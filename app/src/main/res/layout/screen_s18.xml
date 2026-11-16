@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent" android:layout_height="match_parent" android:orientation="vertical">
+    <LinearLayout android:id="@+id/slot_heading" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical"/>
+    <LinearLayout android:id="@+id/slot_periods" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical"/>
+    <LinearLayout android:id="@+id/slot_avatars" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical"/>
+    <LinearLayout android:id="@+id/slot_note" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical"/>
+    <LinearLayout android:id="@+id/slot_graph" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical"/>
+    <LinearLayout android:id="@+id/slot_assumptions" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical"/>
+    <LinearLayout android:id="@+id/slot_disclaimer" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical"/>
+</LinearLayout>

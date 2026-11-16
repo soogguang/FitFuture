@@ -1,0 +1,2 @@
+<?xml version="1.0" encoding="utf-8"?>
+<EditText xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent" android:layout_height="48dp" android:background="@drawable/bg_input" android:textColor="@color/text" android:textColorHint="@color/muted" android:textSize="14sp" android:paddingHorizontal="16dp" android:singleLine="true" android:selectAllOnFocus="true" android:hint="@string/input_hint" android:inputType="textCapSentences" android:importantForAutofill="no"/>

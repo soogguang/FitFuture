@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">FitFuture</string>
+    <string name="back">뒤로 가기</string>
+    <string name="more">더 보기</string>
+    <string name="selected_photo">선택한 음식 사진</string>
+    <string name="avatar_zero">0</string>
+    <string name="avatar_caption">아바타 %1$s단계</string>
+    <string name="input_hint">입력해 주세요</string>
+</resources>
