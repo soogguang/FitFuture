@@ -11,6 +11,9 @@ import com.fitfuture.app.data.*;
 import com.fitfuture.app.domain.*;
 import com.fitfuture.app.domain.Models.*;
 import com.fitfuture.app.ui.*;
+import com.fitfuture.avatar.AvatarStore;
+import com.fitfuture.avatar.core.AvatarSpec;
+import com.fitfuture.avatar.core.BodyCellConfig;
 import java.io.File;
 import java.util.*;
 import java.util.concurrent.*;
@@ -53,7 +56,10 @@ public final class MainActivity extends androidx.activity.ComponentActivity {
               View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR | View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR);
     ui = new Ui(this);
     store = new StateStore(this);
-    services = new DemoServices().services();
+    DemoServices demo = new DemoServices();
+    avatarFuture = new AvatarFutureService(BODY_CELLS);
+    // 음식 인식·추천은 아직 예시 구현, 미래 아바타는 실제 계산 구현
+    services = new FeatureServices(demo, demo, avatarFuture);
     if (saved != null) {
       state = (AppState) saved.getSerializable("state");
       screen = saved.getString("screen", "s01");
@@ -740,6 +746,40 @@ public final class MainActivity extends androidx.activity.ComponentActivity {
     }
   }
 
+  // ── 아바타 ──
+  /** 체형 7칸 BMI 경계·키 표시 범위. 팀에서 확정하면 이 값만 바꾼다. */
+  public static final BodyCellConfig BODY_CELLS = BodyCellConfig.DEFAULT;
+
+  public AvatarFutureService avatarFuture;
+  private AvatarSpec avatar;
+  /** 아바타 만들기 화면에서 고치는 중인 사본과 열린 탭. */
+  public AvatarSpec avatarDraft;
+  public int avatarTab;
+
+  /** 저장된 아바타. 몸 기본형은 프로필 성별을 따른다. */
+  public AvatarSpec avatar() {
+    if (avatar == null) avatar = AvatarStore.load(this, AvatarFutureService.preset(state.profile));
+    return avatar.withPreset(AvatarFutureService.preset(state.profile));
+  }
+
+  public void saveAvatar(AvatarSpec spec) {
+    avatar = spec;
+    if (!preview) AvatarStore.save(this, spec);
+  }
+
+  /** 사용자가 확정한 현재 체형 칸, 확정 전이면 BMI 초안. */
+  public int currentCell(AvatarSpec spec) {
+    return spec.currentCell(BODY_CELLS, state.profile.heightCm, state.profile.weightKg);
+  }
+
+  public int draftCell() {
+    return BODY_CELLS.draftCell(state.profile.heightCm, state.profile.weightKg);
+  }
+
+  public double heightScale() {
+    return BODY_CELLS.heightScale(state.profile.heightCm);
+  }
+
   private String futureKey = "";
   private boolean futureLoading;
   public List<FutureComparison> futureComparisons = new ArrayList<>();
@@ -759,7 +799,13 @@ public final class MainActivity extends androidx.activity.ComponentActivity {
             + ":"
             + state.profile.age
             + ":"
-            + state.profile.activity;
+            + state.profile.activity
+            + ":"
+            + state.profile.gender
+            + ":"
+            + avatar().hashCode()
+            + ":"
+            + state.records.size();
     if (key.equals(futureKey) && futureComparisons.size() == 3) return true;
     if (key.equals(futureKey) && futureLoading) return false;
     futureKey = key;
@@ -768,6 +814,7 @@ public final class MainActivity extends androidx.activity.ComponentActivity {
     Meal meal = state.meal.copy();
     Alternative alternative = state.selected();
     Profile profile = state.profile;
+    avatarFuture.setContext(new ArrayList<>(state.records), avatar());
     async(
         () -> {
           List<FutureComparison> result = new ArrayList<>();

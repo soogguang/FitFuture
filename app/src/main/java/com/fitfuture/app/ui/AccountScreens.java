@@ -217,19 +217,20 @@ public final class AccountScreens {
       week.setGravity(Gravity.CENTER);
       c.addView(week);
       u.gap(c, 12);
-      int stage = 0;
-      if (a.state.weights.size() > i) {
-        double diff = a.state.weights.get(i) - a.state.profile.weightKg;
-        stage = (int) Math.round(diff / 2);
-      }
-      u.avatar(c, AvatarStage.from(stage));
+      // 기록한 체중의 변화율로 지금 체형 칸에서 이동 (미래 비교와 같은 규칙)
+      double rate = 0;
+      if (a.state.weights.size() > i)
+        rate = (a.state.weights.get(i) - a.state.profile.weightKg) / a.state.profile.weightKg;
+      com.fitfuture.avatar.core.BodyCellMapper.Future fw =
+          com.fitfuture.avatar.core.BodyCellMapper.future(a.currentCell(a.avatar()), rate);
+      u.figure(c, a.avatar(), fw.cell, fw.cheekLevel, a.heightScale(), 60, 150);
       LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(0, -2, 1);
       if (i < 2) lp.setMarginEnd(u.dp(6));
       row.addView(c, lp);
     }
     s("weeks").addView(row);
     u.gap(s("weeks"), 12);
-    u.small(s("weeks"), "주차별 단계는 화면 예시예요.");
+    u.small(s("weeks"), "기록한 체중으로 지금 체형에서 몇 칸 움직였는지 보여줘요.");
     u.gap(s("weight"), 18);
     u.section(s("weight"), "직접 잰 체중 · 확장");
     double recent =
@@ -313,7 +314,10 @@ public final class AccountScreens {
           a.state.editingProfile = true;
           a.go("s06");
         });
-    u.menuRow(s("settings"), "아바타 다시 만들기", "기본 2D 토끼 아바타", R.drawable.ic_spark, () -> a.go("s07"));
+    u.menuRow(s("settings"), "아바타 다시 만들기", "얼굴·머리·옷·체형 바꾸기", R.drawable.ic_spark, () -> {
+          a.avatarDraft = null;
+          a.go("s07");
+        });
     LinearLayout notifications = u.card(s("notifications")), r = u.row();
     u.weight(r, u.text("알림 설정 · 확장", 14, R.color.text, true));
     Switch toggle = new Switch(a);
@@ -336,8 +340,8 @@ public final class AccountScreens {
     u.heading(s("greeting"), "안녕하세요, " + a.state.profile.name + "님", "오늘 먹을 한 끼부터 시작해 볼까요?");
     LinearLayout p = s("empty");
     p.setGravity(Gravity.CENTER);
-    u.gap(p, 64);
-    u.avatar(p, AvatarStage.BASELINE);
+    u.gap(p, 40);
+    u.figure(p, a.avatar(), a.currentCell(a.avatar()), 0, a.heightScale(), 90, 220);
     u.gap(p, 22);
     TextView title = u.text("아직 식사 기록이 없어요", 18, R.color.text, true);
     title.setGravity(Gravity.CENTER);

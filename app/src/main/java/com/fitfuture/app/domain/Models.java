@@ -125,8 +125,25 @@ public final class Models {
   public static class FutureComparison {
     public int months;
     public double currentWeightKg, alternativeWeightKg;
+    /** 실제로 이동한 체형 칸 수(−2~+2). 기존 화면 호환용. */
     public AvatarStage currentStage, alternativeStage;
     public String assumptions;
+
+    // ── 아바타 렌더링용 (A = 현재 식단 유지, B = 선택 대안 실천) ──
+    /** 출발점: 사용자가 확정한 현재 체형 칸(1~7). 확정 전이면 BMI 초안. */
+    public int baseCell;
+    /** 기간 뒤 체형 칸(1~7). */
+    public int currentCell, alternativeCell;
+    /** 볼 윤곽 −1·0·+1. 실제로 2칸 이동했을 때만 ±1. */
+    public int currentCheek, alternativeCheek;
+    /** 예상 체중 변화량(kg). 끝 칸에서 그림이 멈춰도 이 값은 그대로 표시한다. */
+    public double currentChangeKg, alternativeChangeKg;
+    /** 끝 칸이라 그림이 덜 움직였는지. */
+    public boolean currentClamped, alternativeClamped;
+    /** 비교에 쓴 하루 섭취 열량(kcal). */
+    public double currentDailyKcal, alternativeDailyKcal;
+    /** B 하루 섭취가 기초대사량보다 낮음 → 극단적 감량 경고 (체형 칸과 별개). */
+    public boolean alternativeBelowBmr;
   }
 
   public static class MealRecord implements Serializable {

@@ -279,19 +279,30 @@ public final class RecommendationScreens {
     f.assumptions = "";
     if (ready) f = a.futureComparisons.get(a.state.months == 1 ? 0 : a.state.months == 3 ? 1 : 2);
     LinearLayout row = u.row();
-    avatarCard(row, "A · 현재 식단 유지", a.state.meal.name, f.currentStage, false);
+    row.setGravity(Gravity.TOP);
+    int base = a.currentCell(a.avatar());
+    avatarCard(row, "A · 현재 식단 유지", a.state.meal.name, ready ? f.currentCell : base,
+        f.currentCheek, ready ? f.currentChangeKg : null, ready ? f.currentCell - f.baseCell : 0,
+        ready && f.currentClamped, false);
     View gap = new View(a);
     row.addView(gap, new LinearLayout.LayoutParams(u.dp(8), 1));
-    avatarCard(row, "B · 선택 대안 실천", a.state.selected().title, f.alternativeStage, true);
+    avatarCard(row, "B · 선택 대안 실천", a.state.selected().title, ready ? f.alternativeCell : base,
+        f.alternativeCheek, ready ? f.alternativeChangeKg : null,
+        ready ? f.alternativeCell - f.baseCell : 0, ready && f.alternativeClamped, true);
     s("avatars").addView(row);
     u.gap(s("note"), 14);
-    u.small(s("note"), "아바타 단계와 그래프는 화면 예시예요.");
+    u.small(s("note"), "지금 체형 " + base + "칸에서 시작해요. 체중이 2%·5% 바뀔 때마다 한 칸씩 움직여요.");
+    if (ready && f.alternativeBelowBmr) {
+      u.gap(s("note"), 10);
+      u.notice(s("note"), "극단적인 감량은 권장하지 않아요",
+          "B의 하루 섭취 열량이 기초대사량보다 낮아요. 다른 대안도 함께 살펴보세요.", 1);
+    }
     u.gap(s("graph"), 12);
     LinearLayout c = u.card(s("graph"));
     c.setPadding(u.dp(12), u.dp(12), u.dp(12), u.dp(12));
     c.addView(u.text("기간별 체중 변화", 14, R.color.text, true));
     u.gap(c, 8);
-    u.small(c, "현재 기준 · 가상 표시 예시");
+    u.small(c, "현재 체중 기준 · 가정에 따른 예상");
     u.gap(c, 8);
     GraphView graph = new GraphView(a, false);
     double[] current = new double[4], alternative = new double[4];
@@ -345,7 +356,15 @@ public final class RecommendationScreens {
   }
 
   private void avatarCard(
-      LinearLayout row, String title, String name, AvatarStage stage, boolean selected) {
+      LinearLayout row,
+      String title,
+      String name,
+      int cell,
+      int cheek,
+      Double changeKg,
+      int moved,
+      boolean clamped,
+      boolean selected) {
     LinearLayout c = u.column();
     c.setPadding(u.dp(6), u.dp(8), u.dp(6), u.dp(8));
     c.setGravity(Gravity.CENTER);
@@ -358,13 +377,31 @@ public final class RecommendationScreens {
           android.content.res.ColorStateList.valueOf(u.color(R.color.text)));
     c.addView(badge, new LinearLayout.LayoutParams(-1, u.dp(28)));
     u.gap(c, 10);
-    u.avatar(c, stage);
+    // 아바타 옆에 예상 변화량 (끝 칸에서 그림이 멈춰도 kg은 그대로 보여준다)
+    LinearLayout figureRow = u.row();
+    figureRow.setGravity(Gravity.CENTER);
+    u.figure(figureRow, a.avatar(), cell, cheek, a.heightScale(), 74, 180);
+    TextView kg =
+        u.text(
+            changeKg == null ? "—" : String.format(java.util.Locale.KOREA, "%+.1f kg", changeKg),
+            13,
+            selected ? R.color.primary_dark : R.color.text,
+            true);
+    figureRow.addView(kg, new LinearLayout.LayoutParams(-2, -2));
+    c.addView(figureRow);
     u.gap(c, 8);
     TextView food = u.text(name, 12, R.color.text, true);
     food.setGravity(Gravity.CENTER);
     c.addView(food);
-    u.gap(c, 8);
-    TextView change = u.text("예상 변화량 —", 11, R.color.muted, false);
+    u.gap(c, 6);
+    String move = moved == 0 ? "그대로" : (moved > 0 ? "+" : "") + moved + "칸";
+    TextView change =
+        u.text(
+            changeKg == null ? "계산 중…" : "체형 " + cell + "칸 (" + move + ")"
+                + (clamped ? "\n끝 칸이라 그림은 여기서 멈춰요" : ""),
+            11,
+            R.color.muted,
+            false);
     change.setGravity(Gravity.CENTER);
     c.addView(change);
     row.addView(c, new LinearLayout.LayoutParams(0, -2, 1));
@@ -446,7 +483,7 @@ public final class RecommendationScreens {
     u.gap(p, 84);
     p.addView(u.icon(R.drawable.ic_check, 32, R.color.primary));
     u.gap(p, 18);
-    u.avatar(p, AvatarStage.BASELINE);
+    u.figure(p, a.avatar(), a.currentCell(a.avatar()), 0, a.heightScale(), 90, 220);
     u.gap(p, 24);
     TextView title = u.title(p, "오늘의 식사를 기록했어요");
     title.setGravity(Gravity.CENTER);

@@ -330,37 +330,114 @@ public final class OnboardingScreens {
         });
   }
 
+  /** S07 아바타 만들기: 파츠를 직접 고르고 현재 체형 칸을 확정한다. 설정의 "아바타 다시 만들기"도 이 화면. */
   private void avatar() {
-    u.heading(s("heading"), "나의 첫 아바타를 설정해요", "사전 제작된 2D 토끼 아바타로 시작할 수 있어요.");
+    if (a.avatarDraft == null) a.avatarDraft = a.avatar();
+    com.fitfuture.avatar.core.AvatarSpec d =
+        a.avatarDraft.withPreset(com.fitfuture.app.data.AvatarFutureService.preset(a.state.profile));
+    a.avatarDraft = d;
+    boolean editing = a.state.onboarded;
+    u.heading(
+        s("heading"),
+        editing ? "아바타를 바꿔요" : "나의 아바타를 만들어요",
+        "얼굴·머리·옷을 골라 나와 닮게 만들어요. 나중에 설정에서 바꿀 수 있어요.");
+
+    // 미리보기 (미래 비교와 같은 렌더러)
     LinearLayout center = s("avatar");
     center.setGravity(Gravity.CENTER);
-    u.gap(center, 80);
-    u.avatar(center, AvatarStage.BASELINE);
-    u.gap(center, 14);
-    TextView label = u.text("기본 토끼 아바타", 12, R.color.primary, true);
+    u.gap(center, 8);
+    int cell = a.currentCell(d);
+    u.figure(center, d, cell, 0, a.heightScale(), 120, 290);
+    u.gap(center, 8);
+    TextView label =
+        u.text(
+            "지금 체형 " + cell + "칸" + (d.bodyCell == com.fitfuture.avatar.core.AvatarSpec.CELL_AUTO ? " (BMI 초안)" : ""),
+            12,
+            R.color.primary,
+            true);
     label.setGravity(Gravity.CENTER);
     center.addView(label);
-    u.gap(center, 80);
-    LinearLayout p = s("upload"), c = u.card(p);
-    u.section(c, "사진으로 아바타 설정 · 확장");
-    u.small(c, "사용자 사진을 활용한 캐릭터 설정은 확장 기능이에요.");
-    u.gap(c, 10);
-    FrameLayout placeholder = u.photo(c, "사용자 사진 업로드", 80, "");
-    placeholder
-        .findViewById(R.id.photo_placeholder)
-        .findViewById(R.id.photo_label)
-        .setPadding(0, 0, 0, 0);
-    u.gap(p, 12);
-    Button disabled = u.button(p, "사진 업로드", () -> {});
-    disabled.setEnabled(false);
-    disabled.setBackgroundResource(R.drawable.bg_placeholder);
-    disabled.setTextColor(u.color(R.color.muted));
+
+    LinearLayout p = s("upload");
+    u.gap(p, 16);
+
+    // 현재 체형 칸
+    u.section(p, "지금 체형");
+    u.gap(p, 4);
+    u.small(p, "키·체중으로 고른 초안이에요. 같은 BMI라도 근육량·체형이 다르니 나와 가까운 칸을 골라 주세요.");
+    u.gap(p, 8);
+    String auto = "자동 (" + a.draftCell() + "칸)";
+    String[] cells = new String[8];
+    cells[0] = auto;
+    for (int i = 1; i <= 7; i++) cells[i] = i + "칸";
+    u.chips(
+        p,
+        cells,
+        Set.of(d.bodyCell == 0 ? auto : d.bodyCell + "칸"),
+        false,
+        v -> {
+          a.avatarDraft = d.withBodyCell(v.equals(auto) ? 0 : Integer.parseInt(v.replace("칸", "")));
+          a.refresh();
+        });
+
+    // 파츠: 부위 탭 → 선택지
+    u.gap(p, 18);
+    u.section(p, "얼굴·머리·옷");
+    u.gap(p, 8);
+    com.fitfuture.avatar.core.AvatarCatalog.Category[] cats =
+        com.fitfuture.avatar.core.AvatarCatalog.Category.values();
+    String[] tabs = new String[cats.length];
+    for (int i = 0; i < cats.length; i++) tabs[i] = cats[i].label;
+    com.fitfuture.avatar.core.AvatarCatalog.Category cat = cats[Math.min(a.avatarTab, cats.length - 1)];
+    u.chips(
+        p,
+        tabs,
+        Set.of(cat.label),
+        false,
+        v -> {
+          a.avatarTab = Arrays.asList(tabs).indexOf(v);
+          a.refresh();
+        });
+    u.gap(p, 10);
+    com.fitfuture.avatar.core.AvatarCatalog.Part[] parts =
+        com.fitfuture.avatar.core.AvatarCatalog.parts(cat);
+    String[] labels = new String[parts.length];
+    String selected = "";
+    for (int i = 0; i < parts.length; i++) {
+      labels[i] = parts[i].label;
+      if (parts[i].id.equals(d.get(cat))) selected = parts[i].label;
+    }
+    u.chips(
+        p,
+        labels,
+        Set.of(selected),
+        false,
+        v -> {
+          String id = parts[Arrays.asList(labels).indexOf(v)].id;
+          // 앞머리는 맞는 뒷머리를 함께 고른다 (그 뒤 뒷머리 탭에서 따로 바꿀 수 있음)
+          a.avatarDraft =
+              cat == com.fitfuture.avatar.core.AvatarCatalog.Category.HAIR
+                  ? d.withHairStyle(id)
+                  : d.with(cat, id);
+          a.refresh();
+        });
+
+    // 사진 기반 추천은 다음 단계
+    u.gap(p, 18);
+    u.notice(p, "사진으로 닮은 파츠 추천 · 다음 단계", "셀카의 얼굴 윤곽으로 얼굴형·눈·눈썹을 추천하는 기능은 이어서 붙일 예정이에요.", 0);
+
     a.primary(
-        "기본 아바타로 시작",
+        editing ? "아바타 저장" : "이 아바타로 시작",
         () -> {
-          a.state.onboarded = true;
-          a.persist();
-          a.root("s08");
+          a.saveAvatar(a.avatarDraft);
+          a.avatarDraft = null;
+          if (editing) {
+            a.back();
+          } else {
+            a.state.onboarded = true;
+            a.persist();
+            a.root("s08");
+          }
         });
   }
 }

@@ -51,17 +51,25 @@ Meal(confirmed=true, nutrition) + Profile
 
 프로필의 목표·활동량·취향·피할 음식·알레르기·한 끼 예산·식사 환경을 전달할 수 있습니다. 실제 추천 가중치와 저장된 피드백을 반영하는 로직은 추천 모듈에서 구현해야 합니다.
 
-## 3. 미래 아바타
+## 3. 미래 아바타 (구현됨 · 장수인)
 
 ```text
 Meal + 선택 Alternative + Profile + months(1/3/6)
- → compare(...)
- → FutureComparison
+ → AvatarFutureService.compare(...)
+ → FutureComparison (체중·체형 칸·볼 윤곽·예상 kg·감량 경고·가정 문구)
 ```
 
-현재·대안 체중과 `AvatarStage`를 반환합니다. UI가 1·3·6개월 결과를 작업 스레드에서 준비해 탭과 그래프에 반영합니다. 실제 BMR/TDEE 계산, 가정, 단계 경계는 이 구현체에 모아야 합니다. 현재 선형 예시 계산을 실제 예측처럼 사용하지 않습니다.
-
-단계 리소스: `avatar_minus_two`, `avatar_minus_one`, `avatar_baseline`, `avatar_plus_one`, `avatar_plus_two`. PNG 원본과 동일한 숫자 플레이스홀더이므로 실물 캐릭터 5종을 받으면 `Ui.avatar()`의 이미지 연결 부분을 교체합니다.
+- 구현: `app/.../data/AvatarFutureService.java` + `avatar` 모듈(`com.fitfuture.avatar`). `MainActivity`에서 `DemoServices` 대신 주입.
+- 계산: Mifflin–St Jeor BMR × 활동 계수 = TDEE, 체지방 1kg ≈ 7,700kcal, ±20% 범위.
+- 하루 섭취 A: 아침·점심·저녁이 모두 기록된 날 3일 이상이면 평균, 아니면 "TDEE만큼 먹되 한 끼를 이 메뉴로 매일" 가정. B = A − (원래 메뉴 − 대안). 쓴 가정은 `assumptions`에 문장으로 들어감.
+- 체형: BMI 7칸(경계 18.5/20.5/23/25/27.5/30, `MainActivity.BODY_CELLS`). 현재 칸은 사용자가 S07에서 확정, 아니면 BMI 초안. 미래 칸은 변화율 2% 미만 0칸, 2~5% 1칸, 5% 이상 2칸, 1~7칸 제한. 실제로 2칸 이동할 때만 볼 윤곽 변경.
+- 렌더링: `Ui.figure()` → `AvatarLayerView`. S07 편집 미리보기, S18 A/B, 홈, S21 완료, S24 주차별이 모두 같은 렌더러.
+- 파츠: Paper Cut v4 앱용 PNG 127개 `app/src/main/assets/avatar/` (모두 320×790, (0,0)에 겹침). 파츠 이름·순서·헤어 짝은 `avatar/.../core/AvatarCatalog.java`. 파츠 수정·재생성은 파츠 원본 패키지(`FitFuture_PaperCut_v2/rebuild.swift`)에서 한다.
+- 자세한 사용법: [`docs/avatar/AVATAR_GUIDE.md`](avatar/AVATAR_GUIDE.md) (얼굴형 vs 볼 윤곽, 헤어 앞뒤 짝, 저장 형식, 문제 해결).
+- 앞머리 선택은 `withHairStyle()`로 맞는 뒷머리까지 함께 고른다.
+- 저장: 아바타 구성은 `AvatarStore`(SharedPreferences, Firestore용 JSON 변환 포함). 원본 사진은 저장하지 않음.
+- `FutureComparison.currentStage/alternativeStage`는 실제 이동한 칸 수(−2~+2)로 계속 채워 기존 코드와 호환.
+- 다음: 셀카 기반 파츠 추천(ML Kit 얼굴 윤곽 → 가장 가까운 파츠).
 
 ## 실제 식사와 피드백
 

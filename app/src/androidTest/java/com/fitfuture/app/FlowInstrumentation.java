@@ -161,7 +161,7 @@ public final class FlowInstrumentation extends Instrumentation {
     click("다음");
     screen("s06");
     click("설정 완료");
-    click("기본 아바타로 시작");
+    click("이 아바타로 시작");
     screen("s27");
     require(
         activity.state.profile.age == 23 && activity.state.profile.heightCm == 170,
