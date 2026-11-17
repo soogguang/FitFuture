@@ -37,6 +37,7 @@ public final class MainActivity extends androidx.activity.ComponentActivity {
   private AccountScreens account;
   private Uri pendingCameraUri;
   public boolean recognitionReady;
+  public String failureMessage = "";
 
   public interface Work<T> {
     T get() throws Exception;
@@ -58,8 +59,11 @@ public final class MainActivity extends androidx.activity.ComponentActivity {
     store = new StateStore(this);
     DemoServices demo = new DemoServices();
     avatarFuture = new AvatarFutureService(BODY_CELLS);
-    // 음식 인식·추천은 아직 예시 구현, 미래 아바타는 실제 계산 구현
-    services = new FeatureServices(demo, demo, avatarFuture);
+    RecommendationHttpClient recommendationClient =
+        new RecommendationHttpClient(BuildConfig.RECOMMENDATION_BASE_URL);
+    services = new FeatureServices(
+        new ServerFoodAnalysisService(demo, recommendationClient),
+        new HttpMealRecommendationService(recommendationClient), avatarFuture);
     if (saved != null) {
       state = (AppState) saved.getSerializable("state");
       screen = saved.getString("screen", "s01");
@@ -67,6 +71,7 @@ public final class MainActivity extends androidx.activity.ComponentActivity {
       if (old != null) backStack.addAll(old);
       preview = saved.getBoolean("preview");
       retryScreen = saved.getString("retry", "s09");
+      failureMessage = saved.getString("failureMessage", "");
       recognitionReady = saved.getBoolean("ready");
       String uri = saved.getString("camera");
       if (uri != null) pendingCameraUri = Uri.parse(uri);
@@ -75,11 +80,6 @@ public final class MainActivity extends androidx.activity.ComponentActivity {
       state = store.load();
       screen = state.onboarded ? "s08" : "s01";
     }
-    if (state.meal != null && state.meal.confirmed)
-      try {
-        state.alternatives = services.recommendations.recommend(state.meal, state.profile);
-      } catch (Exception ignored) {
-      }
     onboarding = new OnboardingScreens(this);
     meals = new MealScreens(this);
     recommendations = new RecommendationScreens(this);
@@ -162,6 +162,7 @@ public final class MainActivity extends androidx.activity.ComponentActivity {
 
   private void seedPreview() {
     try {
+      services = new FeatureServices(new DemoServices(), new DemoServices(), avatarFuture);
       state.meal = services.foodAnalysis.recognize("돈가스 정식", "");
       state.meal.nutrition = services.foodAnalysis.analyze(state.meal.foods);
       state.meal.confirmed = true;
@@ -243,6 +244,7 @@ public final class MainActivity extends androidx.activity.ComponentActivity {
     out.putStringArrayList("back", backStack);
     out.putBoolean("preview", preview);
     out.putString("retry", retryScreen);
+    out.putString("failureMessage", failureMessage);
     out.putBoolean("ready", recognitionReady);
     if (pendingCameraUri != null) out.putString("camera", pendingCameraUri.toString());
   }
@@ -639,6 +641,7 @@ public final class MainActivity extends androidx.activity.ComponentActivity {
         () -> services.foodAnalysis.analyze(draft.foods),
         n -> {
           state.meal.nutrition = n;
+          state.meal.nutritionSource = n.source;
           state.meal.confirmed = true;
           state.alternatives.clear();
           persist();
@@ -654,23 +657,27 @@ public final class MainActivity extends androidx.activity.ComponentActivity {
     go("s16_loading");
     Meal meal = state.meal.copy();
     Profile profile = state.profile;
+    List<MealRecord> history = new ArrayList<>(state.records);
     async(
-        () -> {
-          Thread.sleep(650);
-          return services.recommendations.recommend(meal, profile);
-        },
+        () -> services.recommendations.recommend(meal, profile, history),
         list -> {
-          if (list.isEmpty()) {
+          if (list.size() < 3) {
             go("s29_shortage");
             return;
           }
           state.alternatives = list;
+          state.meal.nutrition = meal.nutrition;
+          state.meal.nutritionSource = meal.nutritionSource;
+          futureKey = "";
+          futureComparisons.clear();
           state.selectedAlternative = Math.min(state.selectedAlternative, list.size() - 1);
+          persist();
           go("s16");
         });
   }
 
   private void showFailure(Exception ex) {
+    failureMessage = ex instanceof ModuleException ? ex.getMessage() : "서버 요청을 처리하지 못했어요. 다시 시도해 주세요.";
     if (ex instanceof ModuleException) {
       switch (((ModuleException) ex).code) {
         case "RECOGNITION":
@@ -685,11 +692,13 @@ public final class MainActivity extends androidx.activity.ComponentActivity {
       }
     }
     retryScreen = screen;
+    if (screen.equals("s14")) retryScreen = "confirmMeal";
     go("s28");
   }
 
   public void retry() {
     if (retryScreen.equals("s12")) recognize();
+    else if (retryScreen.equals("confirmMeal")) confirmMeal();
     else if (retryScreen.equals("s16_loading")) loadRecommendations();
     else go("s09");
   }
@@ -792,6 +801,7 @@ public final class MainActivity extends androidx.activity.ComponentActivity {
             + state.meal.nutrition.caloriesKcal
             + ":"
             + state.selectedAlternative
+            + ":" + state.selected().id + ":" + state.selected().nutrition.caloriesKcal
             + ":"
             + state.profile.weightKg
             + ":"
@@ -836,6 +846,7 @@ public final class MainActivity extends androidx.activity.ComponentActivity {
     r.meal = state.meal.copy();
     r.mealType = state.draftMealType;
     r.plannedAlternative = state.selectedAlternative;
+    r.plannedSnapshot = state.selected();
     r.actualChoice = state.actualChoice;
     r.satisfaction = state.satisfaction;
     r.note = state.note;
@@ -843,9 +854,13 @@ public final class MainActivity extends androidx.activity.ComponentActivity {
       Alternative alt = state.alternatives.get(state.actualChoice);
       r.actualTitle = alt.title;
       r.actualNutrition = alt.nutrition;
+      r.actualSnapshot = alt;
+      for (FoodPortion f : alt.foods) r.actualFoods.add(f.copy());
     } else {
       r.actualTitle = state.actualChoice == 3 ? "원래대로" : "기타";
       r.actualNutrition = state.actualChoice == 3 ? state.meal.nutrition : null;
+      if (state.actualChoice == 3)
+        for (FoodPortion f : state.meal.foods) r.actualFoods.add(f.copy());
     }
     // A repeated save on the same completed flow replaces the record instead of duplicating it.
     state.records.removeIf(old -> old.meal.id.equals(r.meal.id));

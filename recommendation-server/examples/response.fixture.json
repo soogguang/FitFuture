@@ -1,0 +1,151 @@
+{
+  "alternatives": [
+    {
+      "id": "66ebc6bae08c956e07d1",
+      "index": 0,
+      "title": "돈가스 양 조절 · 밥 양 조절",
+      "instructions": "돈가스 150g → 110g / 밥 200g → 130g",
+      "foods": [
+        {
+          "name": "돈가스",
+          "grams": 110.0
+        },
+        {
+          "name": "밥",
+          "grams": 130.0
+        },
+        {
+          "name": "양배추 샐러드",
+          "grams": 50.0
+        }
+      ],
+      "nutrition": {
+        "calories_kcal": 625.0,
+        "carbohydrate_grams": 77.2167,
+        "protein_grams": 23.4,
+        "fat_grams": 23.45
+      },
+      "composition": "돈가스 110 g · 밥 130 g · 양배추 샐러드 50 g",
+      "calorie_difference": -225.0,
+      "score": 81.62,
+      "scores": {
+        "N": 83.81,
+        "P": 77.61,
+        "C": 73.75,
+        "F": 95.0
+      },
+      "weights": {
+        "N": 0.35,
+        "P": 0.3,
+        "C": 0.2,
+        "F": 0.15
+      },
+      "reason": "돈가스 정식, 이렇게도 드실 수 있어요! 돈가스 150g → 110g / 밥 200g → 130g. 목표 열량과 취향, 예산, 실천의 간편함을 함께 살펴봤어요.",
+      "price_won": 7000,
+      "verification": "검증용 예시 데이터 · 실제 영양·알레르기·가격 보장 아님",
+      "source": "fixture (NOT Gemini) + fixture (NOT official MFDS data)"
+    },
+    {
+      "id": "3f8c148077ba1e615012",
+      "index": 1,
+      "title": "돈가스 양 조절",
+      "instructions": "돈가스 150g → 110g",
+      "foods": [
+        {
+          "name": "돈가스",
+          "grams": 110.0
+        },
+        {
+          "name": "밥",
+          "grams": 200.0
+        },
+        {
+          "name": "양배추 샐러드",
+          "grams": 50.0
+        }
+      ],
+      "nutrition": {
+        "calories_kcal": 730.0,
+        "carbohydrate_grams": 100.6667,
+        "protein_grams": 24.8,
+        "fat_grams": 23.8
+      },
+      "composition": "돈가스 110 g · 밥 200 g · 양배추 샐러드 50 g",
+      "calorie_difference": -120.0,
+      "score": 78.27,
+      "scores": {
+        "N": 69.93,
+        "P": 80.14,
+        "C": 73.75,
+        "F": 100.0
+      },
+      "weights": {
+        "N": 0.35,
+        "P": 0.3,
+        "C": 0.2,
+        "F": 0.15
+      },
+      "reason": "돈가스 정식, 이렇게도 드실 수 있어요! 돈가스 150g → 110g. 목표 열량과 취향, 예산, 실천의 간편함을 함께 살펴봤어요.",
+      "price_won": 7000,
+      "verification": "검증용 예시 데이터 · 실제 영양·알레르기·가격 보장 아님",
+      "source": "fixture (NOT Gemini) + fixture (NOT official MFDS data)"
+    },
+    {
+      "id": "ee0dced2fb50f42c1ba1",
+      "index": 2,
+      "title": "밥 양 조절",
+      "instructions": "밥 200g → 130g",
+      "foods": [
+        {
+          "name": "돈가스",
+          "grams": 150.0
+        },
+        {
+          "name": "밥",
+          "grams": 130.0
+        },
+        {
+          "name": "양배추 샐러드",
+          "grams": 50.0
+        }
+      ],
+      "nutrition": {
+        "calories_kcal": 745.0,
+        "carbohydrate_grams": 86.55,
+        "protein_grams": 30.6,
+        "fat_grams": 30.65
+      },
+      "composition": "돈가스 150 g · 밥 130 g · 양배추 샐러드 50 g",
+      "calorie_difference": -105.0,
+      "score": 78.06,
+      "scores": {
+        "N": 67.74,
+        "P": 81.99,
+        "C": 73.75,
+        "F": 100.0
+      },
+      "weights": {
+        "N": 0.35,
+        "P": 0.3,
+        "C": 0.2,
+        "F": 0.15
+      },
+      "reason": "돈가스 정식, 이렇게도 드실 수 있어요! 밥 200g → 130g. 목표 열량과 취향, 예산, 실천의 간편함을 함께 살펴봤어요.",
+      "price_won": 7000,
+      "verification": "검증용 예시 데이터 · 실제 영양·알레르기·가격 보장 아님",
+      "source": "fixture (NOT Gemini) + fixture (NOT official MFDS data)"
+    }
+  ],
+  "original_nutrition": {
+    "calories_kcal": 850.0,
+    "carbohydrate_grams": 110.0,
+    "protein_grams": 32.0,
+    "fat_grams": 31.0
+  },
+  "generation_source": "fixture (NOT Gemini)",
+  "nutrition_source": "fixture (NOT official MFDS data)",
+  "rejected": {
+    "ABSENT_SAUCE": 1,
+    "ALLERGY": 1
+  }
+}

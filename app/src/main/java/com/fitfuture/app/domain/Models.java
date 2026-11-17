@@ -36,6 +36,7 @@ public final class Models {
   }
 
   public static class Nutrition implements Serializable {
+    public String source = "";
     public double caloriesKcal, carbohydrateGrams, proteinGrams, fatGrams;
 
     public Nutrition(double c, double carbs, double p, double f) {
@@ -63,6 +64,7 @@ public final class Models {
     public String id = java.util.UUID.randomUUID().toString(), name, photoUri = "";
     public List<FoodPortion> foods = new ArrayList<>();
     public Nutrition nutrition;
+    public String nutritionSource = "";
     public boolean confirmed;
 
     public Meal(String name) {
@@ -74,6 +76,7 @@ public final class Models {
       m.id = id;
       m.photoUri = photoUri;
       m.nutrition = nutrition;
+      m.nutritionSource = nutritionSource;
       m.confirmed = confirmed;
       for (FoodPortion f : foods) m.foods.add(f.copy());
       return m;
@@ -82,6 +85,10 @@ public final class Models {
 
   public static class Alternative implements Serializable {
     public int index;
+    public String id = "", source = "", verification = "";
+    public double scoreValue, calorieDifference;
+    public int priceWon;
+    public double[] componentScores, scoreWeights;
     public String title, instructions, reason, composition;
     public List<FoodPortion> foods;
     public Nutrition nutrition;
@@ -102,6 +109,7 @@ public final class Models {
       this.nutrition = nutrition;
       this.composition = composition;
       this.score = score;
+      this.scoreValue = score;
     }
   }
 
@@ -154,6 +162,8 @@ public final class Models {
     public String actualTitle, note;
     public String mealType = "점심";
     public Nutrition actualNutrition;
+    public Alternative plannedSnapshot, actualSnapshot;
+    public List<FoodPortion> actualFoods = new ArrayList<>();
   }
 
   public static class ModuleException extends Exception {

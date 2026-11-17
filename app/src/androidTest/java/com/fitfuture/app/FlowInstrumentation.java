@@ -11,10 +11,12 @@ import com.fitfuture.app.domain.Models.*;
 /** Dependency-free device tests of the complete connected flow and persisted data. */
 public final class FlowInstrumentation extends Instrumentation {
   private MainActivity activity;
+  private String recommendationUrl = "";
 
   @Override
   public void onCreate(Bundle args) {
     super.onCreate(args);
+    if (args != null) recommendationUrl = args.getString("recommendationUrl", "");
     start();
   }
 
@@ -25,7 +27,9 @@ public final class FlowInstrumentation extends Instrumentation {
       runFlow();
       result.putString(
           "stream",
-          "PASS: onboarding, validation, recognition, quantity editing, add/remove food,"
+          "PASS: real HTTP/JSON contract, shortage/server error screens, score parsing,"
+              + " recommendation kcal-to-avatar scenarios, feedback snapshots,"
+              + " onboarding, validation, recognition, quantity editing, add/remove food,"
               + " recommendation selection, detail, 1/3/6-month tabs, actual-vs-planned feedback,"
               + " local persistence, recreation, native back, deletion, camera/gallery intents\n");
       finish(Activity.RESULT_OK, result);
@@ -142,6 +146,14 @@ public final class FlowInstrumentation extends Instrumentation {
     intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
     activity = (MainActivity) startActivitySync(intent);
     waitForIdleSync();
+    RecommendationChecks.run(this, activity, recommendationUrl);
+    onMain(() -> {
+      // The original UI regression suite explicitly uses demo fixtures.
+      activity.state = new AppState();
+      DemoServices demo = new DemoServices();
+      activity.services = new com.fitfuture.app.domain.FeatureServices(demo, demo, activity.avatarFuture);
+      activity.root("s01");
+    });
     screen("s01");
     click("시작하기");
     click("건너뛰기");
@@ -220,6 +232,10 @@ public final class FlowInstrumentation extends Instrumentation {
     activity = (MainActivity) recreated;
     removeMonitor(monitor);
     waitForIdleSync();
+    onMain(() -> {
+      DemoServices demo = new DemoServices();
+      activity.services = new com.fitfuture.app.domain.FeatureServices(demo, demo, activity.avatarFuture);
+    });
     screen("s20");
     require(activity.state.note.equals("실천하기 편했어요"), "Memo lost on recreation");
     require(

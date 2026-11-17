@@ -2,7 +2,12 @@
 
 ## 연결 지점
 
-현재 앱은 `MainActivity.onCreate()`에서 `new DemoServices().services()`를 주입합니다. 세 담당자가 각각 `FeatureServices`의 인터페이스를 구현하고 해당 조합을 교체하면 됩니다. 인터페이스는 Java이며 외부 SDK나 UI 타입에 의존하지 않습니다.
+현재 앱은 `MainActivity.onCreate()`에서 아래 어댑터를 주입합니다. 인터페이스는 기존 Java `FeatureServices`를 재사용합니다.
+
+- 음식 인식: `DemoServices` (개발용 예시)
+- 영양 분석: `ServerFoodAnalysisService` → `POST /nutrition`
+- 추천: `HttpMealRecommendationService` → `POST /recommend`
+- 미래 비교: 기존 `AvatarFutureService` (보존)
 
 ```java
 services = new FeatureServices(
@@ -12,7 +17,7 @@ services = new FeatureServices(
 );
 ```
 
-서버 URL·인증·JSON 명세는 아직 합의되지 않았습니다. 실제 HTTP 응답 DTO는 각 구현체에서 `Models`의 타입으로 변환합니다. API 키를 Android 소스에 넣지 않습니다. 서버 연동 시 manifest 인터넷 권한과 HTTP 클라이언트 설정을 추가해야 합니다.
+서버 명세와 실행 방법은 [`recommendation-server/README.md`](../recommendation-server/README.md)를 참고하세요. `RecommendationJson`이 HTTP 응답을 `Models.Alternative`로 변환합니다. Android에는 서버 URL만 있고 Gemini/식약처 API 키는 없습니다. INTERNET 권한을 추가했고 HTTP는 debug에서만 허용합니다.
 
 ## 공통 규칙
 
@@ -35,7 +40,7 @@ services = new FeatureServices(
 
 사진 URI는 기기 내부 참조입니다. 서버가 직접 접근할 수 없으므로 어댑터가 `ContentResolver`로 내용을 읽어 업로드해야 합니다. 갤러리는 `ACTION_OPEN_DOCUMENT`와 읽기 권한 유지, 카메라는 시스템 촬영 Intent와 grant-only `PhotoProvider`를 사용합니다. 카메라 앱을 열기 위해 앱 자체에 CAMERA 권한을 요청하지 않습니다.
 
-현재 사진 인식은 내용과 관계없이 돈가스 정식 예시를 반환합니다. 텍스트의 돈가스·비빔밥·샐러드는 예시 식품 표로 연결하며, 알 수 없는 음식은 사용자 확인 뒤 영양 매칭 실패 화면으로 연결합니다.
+현재 사진 인식은 내용과 관계없이 돈가스 정식 예시를 반환합니다. 텍스트 음식 분해도 예시입니다. 확정한 음식명과 중량은 서버 DB에서 정확히 매칭하며 알 수 없는 음식은 영양 매칭 실패 화면으로 연결합니다. 서버 fixture 모드를 명시적으로 선택하면 합성 DB를 사용하고 화면에 출처를 표시합니다.
 
 사용자가 음식을 편집하면 `confirmed`, 영양 결과, 기존 추천을 무효화합니다. 확인되지 않은 데이터를 추천에 사용하지 않습니다.
 
@@ -47,9 +52,15 @@ Meal(confirmed=true, nutrition) + Profile
  → List<Alternative>
 ```
 
-대안은 제목·실천 방법·구성·영양·추천 이유·점수를 포함합니다. 현재 세 대안은 양 조절 예시이고, 영양 표와 점수는 실제 DB 검증 결과가 아닙니다. 서버 구현체가 알레르기·예산·실천 조건을 검증하고 정렬해야 합니다. 후보가 부족하면 가짜 대안을 복제하는 대신 `SHORTAGE`를 반환합니다.
+대안은 서버가 만든 안정적 `id`, 제목·실천 방법·구성/g·재계산 영양·열량 차이·추천 이유·요소별 실제 점수/가중치·검증 근거·가격·출처를 포함합니다.
+Gemini는 5~10개 구성 변경 후보만 제안하고, 서버가 DB 재계산과 알레르기/기피/가격/환경/과도한 제한/중복 검증 후 N/P/C/F 가중 점수로 상위 3개를 반환합니다.
+검증 가능한 후보가 3개 미만이면 `SHORTAGE`입니다. 공식 데이터/키가 없으면 실제 모드는 실패하며 fixture로 몰래 대체하지 않습니다.
 
-프로필의 목표·활동량·취향·피할 음식·알레르기·한 끼 예산·식사 환경을 전달할 수 있습니다. 실제 추천 가중치와 저장된 피드백을 반영하는 로직은 추천 모듈에서 구현해야 합니다.
+- Android `RecommendationHttpClient`는 별도 Executor에서 HTTP를 실행합니다 (연결 8초/읽기 40초, 응답 크기 제한).
+- S16/S17은 실제 영양·이유·점수·서버 가중치·출처를 표시합니다. 번호는 리스트 위치이며 서버 id/index를 배열 첨자로 사용하지 않습니다.
+- 원래 식사의 영양도 서버가 다시 계산해 같은 DB 기준으로 비교합니다.
+- 앱 생성 시 동기 네트워크 호출을 제거했습니다. 응답은 `StateStore`에 저장하고 재생성 시 보존합니다.
+- 기록의 실제 음식 구성과 만족도를 최근 100개까지 전달하여 간단한 선호도 보정에 사용합니다. 메모는 로컬에 남깁니다. 학습 모델은 아직 없습니다.
 
 ## 3. 미래 아바타 (구현됨 · 장수인)
 
@@ -69,6 +80,7 @@ Meal + 선택 Alternative + Profile + months(1/3/6)
 - 앞머리 선택은 `withHairStyle()`로 맞는 뒷머리까지 함께 고른다.
 - 저장: 아바타 구성은 `AvatarStore`(SharedPreferences, Firestore용 JSON 변환 포함). 원본 사진은 저장하지 않음.
 - `FutureComparison.currentStage/alternativeStage`는 실제 이동한 칸 수(−2~+2)로 계속 채워 기존 코드와 호환.
+- 추천 대안 변경 시 ID/열량을 비교 캐시 키에 포함하여 1·3·6개월을 다시 계산합니다. 서버/추천 모델은 체중 변화량을 계산하지 않습니다.
 - 다음: 셀카 기반 파츠 추천(ML Kit 얼굴 윤곽 → 가장 가까운 파츠).
 
 ## 실제 식사와 피드백
@@ -76,12 +88,12 @@ Meal + 선택 Alternative + Profile + months(1/3/6)
 `MealRecord`는 다음 내용을 로컬 JSON으로 저장합니다.
 
 - 원래 음식·양·영양·사진 참조
-- 먹기 전에 선택한 `plannedAlternative`
-- 실제 먹은 `actualChoice`와 `actualTitle`
+- 먹기 전에 선택한 `plannedAlternative` 위치와 `plannedSnapshot` (안정적 ID/영양/구성 포함)
+- 실제 먹은 `actualChoice`, `actualTitle`, `actualSnapshot`, `actualFoods`
 - 실제 선택의 `actualNutrition` — 기타를 선택하면 알 수 없는 열량을 만들지 않고 `null`
 - 만족도 1~5, 메모, 기록 시각
 
-현재 피드백은 `StateStore`에만 저장합니다. 서버 저장·추천 개인화가 필요하면 별도 기록 저장소 인터페이스를 추가하고 저장 성공 후 완료 화면을 표시하도록 확장하세요. 동일한 식사 ID를 반복 저장하면 중복 기록 대신 기존 기록을 교체합니다.
+피드백은 `StateStore`에 저장합니다. 계획/실제 대안 스냅샷과 실제 음식/g도 함께 보존하고 다음 추천 요청에 선호도 보정 자료로 전달합니다. 기존 기록에서 음식 구성을 모르면 임의 복원하지 않습니다. 별도 서버 영구 저장은 구현하지 않았습니다. 동일한 식사 ID를 반복 저장하면 중복 기록 대신 기존 기록을 교체합니다.
 
 ## 통합 때 확인할 사항
 

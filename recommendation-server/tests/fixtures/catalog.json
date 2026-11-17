@@ -1,0 +1,170 @@
+{
+  "provenance": "fixture",
+  "foods": [
+    {
+      "id": "cutlet",
+      "name": "돈가스",
+      "aliases": [
+        "돈까스"
+      ],
+      "basis_grams": 100,
+      "nutrition": {
+        "calories_kcal": 300,
+        "carbohydrate_grams": 23.333333,
+        "protein_grams": 18,
+        "fat_grams": 18
+      },
+      "source": "fixture",
+      "source_record_id": "SYNTHETIC-cutlet",
+      "role": "food",
+      "allergens": [
+        "돼지고기",
+        "밀",
+        "달걀"
+      ],
+      "allergen_source": "synthetic fixture only",
+      "allergen_valid_until": "2099-01-01",
+      "ingredients": [
+        "돼지고기",
+        "밀가루",
+        "달걀",
+        "기름"
+      ],
+      "ingredient_source": "synthetic fixture only",
+      "ingredient_valid_until": "2099-01-01"
+    },
+    {
+      "id": "rice",
+      "name": "밥",
+      "aliases": [],
+      "basis_grams": 100,
+      "nutrition": {
+        "calories_kcal": 150,
+        "carbohydrate_grams": 33.5,
+        "protein_grams": 2,
+        "fat_grams": 0.5
+      },
+      "source": "fixture",
+      "source_record_id": "SYNTHETIC-rice",
+      "role": "food",
+      "allergens": [],
+      "allergen_source": "synthetic fixture only",
+      "allergen_valid_until": "2099-01-01",
+      "ingredients": [
+        "쌀"
+      ],
+      "ingredient_source": "synthetic fixture only",
+      "ingredient_valid_until": "2099-01-01"
+    },
+    {
+      "id": "salad",
+      "name": "양배추 샐러드",
+      "aliases": [],
+      "basis_grams": 100,
+      "nutrition": {
+        "calories_kcal": 200,
+        "carbohydrate_grams": 16,
+        "protein_grams": 2,
+        "fat_grams": 6
+      },
+      "source": "fixture",
+      "source_record_id": "SYNTHETIC-salad",
+      "role": "food",
+      "allergens": [
+        "달걀"
+      ],
+      "allergen_source": "synthetic fixture only",
+      "allergen_valid_until": "2099-01-01",
+      "ingredients": [
+        "양배추",
+        "마요네즈"
+      ],
+      "ingredient_source": "synthetic fixture only",
+      "ingredient_valid_until": "2099-01-01"
+    },
+    {
+      "id": "sauce",
+      "name": "돈가스 소스",
+      "aliases": [],
+      "basis_grams": 100,
+      "nutrition": {
+        "calories_kcal": 150,
+        "carbohydrate_grams": 35,
+        "protein_grams": 0,
+        "fat_grams": 0
+      },
+      "source": "fixture",
+      "source_record_id": "SYNTHETIC-sauce",
+      "role": "sauce",
+      "allergens": [
+        "대두"
+      ],
+      "allergen_source": "synthetic fixture only",
+      "allergen_valid_until": "2099-01-01",
+      "ingredients": [
+        "대두",
+        "설탕"
+      ],
+      "ingredient_source": "synthetic fixture only",
+      "ingredient_valid_until": "2099-01-01"
+    },
+    {
+      "id": "shrimp",
+      "name": "새우",
+      "aliases": [],
+      "basis_grams": 100,
+      "nutrition": {
+        "calories_kcal": 100,
+        "carbohydrate_grams": 0,
+        "protein_grams": 20,
+        "fat_grams": 2
+      },
+      "source": "fixture",
+      "source_record_id": "SYNTHETIC-shrimp",
+      "role": "food",
+      "allergens": [
+        "갑각류",
+        "새우"
+      ],
+      "allergen_source": "synthetic fixture only",
+      "allergen_valid_until": "2099-01-01",
+      "ingredients": [
+        "새우"
+      ],
+      "ingredient_source": "synthetic fixture only",
+      "ingredient_valid_until": "2099-01-01"
+    }
+  ],
+  "offers": [
+    {
+      "id": "fixture-cafeteria-set",
+      "environment": "학식",
+      "max_grams": {
+        "cutlet": 150,
+        "rice": 200,
+        "salad": 100,
+        "sauce": 20,
+        "shrimp": 100
+      },
+      "price_won": 7000,
+      "source": "synthetic fixture only (not a real menu)",
+      "valid_until": "2099-01-01",
+      "allowed_kinds": [
+        "portion",
+        "sauce",
+        "balance",
+        "substitution",
+        "menu"
+      ],
+      "additional_purchase": false,
+      "cooking_required": false,
+      "allergen_source": "synthetic cross-contact fixture",
+      "allergens": [
+        "돼지고기",
+        "밀",
+        "달걀",
+        "대두"
+      ]
+    }
+  ]
+}

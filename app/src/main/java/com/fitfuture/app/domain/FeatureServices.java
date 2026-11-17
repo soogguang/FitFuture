@@ -15,6 +15,11 @@ public final class FeatureServices {
 
   public interface MealRecommendationService {
     List<Alternative> recommend(Meal meal, Profile profile) throws ModuleException;
+
+    default List<Alternative> recommend(Meal meal, Profile profile, List<MealRecord> history)
+        throws ModuleException {
+      return recommend(meal, profile);
+    }
   }
 
   public interface FutureAvatarService {

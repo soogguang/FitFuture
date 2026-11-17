@@ -308,7 +308,7 @@ public final class MealScreens {
     u.gap(s("notes"), 14);
     u.small(s("notes"), "입력한 음식과 섭취량을 확인했어요");
     u.gap(s("notes"), 14);
-    u.small(s("notes"), "식약처 영양 DB 계산 화면 예시 · 가상 영양값");
+    u.small(s("notes"), "영양 데이터 출처: " + m.nutritionSource + "\n음식 인식은 개발용 예시입니다. 음식과 중량을 직접 확인해 주세요.");
     a.primary("맞춤 대안 3개 보기", a::loadRecommendations);
   }
 

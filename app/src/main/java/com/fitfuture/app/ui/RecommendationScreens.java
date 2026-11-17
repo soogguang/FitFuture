@@ -53,7 +53,7 @@ public final class RecommendationScreens {
     u.chips(
         p,
         new String[] {
-          a.state.profile.goal.equals("체중 감량") ? "체중 관리" : a.state.profile.goal, "메뉴 유지", "추가 구매 없음"
+          a.state.profile.goal.equals("체중 감량") ? "체중 관리" : a.state.profile.goal, a.state.profile.environment, "조건 검증 후 추천"
         },
         Set.of(a.state.profile.goal.equals("체중 감량") ? "체중 관리" : a.state.profile.goal),
         false,
@@ -65,8 +65,10 @@ public final class RecommendationScreens {
     u.heading(s("heading"), meal.name + ", 이렇게 먹어볼까요?", "");
     filters(s("filters"));
     u.gap(s("alternatives"), 12);
-    for (Alternative alt : a.state.alternatives) {
-      boolean selected = alt.index == a.state.selectedAlternative;
+    for (int position = 0; position < a.state.alternatives.size(); position++) {
+      final int selectedPosition = position;
+      Alternative alt = a.state.alternatives.get(position);
+      boolean selected = position == a.state.selectedAlternative;
       LinearLayout c = u.card(s("alternatives"));
       c.setPadding(u.dp(8), u.dp(15), u.dp(8), u.dp(15));
       c.setBackgroundResource(selected ? R.drawable.bg_selected_card : R.drawable.bg_input);
@@ -77,7 +79,7 @@ public final class RecommendationScreens {
       words.setPadding(u.dp(8), 0, u.dp(4), 0);
       LinearLayout heading = u.row();
       TextView index =
-          u.text(String.format(Locale.KOREA, "%02d  ", alt.index + 1), 12, R.color.primary, true);
+          u.text(String.format(Locale.KOREA, "%02d  ", selectedPosition + 1), 12, R.color.primary, true);
       heading.addView(index, new LinearLayout.LayoutParams(-2, -2));
       heading.addView(u.text(alt.title, 14, R.color.text, true));
       words.addView(heading);
@@ -89,7 +91,7 @@ public final class RecommendationScreens {
               Ui.number(alt.nutrition.caloriesKcal)
                   + " kcal · "
                   + signed(alt.nutrition.caloriesKcal - meal.nutrition.caloriesKcal)
-                  + " kcal",
+                  + " kcal · " + String.format(Locale.KOREA, "%.1f점", alt.scoreValue),
               12,
               R.color.primary_dark,
               true));
@@ -98,10 +100,10 @@ public final class RecommendationScreens {
       radio.setGravity(Gravity.CENTER);
       row.addView(radio, new LinearLayout.LayoutParams(u.dp(22), u.dp(48)));
       c.addView(row);
-      c.setContentDescription("추천 " + (alt.index + 1) + " " + alt.title);
+      c.setContentDescription("추천 " + (selectedPosition + 1) + " " + alt.title);
       c.setOnClickListener(
           v -> {
-            a.state.selectedAlternative = alt.index;
+            a.state.selectedAlternative = selectedPosition;
             a.state.months = 1;
             a.persist();
             a.refresh();
@@ -124,7 +126,7 @@ public final class RecommendationScreens {
     u.gap(s("reason"), 8);
     u.notice(s("reason"), "추천 이유", a.state.selected().reason, 0);
     u.gap(s("note"), 14);
-    u.small(s("note"), "목표·취향·비용·실천 가능성을 반영한 순위예요. 열량 차이는 화면 예시예요.");
+    u.small(s("note"), "목표·취향·비용·실천 가능성을 반영한 순위예요.\n" + a.state.selected().source);
     a.primary("선택한 대안으로 미래 비교", () -> a.go("s18"));
   }
 
@@ -151,8 +153,7 @@ public final class RecommendationScreens {
   private void detail() {
     Alternative alt = a.state.selected();
     Meal m = a.state.meal;
-    String[] subs = {"평소 메뉴를 유지하고 싶다면", "식사량을 유지하고 싶다면", "전체 섭취량을 조절하고 싶다면"};
-    u.heading(s("heading"), alt.title, subs[alt.index]);
+    u.heading(s("heading"), alt.title, alt.instructions);
     LinearLayout c = u.card(s("calories"));
     u.section(c, "원래 식단과 열량 비교");
     c.addView(
@@ -172,36 +173,34 @@ public final class RecommendationScreens {
     u.bar(c, alt.nutrition.caloriesKcal / m.nutrition.caloriesKcal, R.color.primary, 6);
     u.gap(c, 8);
     u.small(
-        c, "예시 열량 차이 " + signed(alt.nutrition.caloriesKcal - m.nutrition.caloriesKcal) + " kcal");
+        c, "열량 차이 " + signed(alt.nutrition.caloriesKcal - m.nutrition.caloriesKcal) + " kcal");
     u.gap(s("nutrients"), 12);
     nutrients(s("nutrients"), m.nutrition, alt.nutrition);
     u.gap(s("composition"), 12);
     u.notice(s("composition"), "구성과 양", alt.composition, 0);
     u.gap(s("conditions"), 12);
-    u.notice(
-        s("conditions"),
-        "추천 조건을 확인했어요",
-        (a.state.profile.allergies.isEmpty()
-                ? "알레르기 제외 조건 없음"
-                : String.join("·", a.state.profile.allergies) + " 포함 후보 제외")
-            + " · 한 끼 예산 "
-            + String.format(Locale.KOREA, "%,d", a.state.profile.budgetWon)
-            + "원 · 추가 구매 없음 (예시)",
-        0);
+    u.notice(s("conditions"), "추천 조건 확인 결과",
+        alt.verification + "\n한 끼 비용 " + alt.priceWon + "원 · 예산 "
+            + a.state.profile.budgetWon + "원", 0);
     u.gap(s("scores"), 14);
     LinearLayout scores = u.card(s("scores"));
-    u.section(scores, "추천 기준 · 예시 종합 점수 " + alt.score + "점");
+    u.section(scores, "추천 기준 · 종합 점수 " + String.format(Locale.KOREA, "%.2f", alt.scoreValue) + "점");
     String[] labels = {"영양 균형 N", "음식 선호도 P", "가격·접근성 C", "실천 가능성 F"};
-    int[] weights = {35, 30, 20, 15};
+    double[] values = alt.componentScores, weights = alt.scoreWeights;
+    if (values == null || weights == null) {
+      u.small(scores, "개발용 예시 · 세부 점수 검증 없음");
+      a.primary("이 대안 선택", () -> a.go("s18"));
+      return;
+    }
     for (int i = 0; i < 4; i++) {
       LinearLayout r = u.row();
       u.weight(r, u.text(labels[i], 12, R.color.text, true));
       TextView score =
-          u.text((88 - i * 2) + " · " + weights[i] + "%", 12, R.color.primary_dark, true);
+          u.text(String.format(Locale.KOREA, "%.2f · %.0f%%", values[i], weights[i] * 100), 12, R.color.primary_dark, true);
       r.addView(score, new LinearLayout.LayoutParams(-2, -2));
       scores.addView(r);
       u.gap(scores, 6);
-      u.bar(scores, (88 - i * 2) / 100.0, R.color.primary, 5);
+      u.bar(scores, values[i] / 100.0, R.color.primary, 5);
       u.gap(scores, 14);
     }
     a.primary("이 대안 선택", () -> a.go("s18"));
@@ -245,7 +244,7 @@ public final class RecommendationScreens {
       c.addView(r);
       u.gap(c, 16);
     }
-    u.small(c, "원래 식단은 예시값이에요. 대안의 탄·단·지는 DB에서 재계산해요.");
+    u.small(c, "섭취 중량을 기준으로 서버 DB에서 재계산했어요.\n" + a.state.meal.nutritionSource);
   }
 
   private void future() {
@@ -422,8 +421,8 @@ public final class RecommendationScreens {
     u.gap(s("choices"), 18);
     u.section(s("choices"), "실제 식사");
     List<String> choices = new ArrayList<>();
-    for (Alternative alt : a.state.alternatives)
-      choices.add("추천 " + (alt.index + 1) + " · " + alt.title);
+    for (int i = 0; i < a.state.alternatives.size(); i++)
+      choices.add("추천 " + (i + 1) + " · " + a.state.alternatives.get(i).title);
     choices.add("원래대로");
     choices.add("기타");
     for (int i = 0; i < choices.size(); i++) {
@@ -502,7 +501,7 @@ public final class RecommendationScreens {
             ? "기타 식사의 열량은 기록하지 않았어요."
             : "선택 대안 기준 예상 차이 "
                 + signed(r.actualNutrition.caloriesKcal - r.meal.nutrition.caloriesKcal)
-                + " kcal · 예시");
+                + " kcal");
     u.gap(s("note"), 16);
     u.small(s("note"), "남겨준 피드백은 다음 식사 추천에 활용돼요.");
     a.primary("홈으로 가기", () -> a.root("s08"));

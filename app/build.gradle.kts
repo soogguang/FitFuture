@@ -9,8 +9,12 @@ android {
         versionCode = 1
         versionName = "0.1.0"
         testInstrumentationRunner = "com.fitfuture.app.FlowInstrumentation"
+        buildConfigField("String", "RECOMMENDATION_BASE_URL", "\"" +
+            providers.gradleProperty("recommendationBaseUrl").orElse("http://10.0.2.2:8000").get()
+                .replace("\\", "\\\\").replace("\"", "\\\"") + "\"")
     }
     buildFeatures { buildConfig = true }
+    sourceSets.getByName("androidTest").assets.srcDir("../recommendation-server/examples")
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
