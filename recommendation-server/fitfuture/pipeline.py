@@ -17,6 +17,12 @@ def contains(term, values):
     return any(term.casefold() in v.casefold() or v.casefold() in term.casefold() for v in values)
 
 
+# A cooking-style preference is not an ingredient exclusion. In particular,
+# "기름" must not exclude every reduced-fat alternative to a fried meal.
+def avoided_ingredients(profile):
+    return [term for term in profile.avoided if term != "기름진 음식"]
+
+
 class RecommendationPipeline:
     def __init__(self, repo, generator, scorer, safety=None):
         self.repo, self.generator, self.scorer = repo, generator, scorer
@@ -42,6 +48,7 @@ class RecommendationPipeline:
         if candidate.kind == "balance" and not increases:
             raise Rejected("IMPOSSIBLE_OPERATION")
         foods = [self.repo.foods[p.food_id] for p in candidate.portions]
+        excluded_ingredients = avoided_ingredients(request.profile)
         today = date.today()
         for f in foods:
             if request.profile.allergies:
@@ -53,11 +60,11 @@ class RecommendationPipeline:
                     raise Rejected("ALLERGEN_UNVERIFIABLE")
                 if conflict:
                     raise Rejected("ALLERGY")
-            if request.profile.avoided:
+            if excluded_ingredients:
                 if f.ingredients is None or not f.ingredient_source or not f.ingredient_valid_until \
                         or f.ingredient_valid_until < today:
                     raise Rejected("INGREDIENT_UNVERIFIABLE")
-                if any(contains(a, [f.name, *f.ingredients]) for a in request.profile.avoided):
+                if any(contains(a, [f.name, *f.ingredients]) for a in excluded_ingredients):
                     raise Rejected("AVOIDED")
         offers = [o for o in self.repo.catalog.offers
                   if o.environment == request.profile.environment and o.valid_until >= today
@@ -84,6 +91,8 @@ class RecommendationPipeline:
         original_nutrition = self.repo.calculate(original)
         if original_nutrition.calories_kcal <= 0:
             raise RecommendationError("NUTRITION", "원래 식사의 영양정보를 확인해 주세요.")
+        request = request.model_copy(update={"meal": request.meal.model_copy(
+            update={"nutrition": original_nutrition})})
         batch = await self.generator.generate(request, self.repo)
         rejected, results, accepted = Counter(), [], []
         before = {p.food_id: p.grams for p in original}
@@ -107,6 +116,12 @@ class RecommendationPipeline:
                 portions = [FoodPortion(name=f.name, grams=p.grams) for p, f in zip(candidate.portions, foods)]
                 signature = "|".join(f"{k}:{v:.2f}" for k, v in sorted(after.items()))
                 fixture = self.repo.fixture or self.generator.source.startswith("fixture")
+                difference = round(n.calories_kcal - original_nutrition.calories_kcal, 2)
+                energy_reason = (f"원래 식사보다 {abs(difference):g}kcal "
+                                 + ("줄인" if difference < 0 else "늘린") + " 구성이에요. "
+                                 if difference else "원래 식사와 열량이 같은 구성 변경이에요. ")
+                feasibility = ("추가 구매와 조리 없이 실천할 수 있는 조건이에요. "
+                               if not offer.additional_purchase and not offer.cooking_required else "")
                 results.append(Alternative(
                     id=hashlib.sha256(signature.encode()).hexdigest()[:20], index=0,
                     # Derive titles/instructions from verified changes; never repeat unsupported AI claims.
@@ -114,10 +129,12 @@ class RecommendationPipeline:
                                      if abs(before.get(k, 0) - after.get(k, 0)) > 1),
                     instructions=" / ".join(actions), foods=portions, nutrition=n,
                     composition=" · ".join(f"{f.name} {f.grams:g} g" for f in portions),
-                    calorie_difference=round(n.calories_kcal - original_nutrition.calories_kcal, 2),
+                    calorie_difference=difference,
                     score=score, scores=scores, weights=self.scorer.weights,
                     reason=f"{request.meal.name}, 이렇게도 드실 수 있어요! "
-                           + " / ".join(actions) + ". 목표 열량과 취향, 예산, 실천의 간편함을 함께 살펴봤어요.",
+                           + " / ".join(actions) + ". " + energy_reason
+                           + f"한 끼 {offer.price_won:,}원으로 예산 안에 들어요. " + feasibility
+                           + "목표 열량·영양 균형, 음식 선호와 과거 피드백, 가격·접근성, 실천 가능성을 점수에 반영했어요.",
                     price_won=offer.price_won,
                     verification=("검증용 예시 데이터 · 실제 영양·알레르기·가격 보장 아님" if fixture
                                   else f"식약처 영양 재계산 · 가격/환경 근거: {offer.source} · 유효일 {offer.valid_until}"
@@ -127,8 +144,18 @@ class RecommendationPipeline:
                 accepted.append(after)
             except Rejected as exc:
                 rejected[str(exc)] += 1
-        if len(results) < 3:
-            raise RecommendationError("SHORTAGE", "조건을 확인할 수 있는 대안이 3개보다 적어요. 음식과 조건을 확인해 주세요.",
+        if not results:
+            reasons = {
+                "AVOIDED": "피하고 싶은 재료가 포함된 후보를 제외했어요.",
+                "ALLERGY": "알레르기 성분이 포함된 후보를 제외했어요.",
+                "ALLERGEN_UNVERIFIABLE": "알레르기 성분을 확인할 근거가 부족해요.",
+                "INGREDIENT_UNVERIFIABLE": "기피 재료를 확인할 근거가 부족해요.",
+                "BUDGET": "한 끼 예산을 초과한 후보를 제외했어요.",
+                "PRICE_ENVIRONMENT_ALLERGEN_UNVERIFIABLE": "선택한 식사 환경의 가격·제공 조건을 확인할 근거가 부족해요.",
+            }
+            explanation = " ".join(reasons[code] for code in rejected if code in reasons)
+            raise RecommendationError("SHORTAGE", "조건에 맞는 대안을 찾지 못했어요. "
+                                      + (explanation or "음식과 조건을 확인해 주세요."),
                                       available=len(results), rejected=dict(rejected))
         results.sort(key=lambda a: (-a.score, a.id))
         top = [a.model_copy(update={"index": i}) for i, a in enumerate(results[:3])]

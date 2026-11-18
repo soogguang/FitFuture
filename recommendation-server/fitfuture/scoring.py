@@ -57,6 +57,12 @@ class RuleScorer:
         p = 40 + 25 * retention + (25 * preferred_ratio if profile.preferences else 12.5)
         # Avoided candidates were rejected; +10 reflects passing this constraint.
         p += 10
+        if "기름진 음식" in profile.avoided:
+            # Prefer an actual reduction in total fat, calculated from the DB.
+            # Do not classify a meal as oily from a substring of its ingredients.
+            original_fat = request.meal.nutrition.fat_grams  # Recalculated by the pipeline.
+            fat_reduction = max(0, min(1, 1 - nutrition.fat_grams / original_fat)) if original_fat > 0 else 0
+            p -= 25 * (1 - fat_reduction)
         history = []
         for feedback in request.feedback:
             actual = {f.name for f in feedback.actual_foods}

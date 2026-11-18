@@ -661,7 +661,10 @@ public final class MainActivity extends androidx.activity.ComponentActivity {
     async(
         () -> services.recommendations.recommend(meal, profile, history),
         list -> {
-          if (list.size() < 3) {
+          if (list.isEmpty()) {
+            state.alternatives.clear();
+            failureMessage = "조건에 맞는 대안을 찾지 못했어요. 음식과 식사 조건을 확인해 주세요.";
+            persist();
             go("s29_shortage");
             return;
           }
@@ -670,7 +673,8 @@ public final class MainActivity extends androidx.activity.ComponentActivity {
           state.meal.nutritionSource = meal.nutritionSource;
           futureKey = "";
           futureComparisons.clear();
-          state.selectedAlternative = Math.min(state.selectedAlternative, list.size() - 1);
+          state.selectedAlternative = Math.max(0, Math.min(state.selectedAlternative, list.size() - 1));
+          state.actualChoice = state.selectedAlternative;
           persist();
           go("s16");
         });
@@ -687,6 +691,8 @@ public final class MainActivity extends androidx.activity.ComponentActivity {
           go("s29_nutrition");
           return;
         case "SHORTAGE":
+          state.alternatives.clear();
+          persist();
           go("s29_shortage");
           return;
       }

@@ -23,6 +23,14 @@ macOS에서는 서버가 살아 있는 동안 `caffeinate -i`로 유휴 절전�
 전원 종료, 강제 절전/노트북 덮개 닫기, 로그아웃 후 실행은 보장하지 않습니다. 이 경우 별도 상시 서버가 필요합니다.
 로그는 `.run/server.log`, PID는 `.run/server.pid`입니다. 시스템 절전 설정과 로그인 항목은 변경하지 않습니다.
 
+기존 가상환경의 파일 읽기가 멈추는 경우에는 동일한 고정 버전으로 별도 `.runtime-venv` 환경을 만들 수 있습니다.
+
+```bash
+python3 -m venv .runtime-venv
+.runtime-venv/bin/python -m pip install -r requirements.lock.txt
+.runtime-venv/bin/python scripts/server.py start
+```
+
 키 없이 검증용 서버를 실행하려면 다음을 **명시적으로** 선택합니다.
 
 ```bash
@@ -75,9 +83,11 @@ HTTPS 접근만 시도하며 HTTP로 키를 보내는 fallback은 없습니다. 
 - `POST /recommend`: `examples/request.json`의 meal/profile/feedback → 상위 3개, 원래 영양 재계산, 출처, 제외 사유 집계.
 - `GET /health`: 준비 여부와 후보 생성 모드. `/docs`: OpenAPI 명세.
 - 오류: `{ "error": { "code": "SHORTAGE", "message": "…", "available": 2, "rejected": {…} } }`.
-- NUTRITION: 정확히 매칭 불가. SHORTAGE: 검증된 후보 3개 미만. CONFIGURATION: 키/DB 설정 불가.
-- UPSTREAM/INVALID_AI_RESPONSE: Gemini 호출/스키마 오류. TIMEOUT: Gemini 25초, 전체 35초 제한.
-- 잘못된 요청은 FastAPI 422 스키마 오류. Android에서는 일반 서버 오류 화면으로 연결됩니다.
+- NUTRITION: 정확히 매칭 불가. SHORTAGE: 검증된 후보 없음. CONFIGURATION: 키/DB 설정 불가.
+- AI_RATE_LIMIT: Gemini 요청 한도, AI_AUTH: API 키 권한, AI_MODEL: 사용 불가 모델, INVALID_AI_REQUEST: AI 요청 형식 오류.
+- UPSTREAM/INVALID_AI_RESPONSE: Gemini 일시 오류/응답 스키마 오류. 연결·일시 서버 오류는 한 번만 자동 재시도합니다. 인증·요청 형식·한도 오류는 자동 재시도하지 않습니다.
+- TIMEOUT: Gemini 각 시도 최대 25초, 재시도 포함 최대 30초, 전체 요청 35초 제한. 진단 로그에는 HTTP 상태·연결 오류 종류만 남기며 키와 요청 본문은 기록하지 않습니다.
+- 잘못된 요청은 422 `VALIDATION` 오류로, 나이·체중 등 수정할 필드와 허용 범위를 안내합니다.
 - 요청 본문/키를 로그에 기록하지 않습니다. 외부에 공개하려면 HTTPS·인증·요청 제한을 별도 구성하세요. 기본은 loopback 개발 서버입니다.
 
 ## 처리 과정과 점수
@@ -89,13 +99,19 @@ HTTPS 접근만 시도하며 HTTP로 키를 보내는 fallback은 없습니다. 
    영양은 `기준 영양 × 실제 g / 기준 g`로 합산합니다. 최소 300/최대 1800kcal, 메뉴 교체 외에는 원래 열량의 60% 이상을 유지하는 초기 보수적 정책입니다 (의료 처방 아님, 성인 대상).
 4. 거의 같은 구성은 전체 중량 대비 차이가 5% 미만이면 중복으로 제외합니다.
    설명은 검증된 중량 변화에서 서버가 작성해 AI의 근거 없는 실천/안전 문구가 노출되지 않게 합니다.
-5. 0~100점 요소와 종합 점수로 정렬하고 3개를 반환합니다. 부족하면 전체 SHORTAGE이며 가짜로 채우지 않습니다.
+5. 0~100점 요소와 종합 점수로 정렬하고 최대 3개를 반환합니다. 1~2개만 통과해도 그대로 보여주며, 0개일 때만 SHORTAGE 안내 화면으로 이동합니다. 없는 후보를 채우거나 조건을 완화하지 않습니다.
+
+후보 생성은 이번 요청의 실제 음식별 중량을 기준으로 하며, 고정 예시 중량을 기준으로 삼지 않도록 Gemini에 지시합니다. 추천 이유에는 DB로 검증한 중량·열량 변화, 예산과 실천 조건을 반영합니다. PPT의 열량 수치는 예시이므로 고정하지 않습니다.
+
+음식 인식·영양 모듈을 담당하는 다른 팀원의 설정을 유지하고 **추천 후보 생성만 Gemini로 연결**하려면 기존 `RECOMMENDATION_MODE`에 `CANDIDATE_GENERATOR=gemini`, `GEMINI_API_KEY`를 추가합니다. 영양 모드가 fixture이면 영양 데이터는 계속 합성 예시로 표시됩니다. 실제 모드에서 fixture 후보 생성으로 전환하는 것은 허용하지 않습니다. 키가 없을 때 Gemini 호출은 CONFIGURATION 오류를 반환합니다.
 
 `fitfuture/scoring.json`에서 가중치와 안전 정책을 수정할 수 있습니다. 초기 가중치는 N .35 / P .30 / C .20 / F .15입니다.
 
 - N = 목표 한 끼 열량과의 거리 점수 65% + 탄단지 에너지 비율(50/20/30) 거리 점수 35%.
   명시 목표가 없으면 신체/활동량의 BMR/TDEE 추정과 감량 −300/증량 +200kcal의 하루 조정으로 한 끼 목표를 구합니다. BMR 미만 목표를 만들지 않습니다. 체중 변화량은 계산하지 않습니다.
 - P = 40 + 원래 음식 중량 유지율×25 + 선호 음식 중량 비율×25 (선호 없음 12.5) + 기피 검증 통과 10.
+  `기름진 음식`은 재료 제외가 아닌 취향으로, DB 기준 원래 식사 대비 지방 감소율을 반영해 0~25점을 차감합니다 (많이 줄일수록 차감 감소).
+  재료에 `기름`이 있다는 이유만으로 모든 양 조절 후보를 제외하지 않습니다. `기름` 등 명시적 기피 재료와 알레르기는 계속 제외합니다.
   실제 먹은 음식 집합과 과거 음식의 Jaccard 유사도×(만족도−3)×5를 평균해 보정합니다. 0~100으로 제한합니다.
 - C = 예산 대비 실제 비용에 따른 점수 60% + 환경 접근 확인 100점의 40%. 예산 초과는 채점 전 제외합니다.
 - F = 100 − 추가 구매 25 − 조리 30 − 첫 변경 이후 음식별 변경 5점. 0~100으로 제한합니다.
@@ -123,6 +139,12 @@ cd ..
 python3 scripts/verify_flow.py --adb /path/to/adb  # 일회용 에뮬레이터에서만; FitFuture 로컬 기록 초기화
 # fixture 서버가 실행 중이면 Android → FastAPI 전체 연결도 검증
 python3 scripts/verify_flow.py --adb /path/to/adb --recommendation-url http://10.0.2.2:8000
+```
+
+현재 저장된 확정 식사·프로필을 초기화하지 않고 **실제 Gemini 요청 → 추천 카드 → 상세 → 미래 비교**만 확인하려면 서버에 키를 설정하고 아래 검증을 명시적으로 실행합니다. 실제 API 사용량이 발생하며, 받아온 추천 결과는 앱에 저장됩니다.
+
+```bash
+adb shell am instrument -w -e liveRecommendationOnly true com.fitfuture.app.test/com.fitfuture.app.FlowInstrumentation
 ```
 
 계약 테스트는 실제 HTTP adapter/JSON parser/S17 상세/서버 실패 화면/추천 선택 변경/1·3·6개월 아바타 계산/로컬 피드백 저장을 검증합니다.

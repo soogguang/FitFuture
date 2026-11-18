@@ -5,6 +5,7 @@ from pathlib import Path
 
 import httpx
 from fastapi import FastAPI, Request
+from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 from pydantic import Field
 
@@ -25,8 +26,12 @@ def build_pipeline(client):
     fixture = mode == "fixture"
     path = ROOT / "tests/fixtures/catalog.json" if fixture else Path(os.getenv("MFDS_CATALOG_PATH", "data/mfds.json"))
     repo = NutritionRepository(path, fixture)
-    generator = (FixtureGenerator(ROOT / "tests/fixtures/candidates.json") if fixture else
-                 GeminiGenerator(client, os.getenv("GEMINI_API_KEY", ""), os.getenv("GEMINI_MODEL", "gemini-2.5-flash")))
+    # Candidate generation can be connected separately from the upstream nutrition module.
+    candidate_mode = os.getenv("CANDIDATE_GENERATOR", "fixture" if fixture else "gemini")
+    if candidate_mode not in ("gemini", "fixture") or (not fixture and candidate_mode == "fixture"):
+        raise RecommendationError("CONFIGURATION", "후보 생성 설정을 확인해 주세요. 실제 모드에는 Gemini가 필요해요.", 503)
+    generator = (FixtureGenerator(ROOT / "tests/fixtures/candidates.json") if candidate_mode == "fixture" else
+                 GeminiGenerator(client, os.getenv("GEMINI_API_KEY", ""), os.getenv("GEMINI_MODEL", "gemini-3.8-flash")))
     try:
         scorer = RuleScorer(Path(os.getenv("SCORING_CONFIG_PATH", str(ROOT / "fitfuture/scoring.json"))))
     except (ValueError, OSError, KeyError, TypeError) as exc:
@@ -57,6 +62,18 @@ def create_app(pipeline=None):
             yield
 
     app = FastAPI(title="FitFuture meal recommendations", lifespan=lifespan)
+
+    @app.exception_handler(RequestValidationError)
+    async def validation_handler(request, exc):
+        labels = {"age": "나이 (18~100세)", "height_cm": "키 (100~250cm)",
+                  "weight_kg": "현재 체중 (30~300kg)", "target_weight_kg": "목표 체중 (30~300kg)",
+                  "budget_won": "한 끼 예산", "environment": "식사 환경", "goal": "목표",
+                  "foods": "음식 목록", "grams": "섭취량 (0g 초과~5000g)", "name": "음식 이름"}
+        fields = list(dict.fromkeys(labels[part] for error in exc.errors()
+                                   for part in error["loc"] if part in labels))
+        message = (", ".join(fields) + "을 확인해 주세요." if fields
+                   else "음식과 프로필의 입력 내용을 확인해 주세요.")
+        return JSONResponse(status_code=422, content={"error": {"code": "VALIDATION", "message": message}})
 
     @app.exception_handler(RecommendationError)
     async def error_handler(request, exc):

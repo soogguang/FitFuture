@@ -83,7 +83,7 @@ def main():
                                        cwd=ROOT, stdout=log, stderr=log, stdin=subprocess.DEVNULL,
                                        start_new_session=True)
         PID.write_text(str(process.pid))
-        for _ in range(30):
+        for _ in range(150):
             time.sleep(.2)
             if process.poll() is not None:
                 print("Server failed to start. See .run/server.log.")

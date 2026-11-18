@@ -382,7 +382,7 @@ public final class AccountScreens {
 
   private void required() {
     u.gap(s("notice"), 140);
-    u.notice(s("notice"), "기본 정보를 먼저 입력해 주세요", "목표 열량 설정에 필요한 나이, 키, 체중, 활동량을 입력해 주세요.", 1);
+    u.notice(s("notice"), "기본 정보를 확인해 주세요", "나이 18~100세, 키 100~250cm, 현재·목표 체중 30~300kg 범위로 입력해 주세요.", 1);
     a.primary("기본 정보 입력", () -> a.go("s03"));
   }
 
@@ -399,9 +399,13 @@ public final class AccountScreens {
     u.notice(
         s("notice"),
         "조건에 맞는 대안이 충분하지 않아요",
-        "알레르기와 예산 조건을 충족한 후보만 보여드려요. 다른 음식을 입력하거나 식사 조건을 확인해 주세요.",
+        a.failureMessage.isEmpty()
+            ? "알레르기와 예산 조건을 충족한 후보만 보여드려요. 다른 음식을 입력하거나 식사 조건을 확인해 주세요."
+            : a.failureMessage,
         1);
     u.gap(s("retry"), 14);
+    u.outline(s("retry"), "식사 취향 확인", () -> a.go("s26"));
+    u.gap(s("retry"), 10);
     u.outline(
         s("retry"),
         "식사 조건 확인",

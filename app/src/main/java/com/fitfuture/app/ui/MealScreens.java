@@ -390,6 +390,8 @@ public final class MealScreens {
     c.setPadding(u.dp(12), u.dp(10), u.dp(12), u.dp(10));
     LinearLayout r = u.row();
     EditText name = new EditText(a);
+    name.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_SENTENCES);
+    name.setImeHintLocales(android.os.LocaleList.forLanguageTags("ko-KR,en-US"));
     name.setText(f.name);
     name.setTextSize(14);
     name.setTextColor(u.color(R.color.text));

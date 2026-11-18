@@ -12,11 +12,13 @@ import com.fitfuture.app.domain.Models.*;
 public final class FlowInstrumentation extends Instrumentation {
   private MainActivity activity;
   private String recommendationUrl = "";
+  private boolean liveRecommendationOnly;
 
   @Override
   public void onCreate(Bundle args) {
     super.onCreate(args);
     if (args != null) recommendationUrl = args.getString("recommendationUrl", "");
+    if (args != null) liveRecommendationOnly = Boolean.parseBoolean(args.getString("liveRecommendationOnly", "false"));
     start();
   }
 
@@ -24,6 +26,13 @@ public final class FlowInstrumentation extends Instrumentation {
   public void onStart() {
     Bundle result = new Bundle();
     try {
+      if (liveRecommendationOnly) {
+        runLiveRecommendation();
+        result.putString("stream", "PASS: saved meal/profile -> live Gemini -> "
+            + activity.state.alternatives.size() + " recommendation cards -> details -> future comparison\n");
+        finish(Activity.RESULT_OK, result);
+        return;
+      }
       runFlow();
       result.putString(
           "stream",
@@ -37,6 +46,43 @@ public final class FlowInstrumentation extends Instrumentation {
       result.putString(
           "stream", "FAIL: " + error + "\n" + android.util.Log.getStackTraceString(error));
       finish(Activity.RESULT_CANCELED, result);
+    }
+  }
+
+  /** Explicit opt-in only: real API call using the existing meal, without resetting user data. */
+  private void runLiveRecommendation() throws Exception {
+    Intent intent = new Intent(getTargetContext(), MainActivity.class);
+    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+    activity = (MainActivity) startActivitySync(intent);
+    waitForIdleSync();
+    require(activity.state.meal != null && activity.state.meal.confirmed,
+        "Confirm a meal before running live recommendation verification");
+    onMain(activity::loadRecommendations);
+    long until = System.currentTimeMillis() + 40000;
+    while (activity.screen.equals("s16_loading") && System.currentTimeMillis() < until) {
+      Thread.sleep(100);
+      waitForIdleSync();
+    }
+    require(activity.screen.equals("s16"), "Live recommendation failed: " + activity.failureMessage);
+    require(activity.state.alternatives.size() >= 1 && activity.state.alternatives.size() <= 3,
+        "Expected one to three validated alternatives");
+    for (Alternative alt : activity.state.alternatives) {
+      require(alt.source.startsWith("gemini"), "Live test received non-Gemini candidates");
+      require(clickable(activity.getWindow().getDecorView(), "추천 " + (alt.index + 1) + " " + alt.title) != null,
+          "Live recommendation card missing");
+    }
+    click("추천 근거 및 상세 ›");
+    screen("s17");
+    click("이 대안 선택");
+    waitUntil(() -> activity.futureComparisons.size() == 3);
+    onMain(() -> activity.root("s16"));
+    waitForIdleSync();
+    android.graphics.Bitmap screenshot = getUiAutomation().takeScreenshot();
+    try (java.io.OutputStream out = new java.io.FileOutputStream(
+        new java.io.File(getTargetContext().getFilesDir(), "live-recommendation.png"))) {
+      screenshot.compress(android.graphics.Bitmap.CompressFormat.PNG, 100, out);
+    } finally {
+      screenshot.recycle();
     }
   }
 
@@ -180,7 +226,22 @@ public final class FlowInstrumentation extends Instrumentation {
         "Profile inputs lost");
     click("첫 식사 입력");
     click("텍스트 입력");
-    input("음식 이름", "돈가스 정식");
+    onMain(() -> {
+      EditText food = (EditText) findInput(activity.getWindow().getDecorView(), "음식 이름");
+      require(food != null && food.getImeHintLocales().get(0).getLanguage().equals("ko"),
+          "Korean keyboard locale missing");
+      food.requestFocus();
+      food.setText("");
+      android.view.inputmethod.InputConnection connection =
+          food.onCreateInputConnection(new android.view.inputmethod.EditorInfo());
+      require(connection != null, "Text input connection missing");
+      connection.setComposingText("ㄷ", 1);
+      connection.setComposingText("도", 1);
+      connection.setComposingText("돈", 1);
+      connection.commitText("돈가스 정식", 1);
+      require(food.getText().toString().equals("돈가스 정식")
+          && activity.state.inputText.equals("돈가스 정식"), "Korean composition lost");
+    });
     click("음식 인식하기");
     waitUntil(() -> activity.recognitionReady);
     click("음식과 양 확인하기");

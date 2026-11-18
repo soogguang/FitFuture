@@ -169,6 +169,7 @@ public final class Ui {
       gap(p, 6);
     }
     EditText e = (EditText) a.getLayoutInflater().inflate(R.layout.component_input, p, false);
+    e.setImeHintLocales(android.os.LocaleList.forLanguageTags("ko-KR,en-US"));
     e.setText(value);
     e.setHint(hint);
     e.setContentDescription(label.isEmpty() ? hint : label);

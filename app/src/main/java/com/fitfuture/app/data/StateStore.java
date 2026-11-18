@@ -159,14 +159,16 @@ public final class StateStore {
       s.onboarded = o.optBoolean("onboarded");
       s.meal = readMeal(o.optJSONObject("meal"));
       JSONArray alternatives = o.optJSONArray("alternatives");
-      if (alternatives != null && alternatives.length() == 3)
+      if (alternatives != null && alternatives.length() >= 1 && alternatives.length() <= 3)
         for (int i = 0; i < alternatives.length(); i++)
           s.alternatives.add(RecommendationJson.readAlternative(alternatives.getJSONObject(i), i));
       s.inputText = o.optString("inputText", "돈가스 정식");
       s.draftMealType = o.optString("draftMealType", "점심");
       s.photoUri = o.optString("photo");
-      s.selectedAlternative = Math.max(0, Math.min(2, o.optInt("selected")));
+      s.selectedAlternative = Math.max(0, Math.min(s.alternatives.size() - 1, o.optInt("selected")));
       s.actualChoice = Math.max(0, Math.min(4, o.optInt("actual")));
+      if (s.actualChoice < 3 && s.actualChoice >= s.alternatives.size())
+        s.actualChoice = s.selectedAlternative;
       s.months = o.optInt("months", 1);
       s.satisfaction = o.optInt("rating", 4);
       s.note = o.optString("note");

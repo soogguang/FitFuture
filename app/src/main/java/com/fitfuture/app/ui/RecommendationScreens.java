@@ -426,14 +426,15 @@ public final class RecommendationScreens {
     choices.add("원래대로");
     choices.add("기타");
     for (int i = 0; i < choices.size(); i++) {
-      final int index = i;
+      // Preserve the saved IDs: alternative positions 0..2, original 3, other 4.
+      final int index = i < a.state.alternatives.size() ? i : 3 + i - a.state.alternatives.size();
       TextView choice =
           u.text(
-              (i == a.state.actualChoice ? "◉  " : "○  ") + choices.get(i), 12, R.color.text, true);
+              (index == a.state.actualChoice ? "◉  " : "○  ") + choices.get(i), 12, R.color.text, true);
       choice.setGravity(Gravity.CENTER_VERTICAL);
       choice.setPadding(u.dp(12), 0, u.dp(12), 0);
       choice.setBackgroundResource(
-          i == a.state.actualChoice ? R.drawable.bg_mint_strong : R.drawable.bg_card);
+          index == a.state.actualChoice ? R.drawable.bg_mint_strong : R.drawable.bg_card);
       s("choices").addView(choice, new LinearLayout.LayoutParams(-1, u.dp(36)));
       choice.setContentDescription(choices.get(i));
       choice.setOnClickListener(

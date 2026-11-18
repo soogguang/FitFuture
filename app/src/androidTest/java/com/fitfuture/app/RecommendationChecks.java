@@ -60,7 +60,64 @@ final class RecommendationChecks {
       List<Alternative> alternatives = service.recommend(meal, new Profile());
       require(alternatives.get(0).id.equals(parsed.get(0).id), "HTTP result mismatch");
     }
-    for (String code : new String[] {"SHORTAGE", "UPSTREAM"}) {
+    // Partial results must survive the real HTTP adapter, UI selection, storage and feedback.
+    for (int count : new int[] {1, 2, 3}) {
+      JSONObject partial = new JSONObject(json);
+      JSONArray rows = new JSONArray();
+      for (int i = 0; i < count; i++) rows.put(partial.getJSONArray("alternatives").getJSONObject(i));
+      partial.put("alternatives", rows);
+      try (FakeServer server = new FakeServer(partial.toString(), 200)) {
+        test.runOnMainSync(() -> {
+          a.state = new AppState();
+          a.state.meal = meal;
+          a.state.selectedAlternative = 2;
+          a.services = new FeatureServices(demo,
+              new HttpMealRecommendationService(new RecommendationHttpClient(server.url())), a.avatarFuture);
+          a.loadRecommendations();
+        });
+        waitFor(test, () -> a.screen.equals("s16"));
+      }
+      require(a.state.alternatives.size() == count && a.state.selectedAlternative == count - 1,
+          "Partial results rejected or stale selection retained");
+      AppState restored = new StateStore(test.getTargetContext()).load();
+      require(restored.alternatives.size() == count && restored.selectedAlternative == count - 1,
+          "Partial recommendations lost from storage");
+      test.runOnMainSync(() -> a.root("s18"));
+      waitFor(test, () -> a.futureComparisons.size() == 3);
+      test.runOnMainSync(() -> {
+        a.root("s20");
+        require(control(a.getWindow().getDecorView(), "원래대로").performClick(), "Original choice missing");
+        require(a.state.actualChoice == 3, "Partial results changed original choice ID");
+        a.saveFeedback();
+      });
+      restored = new StateStore(test.getTargetContext()).load();
+      require(restored.records.get(0).actualChoice == 3
+          && restored.records.get(0).actualNutrition.caloriesKcal == meal.nutrition.caloriesKcal
+          && restored.records.get(0).actualFoods.size() == meal.foods.size(), "Original feedback corrupted");
+      test.runOnMainSync(() -> {
+        a.root("s20");
+        require(control(a.getWindow().getDecorView(), "기타").performClick(), "Other choice missing");
+        require(a.state.actualChoice == 4, "Partial results changed other choice ID");
+        a.saveFeedback();
+      });
+      restored = new StateStore(test.getTargetContext()).load();
+      require(restored.records.get(0).actualChoice == 4
+          && restored.records.get(0).actualNutrition == null, "Other feedback corrupted");
+    }
+    JSONObject empty = new JSONObject(json).put("alternatives", new JSONArray());
+    try (FakeServer server = new FakeServer(empty.toString(), 200)) {
+      test.runOnMainSync(() -> {
+        a.state = new AppState();
+        a.state.meal = meal;
+        a.state.alternatives = new ArrayList<>(parsed);
+        a.services = new FeatureServices(demo,
+            new HttpMealRecommendationService(new RecommendationHttpClient(server.url())), a.avatarFuture);
+        a.loadRecommendations();
+      });
+      waitFor(test, () -> a.screen.equals("s29_shortage"));
+      require(a.state.alternatives.isEmpty(), "Empty response kept stale recommendations");
+    }
+    for (String code : new String[] {"SHORTAGE", "UPSTREAM", "VALIDATION"}) {
       try (FakeServer server = new FakeServer("{\"error\":{\"code\":\"" + code + "\",\"message\":\"test\"}}", 422)) {
         test.runOnMainSync(() -> {
           a.state = new AppState();
@@ -123,6 +180,18 @@ final class RecommendationChecks {
           "Live server recommendation-to-feedback flow failed");
     }
     test.getTargetContext().getSharedPreferences("fitfuture.v1", 0).edit().clear().commit();
+  }
+
+  private static android.view.View control(android.view.View root, String label) {
+    if (root.isClickable() && label.equals(root.getContentDescription())) return root;
+    if (root instanceof android.view.ViewGroup) {
+      android.view.ViewGroup group = (android.view.ViewGroup) root;
+      for (int i = 0; i < group.getChildCount(); i++) {
+        android.view.View found = control(group.getChildAt(i), label);
+        if (found != null) return found;
+      }
+    }
+    return null;
   }
 
   private static final class FakeServer implements AutoCloseable {

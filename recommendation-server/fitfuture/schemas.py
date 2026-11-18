@@ -102,7 +102,7 @@ class Alternative(StrictModel):
 
 
 class RecommendResponse(StrictModel):
-    alternatives: list[Alternative]
+    alternatives: list[Alternative] = Field(min_length=1, max_length=3)
     original_nutrition: Nutrition
     generation_source: str
     nutrition_source: str

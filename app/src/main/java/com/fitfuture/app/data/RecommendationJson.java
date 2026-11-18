@@ -116,8 +116,8 @@ public final class RecommendationJson {
 
   public static List<Alternative> response(JSONObject root, Meal meal) throws JSONException, ModuleException {
     JSONArray array = root.getJSONArray("alternatives");
-    if (array.length() < 3) throw new ModuleException("SHORTAGE", "조건에 맞는 대안이 부족해요.");
-    if (array.length() != 3) throw new JSONException("Expected top three");
+    if (array.length() == 0) throw new ModuleException("SHORTAGE", "조건에 맞는 대안을 찾지 못했어요.");
+    if (array.length() > 3) throw new JSONException("Expected at most three alternatives");
     List<Alternative> result = new ArrayList<>();
     Set<String> ids = new HashSet<>();
     Nutrition original = readNutrition(root.getJSONObject("original_nutrition"));

@@ -160,12 +160,12 @@ public final class OnboardingScreens {
     a.primary(
         "다음",
         () -> {
-          if (p.age < 10
-              || p.age > 120
-              || p.heightCm < 80
+          if (p.age < 18
+              || p.age > 100
+              || p.heightCm < 100
               || p.heightCm > 250
-              || p.weightKg < 20
-              || p.weightKg > 400) a.go("s29_required");
+              || p.weightKg < 30
+              || p.weightKg > 300) a.go("s29_required");
           else {
             a.persist();
             a.go(a.state.editingProfile ? "s25" : "s04");
@@ -221,7 +221,7 @@ public final class OnboardingScreens {
     a.primary(
         "다음",
         () -> {
-          if (p.targetWeightKg < 20 || p.targetWeightKg > 400) a.go("s29_required");
+          if (p.targetWeightKg < 30 || p.targetWeightKg > 300) a.go("s29_required");
           else if (a.state.editingProfile) {
             a.state.editingProfile = false;
             a.persist();
@@ -238,6 +238,7 @@ public final class OnboardingScreens {
     group(parent, "좋아하는 음식", new String[] {"돈가스", "비빔밥", "샐러드"}, p.preferences);
     u.gap(parent, 18);
     group(parent, "피하고 싶은 음식", new String[] {"매운 음식", "기름진 음식"}, p.avoided);
+    u.small(parent, "기름진 음식은 지방을 줄인 구성을 우선 추천해요.");
     u.gap(parent, 18);
     group(parent, "알레르기", new String[] {"갑각류", "유제품", "견과류"}, p.allergies);
     u.gap(s("warning"), 16);
