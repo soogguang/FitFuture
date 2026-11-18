@@ -7,6 +7,7 @@ import math
 import os
 import re
 import socket
+import time
 import urllib.error
 import urllib.request
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
@@ -94,10 +95,27 @@ def validate_result(data):
 
 
 class GeminiRecognizer:
-    def __init__(self, key, model, opener=urllib.request.urlopen):
+    def __init__(self, key, model, opener=urllib.request.urlopen, *, attempts=3, sleeper=time.sleep, clock=time.monotonic):
         if not key or not re.fullmatch(r"[A-Za-z0-9._-]+", model):
             raise ValueError("Set GEMINI_API_KEY and GEMINI_MODEL (a model ID without models/).")
         self.key, self.model, self.opener = key, model, opener
+        self.attempts, self.sleeper, self.clock = attempts, sleeper, clock
+
+    def _open(self, request):
+        # Keep the entire operation inside Android's 55-second response timeout.
+        deadline = self.clock() + 45
+        for attempt in range(self.attempts):
+            remaining = deadline - self.clock()
+            if remaining <= 0:
+                raise TimeoutError()
+            try:
+                return self.opener(request, timeout=min(40, remaining))
+            except urllib.error.HTTPError as error:
+                delay = 2 ** attempt
+                if error.code != 503 or attempt + 1 == self.attempts or deadline - self.clock() <= delay:
+                    raise
+                error.close()
+                self.sleeper(delay)
 
     def __call__(self, parts):
         payload = {"contents": [{"role": "user", "parts": parts}], "generationConfig": {
@@ -107,7 +125,7 @@ class GeminiRecognizer:
             data=json.dumps(payload).encode(),
             headers={"Content-Type": "application/json", "x-goog-api-key": self.key}, method="POST")
         try:
-            with self.opener(request, timeout=40) as response:
+            with self._open(request) as response:
                 raw = response.read(MAX_RESPONSE + 1)
             if len(raw) > MAX_RESPONSE:
                 raise ValueError("oversized upstream response")
@@ -161,8 +179,6 @@ def handler_for(recognizer):
 
         def do_POST(self):
             try:
-                if self.path != "/food/recognize":
-                    raise ApiError(404, "NOT_FOUND", "지원하지 않는 경로입니다.")
                 if self.headers.get_content_type() != "application/json" or self.headers.get("Transfer-Encoding"):
                     raise ApiError(415, "INPUT", "Content-Length가 있는 JSON 요청을 보내 주세요.")
                 try:
@@ -174,6 +190,10 @@ def handler_for(recognizer):
                 raw = self.rfile.read(length)
                 if len(raw) != length:
                     raise ApiError(400, "INPUT", "요청을 끝까지 받지 못했어요.")
+                # Drain a bounded request before replying, so Windows does not reset
+                # the connection with unread bytes and discard the error response.
+                if self.path != "/food/recognize":
+                    raise ApiError(404, "NOT_FOUND", "지원하지 않는 경로입니다.")
                 parts = validate_input(json.loads(raw))
                 self.reply(200, recognizer(parts))
             except ApiError as error:
