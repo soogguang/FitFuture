@@ -37,6 +37,7 @@ public final class Models {
 
   public static class Nutrition implements Serializable {
     public double caloriesKcal, carbohydrateGrams, proteinGrams, fatGrams;
+    public String source = "";
 
     public Nutrition(double c, double carbs, double p, double f) {
       caloriesKcal = c;

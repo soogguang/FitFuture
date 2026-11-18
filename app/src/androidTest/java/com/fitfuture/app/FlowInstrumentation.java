@@ -12,11 +12,13 @@ import com.fitfuture.app.domain.Models.*;
 public final class FlowInstrumentation extends Instrumentation {
   private MainActivity activity;
   private boolean cameraOnly;
+  private boolean nutritionOnly;
 
   @Override
   public void onCreate(Bundle args) {
     super.onCreate(args);
     cameraOnly = args != null && "true".equals(args.getString("cameraOnly"));
+    nutritionOnly = args != null && "true".equals(args.getString("nutritionOnly"));
     start();
   }
 
@@ -25,6 +27,12 @@ public final class FlowInstrumentation extends Instrumentation {
     Bundle result = new Bundle();
     try {
       checkFoodResponseContract();
+      if (nutritionOnly) {
+        runNutritionFlow();
+        result.putString("stream", "PASS: MFDS asset, pork soup alias, grams scaling, multi-food totals, unknown/invalid rejection, confirm UI and provenance\n");
+        finish(Activity.RESULT_OK, result);
+        return;
+      }
       if (cameraOnly) {
         runCameraFlow();
         result.putString("stream", "PASS: embedded camera preview, direct JPEG capture, recognition handoff, re-entry\n");
@@ -59,6 +67,52 @@ public final class FlowInstrumentation extends Instrumentation {
       catch (ModuleException | org.json.JSONException expected) { rejected = true; }
       require(rejected, "Invalid remote response must be rejected");
     }
+  }
+
+  private void runNutritionFlow() throws Exception {
+    RemoteFoodAnalysis service = new RemoteFoodAnalysis(getTargetContext(), "http://127.0.0.1");
+    Nutrition one = service.analyze(java.util.List.of(new FoodPortion("돼지국밥", 100)));
+    require(Math.abs(one.caloriesKcal - 76) < 0.001, "Pork soup MFDS energy mismatch");
+    require(Math.abs(one.proteinGrams - 5.53) < 0.001, "Pork soup protein mismatch");
+    Nutrition two = service.analyze(java.util.List.of(new FoodPortion("돼지 국밥", 200)));
+    require(Math.abs(two.caloriesKcal - 152) < 0.001, "Gram scaling mismatch");
+    Nutrition rice = service.analyze(java.util.List.of(new FoodPortion("밥", 100)));
+    Nutrition combined = service.analyze(java.util.List.of(
+        new FoodPortion("돼지국밥", 100), new FoodPortion("밥", 100)));
+    require(Math.abs(combined.caloriesKcal - one.caloriesKcal - rice.caloriesKcal) < 0.001,
+        "Multiple food total mismatch");
+    for (FoodPortion invalid : new FoodPortion[] {new FoodPortion("미등록음식XYZ", 100),
+        new FoodPortion("돼지국밥", Double.NaN), new FoodPortion("돼지국밥", -1),
+        new FoodPortion("돼지국밥", 5001)}) {
+      boolean rejected = false;
+      try { service.analyze(java.util.List.of(invalid)); }
+      catch (ModuleException expected) { rejected = expected.code.equals("NUTRITION"); }
+      require(rejected, "Unknown/invalid food must fail without fabricated values");
+    }
+    Intent intent = new Intent(getTargetContext(), MainActivity.class);
+    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+    intent.putExtra("preview", "s14");
+    activity = (MainActivity) startActivitySync(intent);
+    onMain(() -> {
+      activity.services = new com.fitfuture.app.domain.FeatureServices(service,
+          new DemoServices(), new DemoServices());
+      activity.state.meal = new Meal("돼지국밥");
+      activity.state.meal.foods.add(new FoodPortion("돼지국밥", 500));
+      activity.root("s14");
+    });
+    click("수정 후 확정");
+    waitUntil(() -> activity.screen.equals("s13"));
+    require(activity.state.meal.confirmed && activity.state.meal.nutrition.caloriesKcal == 380,
+        "Confirmation must calculate actual DB nutrition");
+    require(activity.state.meal.nutrition.source.contains("D301-004140000-0001"),
+        "Source food code must be retained");
+    onMain(() -> {
+      activity.state.meal.foods.get(0).name = "미등록음식XYZ";
+      activity.root("s14");
+    });
+    click("수정 후 확정");
+    waitUntil(() -> activity.screen.equals("s29_nutrition"));
+    require(activity.requestError.contains("미등록음식XYZ"), "Error must identify missing food");
   }
 
   private void runCameraFlow() throws Exception {

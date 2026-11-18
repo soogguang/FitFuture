@@ -56,7 +56,7 @@ public final class MainActivity extends androidx.activity.ComponentActivity {
     DemoServices demo = new DemoServices();
     services = BuildConfig.FOOD_API_URL.isEmpty()
         ? demo.services()
-        : new FeatureServices(new RemoteFoodAnalysis(this, BuildConfig.FOOD_API_URL, demo), demo, demo);
+        : new FeatureServices(new RemoteFoodAnalysis(this, BuildConfig.FOOD_API_URL), demo, demo);
     if (saved != null) {
       state = (AppState) saved.getSerializable("state");
       screen = saved.getString("screen", "s01");
@@ -683,6 +683,7 @@ public final class MainActivity extends androidx.activity.ComponentActivity {
           go("s15");
           return;
         case "NUTRITION":
+          requestError = ex.getMessage();
           go("s29_nutrition");
           return;
         case "SHORTAGE":

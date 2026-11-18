@@ -383,7 +383,8 @@ public final class AccountScreens {
 
   private void nutritionError() {
     u.gap(s("notice"), 180);
-    u.notice(s("notice"), "영양정보를 찾지 못했어요", "음식 이름을 더 구체적으로 입력하거나 목록에서 비슷한 음식을 골라 주세요.", 2);
+    u.notice(s("notice"), "영양정보를 찾지 못했어요", a.requestError.isEmpty()
+        ? "음식 이름과 섭취량을 확인해 주세요." : a.requestError, 2);
     u.gap(s("retry"), 14);
     u.outline(s("retry"), "다시 입력", () -> a.go("s11"));
     a.primary("음식 정보 수정", () -> a.go(a.state.meal == null ? "s11" : "s14"));

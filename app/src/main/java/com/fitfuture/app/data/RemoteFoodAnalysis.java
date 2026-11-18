@@ -13,16 +13,15 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 import org.json.*;
 
-/** Real recognition adapter. Nutrition remains the existing demo until DB integration. */
+/** Gemini recognition and local MFDS nutrition lookup. */
 public final class RemoteFoodAnalysis implements FeatureServices.FoodAnalysisService {
   private final Context context;
   private final String origin;
-  private final FeatureServices.FoodAnalysisService nutrition;
+  private NutritionDatabase database;
 
-  public RemoteFoodAnalysis(Context context, String origin, FeatureServices.FoodAnalysisService nutrition) {
+  public RemoteFoodAnalysis(Context context, String origin) {
     this.context = context.getApplicationContext();
     this.origin = origin.replaceAll("/+$", "");
-    this.nutrition = nutrition;
   }
 
   @Override
@@ -101,8 +100,14 @@ public final class RemoteFoodAnalysis implements FeatureServices.FoodAnalysisSer
   }
 
   @Override
-  public Nutrition analyze(List<FoodPortion> foods) throws ModuleException {
-    return nutrition.analyze(foods);
+  public synchronized Nutrition analyze(List<FoodPortion> foods) throws ModuleException {
+    try {
+      if (database == null) database = new NutritionDatabase(new InputStreamReader(
+          context.getAssets().open("nutrition/mfds-foods.tsv"), StandardCharsets.UTF_8));
+      return database.analyze(foods);
+    } catch (IOException | IllegalArgumentException e) {
+      throw new ModuleException("NUTRITION", "영양정보 DB를 불러오지 못했어요.");
+    }
   }
 
   private byte[] photo(Uri uri) throws IOException {
