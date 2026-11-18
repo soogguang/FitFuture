@@ -13,7 +13,7 @@ public final class AvatarCatalog {
 
     public enum Category {
         FACE("얼굴형"), EYES("눈"), BROWS("눈썹"), NOSE("코"), MOUTH("입"),
-        HAIR("앞머리"), HAIR_BACK("뒷머리"), OUTFIT("옷"), ACCESSORY("소품");
+        HAIR("헤어스타일"), HAIR_BACK("뒷머리(자동)"), OUTFIT("옷"), ACCESSORY("소품");
 
         public final String label;
 
@@ -110,7 +110,7 @@ public final class AvatarCatalog {
         }
     }
 
-    /** 앞머리를 고를 때 함께 선택할 뒷머리. 이후 뒷머리만 직접 바꿀 수도 있다. */
+    /** 헤어스타일에 붙는 뒷머리 레이어. 사용자가 따로 고르지 않는다. */
     public static String matchingHairBack(String frontId) {
         switch (frontId) {
             case "f05": return "b01";

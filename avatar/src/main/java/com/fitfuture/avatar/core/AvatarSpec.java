@@ -36,6 +36,8 @@ public final class AvatarSpec {
             String id = parts != null ? parts.get(c) : null;
             m.put(c, id != null && AvatarCatalog.contains(c, id) ? id : AvatarCatalog.defaultId(c, this.preset));
         }
+        // 헤어는 "헤어스타일" 하나: 뒷머리는 고른 스타일에 맞는 것으로 항상 자동 결정한다
+        m.put(Category.HAIR_BACK, AvatarCatalog.matchingHairBack(m.get(Category.HAIR)));
         this.parts = m;
         this.skin = skin != null ? skin : COLOR_ORIGINAL;
         this.hairColor = hairColor != null ? hairColor : COLOR_ORIGINAL;
@@ -60,7 +62,7 @@ public final class AvatarSpec {
         return new AvatarSpec(preset, bodyCell, m, skin, hairColor);
     }
 
-    /** 헤어 선택 시 앞·뒤 한 쌍으로 적용한다. with(HAIR_BACK, ...)으로 따로 조정 가능. */
+    /** 헤어스타일 선택. 뒷머리는 스타일에 맞춰 자동으로 붙는다 (with(HAIR, id)와 같음). */
     public AvatarSpec withHairStyle(String frontId) {
         AvatarSpec selected = with(Category.HAIR, frontId);
         return selected.with(Category.HAIR_BACK,

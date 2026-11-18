@@ -405,7 +405,7 @@ public final class OnboardingScreens {
       Category.MOUTH, Category.HAIR, Category.OUTFIT, Category.ACCESSORY
     };
     String[] tabs = new String[cats.length];
-    for (int i = 0; i < cats.length; i++) tabs[i] = cats[i] == Category.HAIR ? "헤어" : cats[i].label;
+    for (int i = 0; i < cats.length; i++) tabs[i] = cats[i].label;
     int tab = Math.max(0, Math.min(a.avatarTab, cats.length - 1));
     Category cat = cats[tab];
     u.chips(
@@ -420,18 +420,7 @@ public final class OnboardingScreens {
     u.gap(p, 12);
     partTiles(p, d, cell, cat);
 
-    if (cat == Category.HAIR) {
-      // 헤어스타일을 고르면 맞는 뒷머리가 함께 정해진다. 따로 바꾸는 건 고급 옵션.
-      u.gap(p, 10);
-      u.link(p, a.avatarBackOpen ? "뒷머리 따로 바꾸기 ▴" : "뒷머리 따로 바꾸기 ▾", () -> {
-        a.avatarBackOpen = !a.avatarBackOpen;
-        a.refresh();
-      });
-      if (a.avatarBackOpen) {
-        u.gap(p, 8);
-        partTiles(p, d, cell, Category.HAIR_BACK);
-      }
-    }
+    // 헤어는 헤어스타일 하나로 고르고, 뒷머리는 스타일에 맞춰 자동으로 붙는다
 
     a.primary(
         editing ? "아바타 저장" : "이 아바타로 시작",
@@ -471,7 +460,7 @@ public final class OnboardingScreens {
       tile.setBackgroundResource(selected ? R.drawable.bg_selected_card : R.drawable.bg_card);
       PartThumbView thumb = new PartThumbView(a);
       thumb.setPart(candidate, cell, cheek, cat);
-      tile.addView(thumb, new LinearLayout.LayoutParams(u.dp(76), u.dp(cat == Category.HAIR || cat == Category.HAIR_BACK ? 96 : 64)));
+      tile.addView(thumb, new LinearLayout.LayoutParams(u.dp(76), u.dp(cat == Category.HAIR ? 96 : 64)));
       TextView label = u.text(g.label, 11, selected ? R.color.primary_dark : R.color.text, selected);
       label.setGravity(Gravity.CENTER);
       tile.addView(label, new LinearLayout.LayoutParams(-1, -2));
