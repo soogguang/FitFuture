@@ -12,6 +12,11 @@ FitFuture 아바타는 미리 만든 투명 PNG를 겹쳐 그리는 2D 캐릭터
 
 앱이 실행될 때 ImageGen을 호출하거나 그림을 새로 생성하지 않는다. ImageGen은 파츠 제작에 사용했고, 앱은 완성된 PNG를 조합한다.
 
+
+> **앱 통합본 변경 사항 (2026-11-18)**
+> - 볼 윤곽 규칙 변경: "실제로 2칸 이동할 때만"이 아니라 **체형 칸 구간**을 따른다 (1~2칸 `slim`, 3~5칸 `base`, 6~7칸 `full`). `BodyCellConfig.cheekForCell()`, `BodyCellMapper.future(cell, rate, config)`. 편집 미리보기도 현재 칸에 맞는 볼을 쓴다. 볼을 따로 고르는 기능은 두지 않는다.
+> - 셀카 추천 추가: `avatar/.../face/SelfieAnalyzer` (ML Kit) + `core/face/FaceMeasurements·FaceNorms·PartRecommender`. 아래 본문의 "사진 자동 추천 미구현" 설명은 이 통합본에는 해당하지 않는다.
+
 ## 1 처음 받았을 때
 
 ### 어떤 파일을 받아야 하나

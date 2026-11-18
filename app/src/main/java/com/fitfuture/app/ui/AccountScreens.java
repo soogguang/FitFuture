@@ -222,8 +222,9 @@ public final class AccountScreens {
       if (a.state.weights.size() > i)
         rate = (a.state.weights.get(i) - a.state.profile.weightKg) / a.state.profile.weightKg;
       com.fitfuture.avatar.core.BodyCellMapper.Future fw =
-          com.fitfuture.avatar.core.BodyCellMapper.future(a.currentCell(a.avatar()), rate);
-      u.figure(c, a.avatar(), fw.cell, fw.cheekLevel, a.heightScale(), 60, 150);
+          com.fitfuture.avatar.core.BodyCellMapper.future(
+              a.currentCell(a.avatar()), rate, com.fitfuture.app.MainActivity.BODY_CELLS);
+      u.figure(c, a.avatar(), fw.cell, a.heightScale(), 60, 150);
       LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(0, -2, 1);
       if (i < 2) lp.setMarginEnd(u.dp(6));
       row.addView(c, lp);
@@ -341,7 +342,7 @@ public final class AccountScreens {
     LinearLayout p = s("empty");
     p.setGravity(Gravity.CENTER);
     u.gap(p, 40);
-    u.figure(p, a.avatar(), a.currentCell(a.avatar()), 0, a.heightScale(), 90, 220);
+    u.figure(p, a.avatar(), a.currentCell(a.avatar()), a.heightScale(), 90, 220);
     u.gap(p, 22);
     TextView title = u.text("아직 식사 기록이 없어요", 18, R.color.text, true);
     title.setGravity(Gravity.CENTER);

@@ -62,7 +62,9 @@ Meal + 선택 Alternative + Profile + months(1/3/6)
 - 구현: `app/.../data/AvatarFutureService.java` + `avatar` 모듈(`com.fitfuture.avatar`). `MainActivity`에서 `DemoServices` 대신 주입.
 - 계산: Mifflin–St Jeor BMR × 활동 계수 = TDEE, 체지방 1kg ≈ 7,700kcal, ±20% 범위.
 - 하루 섭취 A: 아침·점심·저녁이 모두 기록된 날 3일 이상이면 평균, 아니면 "TDEE만큼 먹되 한 끼를 이 메뉴로 매일" 가정. B = A − (원래 메뉴 − 대안). 쓴 가정은 `assumptions`에 문장으로 들어감.
-- 체형: BMI 7칸(경계 18.5/20.5/23/25/27.5/30, `MainActivity.BODY_CELLS`). 현재 칸은 사용자가 S07에서 확정, 아니면 BMI 초안. 미래 칸은 변화율 2% 미만 0칸, 2~5% 1칸, 5% 이상 2칸, 1~7칸 제한. 실제로 2칸 이동할 때만 볼 윤곽 변경.
+- 체형: BMI 7칸(경계 18.5/20.5/23/25/27.5/30, `MainActivity.BODY_CELLS`). 현재 칸은 사용자가 S07에서 확정, 아니면 BMI 초안. 미래 칸은 변화율 2% 미만 0칸, 2~5% 1칸, 5% 이상 2칸, 1~7칸 제한.
+- 볼 윤곽: 체형 칸 구간을 따름 (1~2칸 갸름, 3~5칸 기본, 6~7칸 도톰, `BodyCellConfig.cheekForCell`). 얼굴형은 그대로, 편집·미래 비교·홈·주차별 어디서든 체형이 바뀌면 볼도 바뀜.
+- 셀카 추천: S07의 "셀카 찍기 / 사진 고르기" → ML Kit 얼굴 윤곽(기기 안) → 비율 측정 → 평균 대비 편차로 얼굴형·눈·눈썹·코·입 초안. 헤어·옷·체형은 유지. 사진은 저장하지 않고 촬영 파일은 분석 뒤 삭제. 평균·표준편차(`FaceNorms.DEFAULT`)는 추정치라 실제 사진으로 보정 필요 (디버그 빌드에서 측정 z값 표시).
 - 렌더링: `Ui.figure()` → `AvatarLayerView`. S07 편집 미리보기, S18 A/B, 홈, S21 완료, S24 주차별이 모두 같은 렌더러.
 - 파츠: Paper Cut v4 앱용 PNG 127개 `app/src/main/assets/avatar/` (모두 320×790, (0,0)에 겹침). 파츠 이름·순서·헤어 짝은 `avatar/.../core/AvatarCatalog.java`. 파츠 수정·재생성은 파츠 원본 패키지(`FitFuture_PaperCut_v2/rebuild.swift`)에서 한다.
 - 자세한 사용법: [`docs/avatar/AVATAR_GUIDE.md`](avatar/AVATAR_GUIDE.md) (얼굴형 vs 볼 윤곽, 헤어 앞뒤 짝, 저장 형식, 문제 해결).

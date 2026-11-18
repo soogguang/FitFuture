@@ -98,7 +98,7 @@ public final class MealScreens {
     c.addView(macros);
     u.gap(s("avatar"), 12);
     LinearLayout avatar = u.card(s("avatar")), r = u.row(), icon = u.column();
-    u.figure(icon, a.avatar(), a.currentCell(a.avatar()), 0, a.heightScale(), 56, 136);
+    u.figure(icon, a.avatar(), a.currentCell(a.avatar()), a.heightScale(), 56, 136);
     r.addView(icon, new LinearLayout.LayoutParams(-2, -2));
     LinearLayout label = u.column();
     label.setPadding(u.dp(20), 0, 0, 0);

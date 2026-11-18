@@ -10,4 +10,8 @@ android {
     }
 }
 
-dependencies { testImplementation("junit:junit:4.13.2") }
+dependencies {
+    // 셀카 얼굴 윤곽 (모델 내장형: 설치 즉시 오프라인 동작, 사진이 기기 밖으로 나가지 않음)
+    implementation("com.google.mlkit:face-detection:16.1.7")
+    testImplementation("junit:junit:4.13.2")
+}

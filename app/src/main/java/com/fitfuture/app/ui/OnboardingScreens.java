@@ -332,7 +332,10 @@ public final class OnboardingScreens {
 
   /** S07 아바타 만들기: 파츠를 직접 고르고 현재 체형 칸을 확정한다. 설정의 "아바타 다시 만들기"도 이 화면. */
   private void avatar() {
-    if (a.avatarDraft == null) a.avatarDraft = a.avatar();
+    if (a.avatarDraft == null) {
+      a.avatarDraft = a.avatar();
+      a.clearSelfie();
+    }
     com.fitfuture.avatar.core.AvatarSpec d =
         a.avatarDraft.withPreset(com.fitfuture.app.data.AvatarFutureService.preset(a.state.profile));
     a.avatarDraft = d;
@@ -347,11 +350,17 @@ public final class OnboardingScreens {
     center.setGravity(Gravity.CENTER);
     u.gap(center, 8);
     int cell = a.currentCell(d);
-    u.figure(center, d, cell, 0, a.heightScale(), 120, 290);
+    u.figure(center, d, cell, a.heightScale(), 120, 290);
     u.gap(center, 8);
     TextView label =
         u.text(
-            "지금 체형 " + cell + "칸" + (d.bodyCell == com.fitfuture.avatar.core.AvatarSpec.CELL_AUTO ? " (BMI 초안)" : ""),
+            "지금 체형 "
+                + cell
+                + "칸"
+                + (d.bodyCell == com.fitfuture.avatar.core.AvatarSpec.CELL_AUTO ? " (BMI 초안)" : "")
+                + " · 볼 "
+                + new String[] {"갸름", "기본", "도톰"}[
+                    com.fitfuture.app.MainActivity.BODY_CELLS.cheekForCell(cell) + 1],
             12,
             R.color.primary,
             true);
@@ -364,7 +373,7 @@ public final class OnboardingScreens {
     // 현재 체형 칸
     u.section(p, "지금 체형");
     u.gap(p, 4);
-    u.small(p, "키·체중으로 고른 초안이에요. 같은 BMI라도 근육량·체형이 다르니 나와 가까운 칸을 골라 주세요.");
+    u.small(p, "키·체중으로 고른 초안이에요. 같은 BMI라도 근육량·체형이 다르니 나와 가까운 칸을 골라 주세요. 체형에 따라 볼 윤곽도 함께 바뀌어요.");
     u.gap(p, 8);
     String auto = "자동 (" + a.draftCell() + "칸)";
     String[] cells = new String[8];
@@ -379,6 +388,9 @@ public final class OnboardingScreens {
           a.avatarDraft = d.withBodyCell(v.equals(auto) ? 0 : Integer.parseInt(v.replace("칸", "")));
           a.refresh();
         });
+
+    // 셀카로 초안을 고른 뒤 아래 파츠에서 다듬는다
+    selfieCard(p);
 
     // 파츠: 부위 탭 → 선택지
     u.gap(p, 18);
@@ -422,9 +434,6 @@ public final class OnboardingScreens {
           a.refresh();
         });
 
-    // 사진 기반 추천은 다음 단계
-    u.gap(p, 18);
-    u.notice(p, "사진으로 닮은 파츠 추천 · 다음 단계", "셀카의 얼굴 윤곽으로 얼굴형·눈·눈썹을 추천하는 기능은 이어서 붙일 예정이에요.", 0);
 
     a.primary(
         editing ? "아바타 저장" : "이 아바타로 시작",
@@ -439,5 +448,48 @@ public final class OnboardingScreens {
             a.root("s08");
           }
         });
+  }
+
+  /** 셀카 한 장으로 얼굴형·눈·눈썹·코·입 초안을 고른다. 헤어·옷·체형은 그대로. */
+  private void selfieCard(LinearLayout p) {
+    u.gap(p, 18);
+    LinearLayout c = u.card(p);
+    u.section(c, "사진으로 닮은 얼굴 추천");
+    u.gap(c, 4);
+    u.small(c, "정면 셀카 한 장으로 얼굴형·눈·눈썹·코·입을 골라요. 사진은 기기 안에서만 분석하고 저장하지 않아요.");
+    u.gap(c, 10);
+    LinearLayout buttons = u.row();
+    Button camera = u.button(buttons, "셀카 찍기", () -> a.startSelfie(true));
+    camera.setLayoutParams(new LinearLayout.LayoutParams(0, u.dp(44), 1));
+    View gap = new View(a);
+    buttons.addView(gap, new LinearLayout.LayoutParams(u.dp(8), 1));
+    Button pick = u.outline(buttons, "사진 고르기", () -> a.startSelfie(false));
+    pick.setLayoutParams(new LinearLayout.LayoutParams(0, u.dp(44), 1));
+    camera.setEnabled(!a.selfieBusy);
+    pick.setEnabled(!a.selfieBusy);
+    c.addView(buttons);
+    if (!a.selfieMessage.isEmpty()) {
+      u.gap(c, 10);
+      u.notice(c, a.selfieBusy ? "분석 중" : a.selfieOk ? "추천 완료" : "다시 시도해 주세요", a.selfieMessage,
+          a.selfieOk || a.selfieBusy ? 0 : 1);
+    }
+    if (a.selfieOk && !a.selfieReasons.isEmpty()) {
+      u.gap(c, 8);
+      for (java.util.Map.Entry<com.fitfuture.avatar.core.AvatarCatalog.Category, String> e :
+          a.selfieReasons.entrySet()) {
+        u.small(c, "· " + e.getKey().label + ": " + e.getValue());
+      }
+      u.gap(c, 4);
+      u.small(c, "추천은 초안이에요. 저장해야 내 아바타에 반영돼요.");
+    }
+    // 기준값 조정용: 디버그 빌드에서만 측정값(z)을 보여준다
+    if (com.fitfuture.app.BuildConfig.DEBUG && a.selfieOk && !a.selfieZ.isEmpty()) {
+      StringBuilder sb = new StringBuilder("측정 z값 (기준값 조정용, 디버그만)\n");
+      for (java.util.Map.Entry<String, Double> e : a.selfieZ.entrySet()) {
+        sb.append(e.getKey()).append(" ").append(String.format(java.util.Locale.US, "%+.2f", e.getValue())).append("  ");
+      }
+      u.gap(c, 6);
+      u.small(c, sb.toString());
+    }
   }
 }
