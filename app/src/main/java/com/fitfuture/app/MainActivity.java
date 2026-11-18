@@ -778,6 +778,8 @@ public final class MainActivity extends androidx.activity.ComponentActivity {
   /** 아바타 만들기 화면에서 고치는 중인 사본과 열린 탭. */
   public AvatarSpec avatarDraft;
   public int avatarTab;
+  /** 헤어 탭에서 '뒷머리 따로 바꾸기'를 펼쳤는지 */
+  public boolean avatarBackOpen;
 
   /** 저장된 아바타. 몸 기본형은 프로필 성별을 따른다. */
   public AvatarSpec avatar() {

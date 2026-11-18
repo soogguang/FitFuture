@@ -68,7 +68,8 @@ Meal + 선택 Alternative + Profile + months(1/3/6)
 - 렌더링: `Ui.figure()` → `AvatarLayerView`. S07 편집 미리보기, S18 A/B, 홈, S21 완료, S24 주차별이 모두 같은 렌더러.
 - 파츠: Paper Cut v4 앱용 PNG 127개 `app/src/main/assets/avatar/` (모두 320×790, (0,0)에 겹침). 파츠 이름·순서·헤어 짝은 `avatar/.../core/AvatarCatalog.java`. 파츠 수정·재생성은 파츠 원본 패키지(`FitFuture_PaperCut_v2/rebuild.swift`)에서 한다.
 - 자세한 사용법: [`docs/avatar/AVATAR_GUIDE.md`](avatar/AVATAR_GUIDE.md) (얼굴형 vs 볼 윤곽, 헤어 앞뒤 짝, 저장 형식, 문제 해결).
-- 앞머리 선택은 `withHairStyle()`로 맞는 뒷머리까지 함께 고른다.
+- 편집 화면(S07): 부위 탭 → 그림 타일(지금 아바타에 후보 파츠를 입힌 모습, `PartThumbView`)로 종류를 고르고, 크기·굵기·두께는 같은 종류 안에서 3단계(`PartGroups`). 저장 ID는 그대로.
+- 헤어: 헤어스타일 하나를 고르면 `withHairStyle()`로 맞는 뒷머리까지 함께 정해지고, "뒷머리 따로 바꾸기"를 펼치면 뒷머리만 바꿀 수 있다.
 - 저장: 아바타 구성은 `AvatarStore`(SharedPreferences, Firestore용 JSON 변환 포함). 원본 사진은 저장하지 않음.
 - `FutureComparison.currentStage/alternativeStage`는 실제 이동한 칸 수(−2~+2)로 계속 채워 기존 코드와 호환.
 - 다음: 셀카 기반 파츠 추천(ML Kit 얼굴 윤곽 → 가장 가까운 파츠).
