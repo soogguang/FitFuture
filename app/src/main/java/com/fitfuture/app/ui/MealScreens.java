@@ -194,7 +194,13 @@ public final class MealScreens {
     bg.setColor(Color.parseColor("#343D38"));
     bg.setCornerRadius(u.dp(16));
     camera.setBackground(bg);
+    camera.setClipToOutline(true);
     p.addView(camera, new LinearLayout.LayoutParams(-1, u.dp(372)));
+    androidx.camera.view.PreviewView preview = new androidx.camera.view.PreviewView(a);
+    preview.setImplementationMode(androidx.camera.view.PreviewView.ImplementationMode.COMPATIBLE);
+    preview.setScaleType(androidx.camera.view.PreviewView.ScaleType.FILL_CENTER);
+    preview.setContentDescription("음식 카메라 미리보기");
+    camera.addView(preview, new FrameLayout.LayoutParams(-1, -1));
     LinearLayout frame = u.column();
     frame.setGravity(Gravity.CENTER);
     android.graphics.drawable.GradientDrawable outline =
@@ -203,10 +209,9 @@ public final class MealScreens {
     outline.setStroke(u.dp(1), Color.WHITE);
     outline.setCornerRadius(u.dp(16));
     frame.setBackground(outline);
-    frame.addView(u.icon(R.drawable.ic_camera, 36, R.color.white));
-    u.gap(frame, 10);
-    TextView label = u.text("카메라 뷰파인더", 12, R.color.white, false);
+    TextView label = u.text("카메라를 준비하고 있어요…", 14, R.color.white, false);
     label.setGravity(Gravity.CENTER);
+    label.setBackgroundColor(Color.parseColor("#AA343D38"));
     frame.addView(label);
     FrameLayout.LayoutParams fp = new FrameLayout.LayoutParams(-1, -1);
     fp.setMargins(u.dp(30), u.dp(46), u.dp(30), u.dp(46));
@@ -214,6 +219,7 @@ public final class MealScreens {
     u.gap(s("text_link"), 14);
     u.link(s("text_link"), "텍스트로 입력", () -> a.go("s11"));
     a.primary("사진 촬영", a::capturePhoto);
+    a.mealCamera.attach(preview, label, (TextView) a.footer.getChildAt(0));
   }
 
   private void text() {

@@ -4,14 +4,12 @@ import android.app.*;
 import android.content.*;
 import android.net.Uri;
 import android.os.*;
-import android.provider.MediaStore;
 import android.view.*;
 import android.widget.*;
 import com.fitfuture.app.data.*;
 import com.fitfuture.app.domain.*;
 import com.fitfuture.app.domain.Models.*;
 import com.fitfuture.app.ui.*;
-import java.io.File;
 import java.util.*;
 import java.util.concurrent.*;
 
@@ -32,7 +30,7 @@ public final class MainActivity extends androidx.activity.ComponentActivity {
   private MealScreens meals;
   private RecommendationScreens recommendations;
   private AccountScreens account;
-  private Uri pendingCameraUri;
+  public MealCamera mealCamera;
   public boolean recognitionReady;
 
   public interface Work<T> {
@@ -52,6 +50,7 @@ public final class MainActivity extends androidx.activity.ComponentActivity {
           .setSystemUiVisibility(
               View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR | View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR);
     ui = new Ui(this);
+    mealCamera = new MealCamera(this);
     store = new StateStore(this);
     DemoServices demo = new DemoServices();
     services = BuildConfig.FOOD_API_URL.isEmpty()
@@ -65,8 +64,6 @@ public final class MainActivity extends androidx.activity.ComponentActivity {
       preview = saved.getBoolean("preview");
       retryScreen = saved.getString("retry", "s09");
       recognitionReady = saved.getBoolean("ready");
-      String uri = saved.getString("camera");
-      if (uri != null) pendingCameraUri = Uri.parse(uri);
     }
     if (state == null) {
       state = store.load();
@@ -158,11 +155,12 @@ public final class MainActivity extends androidx.activity.ComponentActivity {
   }
 
   private void seedPreview() {
+    DemoServices fixture = new DemoServices();
     try {
-      state.meal = services.foodAnalysis.recognize("돈가스 정식", "");
-      state.meal.nutrition = services.foodAnalysis.analyze(state.meal.foods);
+      state.meal = fixture.recognize("돈가스 정식", "");
+      state.meal.nutrition = fixture.analyze(state.meal.foods);
       state.meal.confirmed = true;
-      state.alternatives = services.recommendations.recommend(state.meal, state.profile);
+      state.alternatives = fixture.recommend(state.meal, state.profile);
     } catch (Exception ignored) {
     }
     state.note = "밥을 조금 덜어도 충분했어요";
@@ -241,7 +239,12 @@ public final class MainActivity extends androidx.activity.ComponentActivity {
     out.putBoolean("preview", preview);
     out.putString("retry", retryScreen);
     out.putBoolean("ready", recognitionReady);
-    if (pendingCameraUri != null) out.putString("camera", pendingCameraUri.toString());
+  }
+
+  @Override
+  protected void onResume() {
+    super.onResume();
+    if (mealCamera != null) mealCamera.resume();
   }
 
   @Override
@@ -253,6 +256,7 @@ public final class MainActivity extends androidx.activity.ComponentActivity {
   @Override
   protected void onDestroy() {
     operation++;
+    mealCamera.close();
     if (activeDialog != null) activeDialog.dismiss();
     worker.shutdownNow();
     super.onDestroy();
@@ -346,6 +350,7 @@ public final class MainActivity extends androidx.activity.ComponentActivity {
   }
 
   public void render() {
+    mealCamera.close();
     if (screen.equals("s08") && state.records.isEmpty()) screen = "s27";
     setContentView(R.layout.activity_main);
     View root = findViewById(R.id.root);
@@ -705,19 +710,15 @@ public final class MainActivity extends androidx.activity.ComponentActivity {
   }
 
   public void capturePhoto() {
-    try {
-      File directory = new File(getFilesDir(), "photos");
-      if (!directory.exists() && !directory.mkdirs()) throw new java.io.IOException();
-      File file = File.createTempFile("meal-", ".jpg", directory);
-      pendingCameraUri = Uri.parse("content://" + getPackageName() + ".photos/" + file.getName());
-      Intent i = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-      i.putExtra(MediaStore.EXTRA_OUTPUT, pendingCameraUri);
-      i.setClipData(ClipData.newRawUri("meal photo", pendingCameraUri));
-      i.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION | Intent.FLAG_GRANT_READ_URI_PERMISSION);
-      startActivityForResult(i, 43);
-    } catch (Exception ex) {
-      go("s28");
-    }
+    mealCamera.takePhoto();
+  }
+
+  public void acceptMealPhoto(Uri uri) {
+    state.photoUri = uri.toString();
+    state.inputText = "";
+    state.meal = null;
+    state.alternatives.clear();
+    recognize();
   }
 
   @Override
@@ -733,13 +734,9 @@ public final class MainActivity extends androidx.activity.ComponentActivity {
               .takePersistableUriPermission(uri, Intent.FLAG_GRANT_READ_URI_PERMISSION);
         } catch (SecurityException ignored) {
         }
-    } else if (request == 43) uri = pendingCameraUri;
+    }
     if (uri != null) {
-      state.photoUri = uri.toString();
-      state.inputText = "";
-      state.meal = null;
-      state.alternatives.clear();
-      recognize();
+      acceptMealPhoto(uri);
     }
   }
 

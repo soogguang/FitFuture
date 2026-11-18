@@ -23,4 +23,10 @@ android {
     }
 }
 
-dependencies { implementation("androidx.activity:activity:1.13.0"); coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.5") }
+dependencies {
+    implementation("androidx.activity:activity:1.13.0")
+    implementation("androidx.camera:camera-camera2:1.5.3")
+    implementation("androidx.camera:camera-lifecycle:1.5.3")
+    implementation("androidx.camera:camera-view:1.5.3")
+    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.5")
+}

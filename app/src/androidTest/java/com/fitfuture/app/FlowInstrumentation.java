@@ -11,10 +11,12 @@ import com.fitfuture.app.domain.Models.*;
 /** Dependency-free device tests of the complete connected flow and persisted data. */
 public final class FlowInstrumentation extends Instrumentation {
   private MainActivity activity;
+  private boolean cameraOnly;
 
   @Override
   public void onCreate(Bundle args) {
     super.onCreate(args);
+    cameraOnly = args != null && "true".equals(args.getString("cameraOnly"));
     start();
   }
 
@@ -23,12 +25,18 @@ public final class FlowInstrumentation extends Instrumentation {
     Bundle result = new Bundle();
     try {
       checkFoodResponseContract();
+      if (cameraOnly) {
+        runCameraFlow();
+        result.putString("stream", "PASS: embedded camera preview, direct JPEG capture, recognition handoff, re-entry\n");
+        finish(Activity.RESULT_OK, result);
+        return;
+      }
       runFlow();
       result.putString(
           "stream",
           "PASS: onboarding, validation, recognition, quantity editing, add/remove food,"
               + " recommendation selection, detail, 1/3/6-month tabs, actual-vs-planned feedback,"
-              + " local persistence, recreation, native back, deletion, camera/gallery intents\n");
+              + " local persistence, recreation, native back, deletion, embedded camera/gallery\n");
       finish(Activity.RESULT_OK, result);
     } catch (Throwable error) {
       result.putString(
@@ -51,6 +59,51 @@ public final class FlowInstrumentation extends Instrumentation {
       catch (ModuleException | org.json.JSONException expected) { rejected = true; }
       require(rejected, "Invalid remote response must be rejected");
     }
+  }
+
+  private void runCameraFlow() throws Exception {
+    Intent intent = new Intent(getTargetContext(), MainActivity.class);
+    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+    intent.putExtra("preview", "s10"); // Isolated preview mode does not overwrite the user's records.
+    activity = (MainActivity) startActivitySync(intent);
+    waitForIdleSync();
+    onMain(() -> activity.services = new DemoServices().services());
+    captureInsideScreen();
+    onMain(() -> activity.root("s10"));
+    waitUntil(this::shutterReady);
+    onMain(() -> activity.root("s09"));
+    screen("s09");
+  }
+
+  private android.net.Uri captureInsideScreen() throws Exception {
+    waitUntil(this::shutterReady);
+    ActivityMonitor externalCamera = addMonitor(
+        new IntentFilter(android.provider.MediaStore.ACTION_IMAGE_CAPTURE), null, true);
+    onMain(() -> activity.recognitionReady = false);
+    onMain(() -> activity.footer.getChildAt(0).performClick());
+    waitUntil(() -> activity.recognitionReady);
+    require(externalCamera.getHits() == 0, "Capture must stay inside FitFuture");
+    removeMonitor(externalCamera);
+    android.net.Uri uri = android.net.Uri.parse(activity.state.photoUri);
+    require(uri.toString().contains(".photos/meal-"), "Captured URI missing");
+    try (java.io.InputStream stream = getTargetContext().getContentResolver().openInputStream(uri)) {
+      android.graphics.BitmapFactory.Options bounds = new android.graphics.BitmapFactory.Options();
+      bounds.inJustDecodeBounds = true;
+      android.graphics.BitmapFactory.decodeStream(stream, null, bounds);
+      require(bounds.outWidth > 0 && bounds.outHeight > 0, "Camera did not write a decodable image");
+    }
+    click("음식과 양 확인하기");
+    screen("s14");
+    require(activity.findViewById(R.id.photo_image).getVisibility() == View.VISIBLE,
+        "Captured photo not displayed");
+    return uri;
+  }
+
+  private boolean shutterReady() {
+    if (activity.footer.getChildCount() == 0) return false;
+    View button = activity.footer.getChildAt(0);
+    return button instanceof TextView && button.isEnabled()
+        && ((TextView) button).getText().toString().equals("사진 촬영");
   }
 
   private void onMain(Runnable action) {
@@ -141,7 +194,7 @@ public final class FlowInstrumentation extends Instrumentation {
   }
 
   private void waitUntil(java.util.function.BooleanSupplier check) throws Exception {
-    long until = System.currentTimeMillis() + 15000;
+    long until = System.currentTimeMillis() + 30000;
     while (!check.getAsBoolean() && System.currentTimeMillis() < until) {
       Thread.sleep(80);
       waitForIdleSync();
@@ -289,68 +342,20 @@ public final class FlowInstrumentation extends Instrumentation {
     removeMonitor(gallery);
     click("사진 촬영");
     screen("s10");
-    ActivityMonitor camera =
-        addMonitor(
-            new IntentFilter(android.provider.MediaStore.ACTION_IMAGE_CAPTURE),
-            new ActivityResult(Activity.RESULT_CANCELED, null),
-            true);
-    click("사진 촬영");
-    require(camera.getHits() == 1, "Camera intent not launched");
-    removeMonitor(camera);
-    onMain(() -> activity.getOnBackPressedDispatcher().onBackPressed());
-    waitForIdleSync();
-    screen("s09");
-    // Exercise the real URI provider and both success callbacks without depending on a vendor
-    // camera UI.
-    click("사진 촬영");
-    java.util.concurrent.atomic.AtomicReference<android.net.Uri> fixture =
-        new java.util.concurrent.atomic.AtomicReference<>();
-    ActivityMonitor successfulCamera =
-        new ActivityMonitor() {
-          @Override
-          public ActivityResult onStartActivity(Intent request) {
-            if (!android.provider.MediaStore.ACTION_IMAGE_CAPTURE.equals(request.getAction()))
-              return null;
-            android.net.Uri uri =
-                request.getParcelableExtra(android.provider.MediaStore.EXTRA_OUTPUT);
-            fixture.set(uri);
-            try (java.io.OutputStream output =
-                getTargetContext().getContentResolver().openOutputStream(uri)) {
-              android.graphics.Bitmap bitmap =
-                  android.graphics.Bitmap.createBitmap(
-                      64, 64, android.graphics.Bitmap.Config.ARGB_8888);
-              bitmap.eraseColor(android.graphics.Color.rgb(160, 110, 60));
-              bitmap.compress(android.graphics.Bitmap.CompressFormat.JPEG, 90, output);
-              bitmap.recycle();
-            } catch (Exception ex) {
-              throw new IllegalStateException(ex);
-            }
-            return new ActivityResult(Activity.RESULT_OK, null);
-          }
-        };
-    addMonitor(successfulCamera);
-    click("사진 촬영");
-    removeMonitor(successfulCamera);
-    waitUntil(() -> activity.recognitionReady);
-    require(activity.state.photoUri.equals(fixture.get().toString()), "Camera URI not propagated");
-    click("음식과 양 확인하기");
-    screen("s14");
-    require(
-        activity.findViewById(R.id.photo_image).getVisibility() == View.VISIBLE,
-        "Captured photo not displayed");
+    android.net.Uri captured = captureInsideScreen();
     onMain(() -> activity.root("s09"));
     ActivityMonitor successfulGallery =
         new ActivityMonitor() {
           @Override
           public ActivityResult onStartActivity(Intent request) {
             if (!Intent.ACTION_OPEN_DOCUMENT.equals(request.getAction())) return null;
-            return new ActivityResult(Activity.RESULT_OK, new Intent().setData(fixture.get()));
+            return new ActivityResult(Activity.RESULT_OK, new Intent().setData(captured));
           }
         };
     addMonitor(successfulGallery);
     click("갤러리");
     removeMonitor(successfulGallery);
     waitUntil(() -> activity.recognitionReady);
-    require(activity.state.photoUri.equals(fixture.get().toString()), "Gallery URI not propagated");
+    require(activity.state.photoUri.equals(captured.toString()), "Gallery URI not propagated");
   }
 }
