@@ -354,9 +354,9 @@ public final class AccountScreens {
     u.gap(p, 202);
     p.addView(u.icon(R.drawable.ic_wifi_off, 42, R.color.error_text));
     u.gap(p, 20);
-    TextView title = u.title(p, "잠시 연결이 끊겼어요");
+    TextView title = u.title(p, a.requestError.isEmpty() ? "잠시 연결이 끊겼어요" : "요청을 완료하지 못했어요");
     title.setGravity(Gravity.CENTER);
-    TextView body = u.muted(p, "네트워크 연결을 확인한 뒤 다시 시도해 주세요.");
+    TextView body = u.muted(p, a.requestError.isEmpty() ? "네트워크 연결을 확인한 뒤 다시 시도해 주세요." : a.requestError);
     body.setGravity(Gravity.CENTER);
     a.primary("다시 시도", a::retry);
   }

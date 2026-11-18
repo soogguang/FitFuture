@@ -122,8 +122,15 @@ class GeminiRecognizer:
                              if not part.get("thought", False))
             return validate_result(json.loads(output))
         except urllib.error.HTTPError as error:
-            code = "RATE_LIMIT" if error.code == 429 else "UPSTREAM"
-            raise ApiError(503 if error.code == 429 else 502, code, "인식 서비스를 잠시 후 다시 시도해 주세요.") from None
+            if error.code == 503:
+                raise ApiError(503, "MODEL_BUSY", "Gemini가 일시적으로 요청을 처리하지 못하고 있어요. 잠시 후 다시 시도해 주세요.") from None
+            if error.code == 429:
+                raise ApiError(503, "RATE_LIMIT", "Gemini 요청 한도에 도달했어요. 서버 계정의 사용량을 확인해 주세요.") from None
+            if error.code in (401, 403):
+                raise ApiError(502, "API_AUTH", "서버의 Gemini API 키와 접근 권한을 확인해 주세요.") from None
+            if error.code == 404:
+                raise ApiError(502, "MODEL_NOT_FOUND", "서버에 설정한 Gemini 모델을 사용할 수 없어요.") from None
+            raise ApiError(502, "UPSTREAM", "Gemini 요청을 처리하지 못했어요. 서버의 키와 모델 설정을 확인해 주세요.") from None
         except (urllib.error.URLError, TimeoutError):
             raise ApiError(504, "NETWORK", "인식 서비스 연결 시간이 초과됐어요.") from None
         except (ValueError, KeyError, TypeError, AttributeError, IndexError):

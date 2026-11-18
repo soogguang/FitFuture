@@ -32,6 +32,7 @@ public final class MainActivity extends androidx.activity.ComponentActivity {
   private AccountScreens account;
   public MealCamera mealCamera;
   public boolean recognitionReady;
+  public String requestError = "";
 
   public interface Work<T> {
     T get() throws Exception;
@@ -63,6 +64,7 @@ public final class MainActivity extends androidx.activity.ComponentActivity {
       if (old != null) backStack.addAll(old);
       preview = saved.getBoolean("preview");
       retryScreen = saved.getString("retry", "s09");
+      requestError = saved.getString("requestError", "");
       recognitionReady = saved.getBoolean("ready");
     }
     if (state == null) {
@@ -238,6 +240,7 @@ public final class MainActivity extends androidx.activity.ComponentActivity {
     out.putStringArrayList("back", backStack);
     out.putBoolean("preview", preview);
     out.putString("retry", retryScreen);
+    out.putString("requestError", requestError);
     out.putBoolean("ready", recognitionReady);
   }
 
@@ -595,6 +598,7 @@ public final class MainActivity extends androidx.activity.ComponentActivity {
   }
 
   public <T> void async(Work<T> work, Done<T> done) {
+    requestError = "";
     int token = ++operation;
     worker.submit(
         () -> {
@@ -687,6 +691,7 @@ public final class MainActivity extends androidx.activity.ComponentActivity {
       }
     }
     retryScreen = screen;
+    requestError = ex instanceof ModuleException ? ex.getMessage() : "서버 연결을 확인한 뒤 다시 시도해 주세요.";
     go("s28");
   }
 

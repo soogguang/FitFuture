@@ -76,6 +76,15 @@ class RecognitionTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             GeminiRecognizer("", "")
 
+    def test_provider_busy_and_configuration_errors(self):
+        for status, code in ((503, "MODEL_BUSY"), (401, "API_AUTH"), (403, "API_AUTH"), (404, "MODEL_NOT_FOUND")):
+            def opener(*args, **kwargs):
+                raise urllib.error.HTTPError("https://example", status, "secret", {}, None)
+            with self.subTest(status=status), self.assertRaises(ApiError) as caught:
+                GeminiRecognizer("secret", "test", opener)([])
+            self.assertEqual(caught.exception.code, code)
+            self.assertNotIn("secret", caught.exception.message)
+
 
 class HttpContractTests(unittest.TestCase):
     @classmethod
