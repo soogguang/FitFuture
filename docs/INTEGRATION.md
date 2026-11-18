@@ -2,7 +2,7 @@
 
 ## 연결 지점
 
-현재 앱은 `MainActivity.onCreate()`에서 `new DemoServices().services()`를 주입합니다. 세 담당자가 각각 `FeatureServices`의 인터페이스를 구현하고 해당 조합을 교체하면 됩니다. 인터페이스는 Java이며 외부 SDK나 UI 타입에 의존하지 않습니다.
+현재 앱은 `MainActivity.onCreate()`에서 기본 `DemoServices`를 주입합니다. `foodApiUrl` 빌드 속성을 지정하면 음식 분석만 `RemoteFoodAnalysis`로 교체합니다. 이 구현체의 인식은 실제 서버를 사용하고 영양 분석은 아직 데모에 위임합니다. 나머지 담당자는 각각 `FeatureServices`의 인터페이스를 구현하고 해당 조합을 교체하면 됩니다. 인터페이스는 Java이며 외부 SDK나 UI 타입에 의존하지 않습니다.
 
 ```java
 services = new FeatureServices(
@@ -12,7 +12,7 @@ services = new FeatureServices(
 );
 ```
 
-서버 URL·인증·JSON 명세는 아직 합의되지 않았습니다. 실제 HTTP 응답 DTO는 각 구현체에서 `Models`의 타입으로 변환합니다. API 키를 Android 소스에 넣지 않습니다. 서버 연동 시 manifest 인터넷 권한과 HTTP 클라이언트 설정을 추가해야 합니다.
+팀 공용 서버 URL·인증·JSON 명세는 아직 합의되지 않았습니다. 로컬 인식 API 초안과 실행 방법은 `server/README.md`에 있습니다. 인터넷 권한과 HttpURLConnection 어댑터를 추가했으며 로컬 HTTP는 debug의 loopback/에뮬레이터 호스트에만 허용합니다. API 키는 서버 환경변수에 두고 Android 소스에 넣지 않습니다. 실제 HTTP 응답 DTO는 각 구현체에서 `Models`의 타입으로 변환합니다.
 
 ## 공통 규칙
 

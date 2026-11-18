@@ -22,6 +22,7 @@ public final class FlowInstrumentation extends Instrumentation {
   public void onStart() {
     Bundle result = new Bundle();
     try {
+      checkFoodResponseContract();
       runFlow();
       result.putString(
           "stream",
@@ -33,6 +34,22 @@ public final class FlowInstrumentation extends Instrumentation {
       result.putString(
           "stream", "FAIL: " + error + "\n" + android.util.Log.getStackTraceString(error));
       finish(Activity.RESULT_CANCELED, result);
+    }
+  }
+
+  private void checkFoodResponseContract() throws Exception {
+    Meal meal = RemoteFoodAnalysis.parse(new org.json.JSONObject(
+        "{\"name\":\"비빔밥\",\"foods\":[{\"name\":\"비빔밥\",\"grams\":400}]}"));
+    require(meal.name.equals("비빔밥") && meal.foods.get(0).grams == 400 && !meal.confirmed,
+        "Remote recognition must preserve food and keep estimates unconfirmed");
+    for (String invalid : new String[] {
+        "{\"name\":\"밥\",\"foods\":[]}",
+        "{\"name\":\"밥\",\"foods\":[{\"name\":\"밥\",\"grams\":0}]}",
+        "{\"name\":\"밥\",\"foods\":[{\"name\":\"밥\",\"grams\":\"100\"}]}"}) {
+      boolean rejected = false;
+      try { RemoteFoodAnalysis.parse(new org.json.JSONObject(invalid)); }
+      catch (ModuleException | org.json.JSONException expected) { rejected = true; }
+      require(rejected, "Invalid remote response must be rejected");
     }
   }
 

@@ -53,7 +53,10 @@ public final class MainActivity extends androidx.activity.ComponentActivity {
               View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR | View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR);
     ui = new Ui(this);
     store = new StateStore(this);
-    services = new DemoServices().services();
+    DemoServices demo = new DemoServices();
+    services = BuildConfig.FOOD_API_URL.isEmpty()
+        ? demo.services()
+        : new FeatureServices(new RemoteFoodAnalysis(this, BuildConfig.FOOD_API_URL, demo), demo, demo);
     if (saved != null) {
       state = (AppState) saved.getSerializable("state");
       screen = saved.getString("screen", "s01");
