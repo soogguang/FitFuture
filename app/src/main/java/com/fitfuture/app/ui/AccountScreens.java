@@ -358,10 +358,9 @@ public final class AccountScreens {
     u.gap(p, 202);
     p.addView(u.icon(R.drawable.ic_wifi_off, 42, R.color.error_text));
     u.gap(p, 20);
-    TextView title = u.title(p, "잠시 연결이 끊겼어요");
+    TextView title = u.title(p, a.requestError.isEmpty() ? "잠시 연결이 끊겼어요" : "요청을 완료하지 못했어요");
     title.setGravity(Gravity.CENTER);
-    TextView body = u.muted(p, a.failureMessage.isEmpty()
-        ? "네트워크 연결을 확인한 뒤 다시 시도해 주세요." : a.failureMessage);
+    TextView body = u.muted(p, a.requestError.isEmpty() ? "네트워크 연결을 확인한 뒤 다시 시도해 주세요." : a.requestError);
     body.setGravity(Gravity.CENTER);
     a.primary("다시 시도", a::retry);
   }
@@ -388,7 +387,8 @@ public final class AccountScreens {
 
   private void nutritionError() {
     u.gap(s("notice"), 180);
-    u.notice(s("notice"), "영양정보를 찾지 못했어요", "음식 이름을 더 구체적으로 입력하거나 목록에서 비슷한 음식을 골라 주세요.", 2);
+    u.notice(s("notice"), "영양정보를 찾지 못했어요", a.requestError.isEmpty()
+        ? "음식 이름과 섭취량을 확인해 주세요." : a.requestError, 2);
     u.gap(s("retry"), 14);
     u.outline(s("retry"), "다시 입력", () -> a.go("s11"));
     a.primary("음식 정보 수정", () -> a.go(a.state.meal == null ? "s11" : "s14"));

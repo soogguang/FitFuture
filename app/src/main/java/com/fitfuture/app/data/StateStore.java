@@ -30,14 +30,16 @@ public final class StateStore {
         .put("kcal", n.caloriesKcal)
         .put("carbs", n.carbohydrateGrams)
         .put("protein", n.proteinGrams)
-        .put("fat", n.fatGrams);
+        .put("fat", n.fatGrams)
+        .put("source", n.source);
   }
 
   private Nutrition readNutrition(JSONObject o) {
-    return o == null || !o.has("kcal")
-        ? null
-        : new Nutrition(
-            o.optDouble("kcal"), o.optDouble("carbs"), o.optDouble("protein"), o.optDouble("fat"));
+    if (o == null || !o.has("kcal")) return null;
+    Nutrition n = new Nutrition(
+        o.optDouble("kcal"), o.optDouble("carbs"), o.optDouble("protein"), o.optDouble("fat"));
+    n.source = o.optString("source", "");
+    return n;
   }
 
   private JSONObject meal(Meal m) throws JSONException {

@@ -1,7 +1,8 @@
 # 음식 인식 로컬 서버
 
 첫 단계: 사진/음식명 → Gemini → 음식 목록과 추정 g → 앱 S14 확인 화면.
-통합 앱에서는 영양·추천을 별도 `recommendation-server`에, 미래 비교를 `AvatarFutureService`에 연결한다. 새로운 음식은 영양 DB에 없으면 영양 확인 단계에서 매칭 실패할 수 있다.
+`foodApiUrl`을 지정한 앱에서는 확정한 음식의 영양을 앱에 포함된 식약처 음식 DB로 계산한다. 미지정 시 음식 인식은 데모이며 영양은 별도 `recommendation-server`에서 계산한다. 대안 추천은 `recommendation-server`, 미래 비교는 `AvatarFutureService`에 연결한다. 추천 서버는 원래 식사의 영양도 자체 DB에서 다시 계산하므로 새 음식은 서버 DB에도 매칭되어야 한다.
+DB 범위·출처·갱신 방법은 [영양 DB 설명](../app/src/main/assets/nutrition/SOURCE.md)을 참고한다.
 Python 3.11 이상 표준 라이브러리만 사용하므로 pip 설치는 필요 없다.
 
 ## 실행
@@ -11,7 +12,7 @@ Python 3.11 이상 표준 라이브러리만 사용하므로 pip 설치는 필�
 
 ```powershell
 $env:GEMINI_API_KEY='YOUR_GEMINI_API_KEY'
-$env:GEMINI_MODEL='gemini-4-hydrogen'
+$env:GEMINI_MODEL='gemini-3.5-flash-lite'
 python server/food_server.py
 ```
 
@@ -62,10 +63,30 @@ Gemini로의 전송과 공급자 측 데이터 처리는 계정 정책에 따른
 | 422 | 비음식/인식 불가 | 기존 S15 인식 실패 |
 | 502/503/504 | 공급자 오류/한도/시간 초과 | 기존 S28 및 재시도 |
 
-공급자 대기 시간은 40초, 앱 응답 대기는 55초다. 자동 재시도로 유료 호출을 반복하지 않는다.
+공급자의 HTTP 503은 `MODEL_BUSY`, 429는 `RATE_LIMIT`, 401/403은 `API_AUTH`, 404는 `MODEL_NOT_FOUND`로 구분한다. 앱은 이 코드에 맞는 안내를 표시한다. 서버가 정상이어도 Gemini가 혼잡하면 인식 요청은 실패할 수 있다. `/health`와 브라우저의 기본 경로 응답만으로 Gemini 호출 성공을 판단하지 않는다.
+
+공급자 요청의 소켓 대기 시간은 최대 40초, 앱 응답 대기는 55초다. HTTP 503만 1초·2초 대기 후 최대 총 3회 시도하고, 재시도 시작은 45초 예산 안으로 제한한다. 400·401·403·404·429는 자동 재시도하지 않는다. 재시도로 혼잡 해소를 보장하지 않으며 성공한 요청을 반복하지 않는다.
 화면을 떠난 결과는 기존 요청 세대 검사로 반영하지 않지만 이미 시작한 공급자 호출 자체는 취소하지 않는다.
 
 ## 검증
+
+에뮬레이터를 사용하기 전에 PC에서 실제 공급자 호출을 분리해 확인할 수 있다.
+
+```cmd
+python server\diagnose_gemini.py
+python server\diagnose_gemini.py --image "C:\path\food.jpg"
+```
+
+진단은 현재 프로세스 환경변수, 없으면 Windows의 `setx`로 저장한 사용자 환경변수에서 키·모델을 읽으며 키는 출력/저장하지 않는다. 첫 단계는 앱·로컬 HTTP 서버·음식 프롬프트·JSON 스키마를 제외한 최소 REST 요청이다. 성공한 경우에만 실제 음식 인식 JSON, 선택적으로 음식 사진을 확인한다. 실제 API를 호출하므로 공급자 한도를 사용한다. 최소 요청이 실패하면 음식 인식 단계로 진행하지 않는다.
+
+2026-11-19 PC 실호출 확인: 기존 `gemini-4-hydrogen`은 최소 REST/.NET 호출에서도 503을 반환했다. 같은 계정의 `gemini-3.5-flash-lite`에서는 최소 요청, 음식명 JSON 인식, 공개 바나나 사진 인식(바나나·추정 118g)이 성공했다. 실제 `POST /food/recognize`를 통해 바나나 사진은 200, 단색 비음식 PNG는 422로 처리되는 것도 확인했다. 모델의 향후 가용성을 보장하는 결과는 아니며 실제 사용자 음식 사진의 정확도는 별도 평가한다. 테스트 사진 원본: https://upload.wikimedia.org/wikipedia/commons/8/8a/Banana-Single.jpg (테스트 산출물은 Git에 포함하지 않음).
+
+cmd에서 이미 실행 중인 서버에 모델 변경을 적용하려면 Ctrl+C 후 다음과 같이 실행한다. `setx`는 새 창에 적용되므로 기존 cmd에는 `set`도 필요하다.
+
+```cmd
+set "GEMINI_MODEL=gemini-3.5-flash-lite"
+python server\food_server.py --port 8765
+```
 
 ```powershell
 python -m unittest discover -s server -v

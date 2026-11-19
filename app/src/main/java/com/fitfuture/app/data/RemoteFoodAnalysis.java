@@ -13,16 +13,15 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 import org.json.*;
 
-/** Real recognition adapter. Nutrition is delegated to the supplied analysis service. */
+/** Gemini recognition and local MFDS nutrition lookup. */
 public final class RemoteFoodAnalysis implements FeatureServices.FoodAnalysisService {
   private final Context context;
   private final String origin;
-  private final FeatureServices.FoodAnalysisService nutrition;
+  private NutritionDatabase database;
 
-  public RemoteFoodAnalysis(Context context, String origin, FeatureServices.FoodAnalysisService nutrition) {
+  public RemoteFoodAnalysis(Context context, String origin) {
     this.context = context.getApplicationContext();
     this.origin = origin.replaceAll("/+$", "");
-    this.nutrition = nutrition;
   }
 
   @Override
@@ -47,7 +46,22 @@ public final class RemoteFoodAnalysis implements FeatureServices.FoodAnalysisSer
       try (OutputStream stream = connection.getOutputStream()) { stream.write(body); }
       int status = connection.getResponseCode();
       if (status == 422) throw new ModuleException("RECOGNITION", "음식을 인식하지 못했어요.");
-      if (status != 200) throw new ModuleException("NETWORK", "음식 인식 서버에 연결하지 못했어요.");
+      if (status != 200) {
+        String code = "NETWORK";
+        try (InputStream stream = connection.getErrorStream()) {
+          if (stream != null) code = new JSONObject(new String(readLimited(stream, 65536),
+              StandardCharsets.UTF_8)).getJSONObject("error").optString("code", "NETWORK");
+        } catch (IOException | JSONException ignored) { /* Use a local, safe fallback message. */ }
+        String message = switch (code) {
+          case "MODEL_BUSY" -> "Gemini가 일시적으로 요청을 처리하지 못하고 있어요. 잠시 후 다시 시도해 주세요.";
+          case "RATE_LIMIT" -> "Gemini 요청 한도에 도달했어요. 서버 계정의 사용량을 확인해 주세요.";
+          case "API_AUTH" -> "서버의 Gemini API 키와 접근 권한을 확인해 주세요.";
+          case "MODEL_NOT_FOUND" -> "서버에 설정한 Gemini 모델을 사용할 수 없어요.";
+          case "UPSTREAM" -> "Gemini 요청 처리에 실패했어요. 잠시 후 다시 시도하거나 서버 설정을 확인해 주세요.";
+          default -> "음식 인식 서버에 연결하지 못했어요. 서버 실행 상태와 주소를 확인해 주세요.";
+        };
+        throw new ModuleException(code, message);
+      }
       JSONObject response;
       try (InputStream stream = connection.getInputStream()) {
         response = new JSONObject(new String(readLimited(stream, 65536), StandardCharsets.UTF_8));
@@ -86,8 +100,14 @@ public final class RemoteFoodAnalysis implements FeatureServices.FoodAnalysisSer
   }
 
   @Override
-  public Nutrition analyze(List<FoodPortion> foods) throws ModuleException {
-    return nutrition.analyze(foods);
+  public synchronized Nutrition analyze(List<FoodPortion> foods) throws ModuleException {
+    try {
+      if (database == null) database = new NutritionDatabase(new InputStreamReader(
+          context.getAssets().open("nutrition/mfds-foods.tsv"), StandardCharsets.UTF_8));
+      return database.analyze(foods);
+    } catch (IOException | IllegalArgumentException e) {
+      throw new ModuleException("NUTRITION", "영양정보 DB를 불러오지 못했어요.");
+    }
   }
 
   private byte[] photo(Uri uri) throws IOException {

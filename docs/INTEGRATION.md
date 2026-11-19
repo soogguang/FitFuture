@@ -5,7 +5,7 @@
 현재 앱은 `MainActivity.onCreate()`에서 아래 어댑터를 주입합니다. 인터페이스는 기존 Java `FeatureServices`를 재사용합니다.
 
 - 음식 인식: `foodApiUrl` 지정 시 `RemoteFoodAnalysis` → `POST /food/recognize`, 미지정 시 `DemoServices` (개발용 예시)
-- 영양 분석: `ServerFoodAnalysisService` → `POST /nutrition`
+- 영양 분석: `foodApiUrl` 지정 시 `RemoteFoodAnalysis` → 앱 내 `NutritionDatabase` (식약처 음식 DB), 미지정 시 `ServerFoodAnalysisService` → `POST /nutrition`
 - 추천: `HttpMealRecommendationService` → `POST /recommend`
 - 미래 비교: 기존 `AvatarFutureService` (보존)
 
@@ -17,7 +17,7 @@ services = new FeatureServices(
 );
 ```
 
-서버 명세와 실행 방법은 [음식 인식 서버](../server/README.md)와 [영양·추천 서버](../recommendation-server/README.md)를 참고하세요. `ServerFoodAnalysisService`가 인식을 `RemoteFoodAnalysis`에 위임하고 영양은 추천 서버에서 계산합니다. `RecommendationJson`이 HTTP 응답을 `Models.Alternative`로 변환합니다. Android에는 서버 URL만 있고 Gemini/식약처 API 키는 없습니다. HTTP는 debug의 loopback/에뮬레이터 호스트에만 허용합니다.
+서버 명세와 실행 방법은 [음식 인식 서버](../server/README.md)와 [영양·추천 서버](../recommendation-server/README.md)를 참고하세요. `foodApiUrl` 지정 시 `RemoteFoodAnalysis`가 인식 서버 호출과 로컬 식약처 영양 계산을 담당합니다. 미지정 시 `ServerFoodAnalysisService`가 예시 인식을 사용하고 영양은 추천 서버에서 계산합니다. `RecommendationJson`이 HTTP 응답을 `Models.Alternative`로 변환합니다. Android에는 서버 URL만 있고 Gemini/식약처 API 키는 없습니다. HTTP는 debug의 loopback/에뮬레이터 호스트에만 허용합니다.
 
 두 로컬 서버는 서로 다른 포트로 실행합니다. 예를 들어 음식 인식은 `python3 server/food_server.py --port 8765`, 영양·추천은 기본 8000 포트를 사용하고, 앱은 `./gradlew :app:assembleDebug -PfoodApiUrl=http://10.0.2.2:8765 -PrecommendationBaseUrl=http://10.0.2.2:8000`으로 빌드합니다.
 
@@ -40,9 +40,9 @@ services = new FeatureServices(
  → Nutrition
 ```
 
-사진 URI는 기기 내부 참조입니다. 서버가 직접 접근할 수 없으므로 어댑터가 `ContentResolver`로 내용을 읽어 업로드해야 합니다. 갤러리는 `ACTION_OPEN_DOCUMENT`와 읽기 권한 유지, 카메라는 시스템 촬영 Intent와 grant-only `PhotoProvider`를 사용합니다. 카메라 앱을 열기 위해 앱 자체에 CAMERA 권한을 요청하지 않습니다.
+사진 URI는 기기 내부 참조입니다. 서버가 직접 접근할 수 없으므로 어댑터가 `ContentResolver`로 내용을 읽어 업로드합니다. 갤러리는 `ACTION_OPEN_DOCUMENT`와 읽기 권한 유지를 사용합니다. 촬영 화면은 `MealCamera`의 CameraX `PreviewView`로 실시간 영상을 표시하며 CAMERA 런타임 권한을 요청합니다. 화면의 촬영 버튼은 `ImageCapture`로 내부 파일에 직접 JPEG를 저장하고 `PhotoProvider` URI를 음식 인식에 전달합니다. 외부 카메라 앱은 열지 않습니다. 화면을 떠나면 use case를 해제하고 이전 콜백을 무효화합니다.
 
-`foodApiUrl`을 지정하면 사진·음식명을 Gemini 서버에 보내 음식 구성과 추정량을 받습니다. 미지정 시 사진 인식은 돈가스 정식 예시를 반환하고 텍스트 음식 분해도 예시입니다. 확정한 음식명과 중량은 영양·추천 서버 DB에서 정확히 매칭하며 알 수 없는 음식은 영양 매칭 실패 화면으로 연결합니다. 서버 fixture 모드를 명시적으로 선택하면 합성 DB를 사용하고 화면에 출처를 표시합니다.
+`foodApiUrl`을 지정하면 사진·음식명을 Gemini 서버에 보내 음식 구성과 추정량을 받습니다. 사용자가 확정한 음식명과 중량은 앱에 포함된 [식약처 음식 DB](../app/src/main/assets/nutrition/SOURCE.md)의 100g당 값으로 계산합니다. 미지정 시 사진 인식은 돈가스 정식 예시를 반환하고 텍스트 음식 분해도 예시이며, 확정한 음식의 영양은 `ServerFoodAnalysisService`로 추천 서버에서 계산합니다. 어느 경로든 알 수 없는 음식은 영양 매칭 실패 화면으로 연결합니다. 서버 fixture 모드를 명시적으로 선택하면 합성 DB를 사용하고 화면에 출처를 표시합니다. 추천 요청 시 원래 식사의 영양은 추천 서버 DB에서 다시 계산하므로, 앱 DB에서 인식한 음식도 추천 서버 DB에 별도로 매칭되어야 합니다.
 
 사용자가 음식을 편집하면 `confirmed`, 영양 결과, 기존 추천을 무효화합니다. 확인되지 않은 데이터를 추천에 사용하지 않습니다.
 

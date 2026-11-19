@@ -79,7 +79,7 @@ HTTPS 접근만 시도하며 HTTP로 키를 보내는 fallback은 없습니다. 
 
 ## API와 오류
 
-- `POST /nutrition`: 확정할 음식명/g → DB 기준 Nutrition, 출처. Android S13부터 같은 기준을 씁니다.
+- `POST /nutrition`: 확정할 음식명/g → DB 기준 Nutrition, 출처. Android는 `foodApiUrl` 미지정 시 이 API를 사용하고, 지정 시 앱 내 식약처 DB로 S13 영양을 계산합니다. 추천 요청 시에는 이 서버 DB로 원래 식사의 영양을 다시 계산합니다.
 - `POST /recommend`: `examples/request.json`의 meal/profile/feedback → 상위 3개, 원래 영양 재계산, 출처, 제외 사유 집계.
 - `GET /health`: 준비 여부와 후보 생성 모드. `/docs`: OpenAPI 명세.
 - 오류: `{ "error": { "code": "SHORTAGE", "message": "…", "available": 2, "rejected": {…} } }`.

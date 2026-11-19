@@ -76,6 +76,37 @@ class RecognitionTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             GeminiRecognizer("", "")
 
+    def test_provider_busy_and_configuration_errors(self):
+        for status, code in ((503, "MODEL_BUSY"), (401, "API_AUTH"), (403, "API_AUTH"), (404, "MODEL_NOT_FOUND")):
+            def opener(*args, **kwargs):
+                raise urllib.error.HTTPError("https://example", status, "secret", {}, None)
+            with self.subTest(status=status), self.assertRaises(ApiError) as caught:
+                GeminiRecognizer("secret", "test", opener, sleeper=lambda _: None)([])
+            self.assertEqual(caught.exception.code, code)
+            self.assertNotIn("secret", caught.exception.message)
+
+    def test_busy_retry_then_success(self):
+        calls, delays = [], []
+        def opener(request, timeout):
+            calls.append(timeout)
+            if len(calls) < 3:
+                raise urllib.error.HTTPError("https://example", 503, "busy", {}, None)
+            return io.BytesIO(json.dumps({"candidates": [{"finishReason": "STOP", "content": {
+                "parts": [{"text": json.dumps(result())}]}}]}).encode())
+        output = GeminiRecognizer("secret", "test", opener, sleeper=delays.append)([])
+        self.assertEqual(len(calls), 3)
+        self.assertEqual(delays, [1, 2])
+        self.assertEqual(output["name"], "비빔밥")
+
+    def test_no_retry_for_authentication_error(self):
+        calls = []
+        def opener(*args, **kwargs):
+            calls.append(1)
+            raise urllib.error.HTTPError("https://example", 403, "denied", {}, None)
+        with self.assertRaises(ApiError):
+            GeminiRecognizer("secret", "test", opener, sleeper=lambda _: self.fail("must not retry"))([])
+        self.assertEqual(len(calls), 1)
+
 
 class HttpContractTests(unittest.TestCase):
     @classmethod

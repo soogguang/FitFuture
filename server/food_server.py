@@ -7,6 +7,7 @@ import math
 import os
 import re
 import socket
+import time
 import urllib.error
 import urllib.request
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
@@ -94,10 +95,27 @@ def validate_result(data):
 
 
 class GeminiRecognizer:
-    def __init__(self, key, model, opener=urllib.request.urlopen):
+    def __init__(self, key, model, opener=urllib.request.urlopen, *, attempts=3, sleeper=time.sleep, clock=time.monotonic):
         if not key or not re.fullmatch(r"[A-Za-z0-9._-]+", model):
             raise ValueError("Set GEMINI_API_KEY and GEMINI_MODEL (a model ID without models/).")
         self.key, self.model, self.opener = key, model, opener
+        self.attempts, self.sleeper, self.clock = attempts, sleeper, clock
+
+    def _open(self, request):
+        # Keep the entire operation inside Android's 55-second response timeout.
+        deadline = self.clock() + 45
+        for attempt in range(self.attempts):
+            remaining = deadline - self.clock()
+            if remaining <= 0:
+                raise TimeoutError()
+            try:
+                return self.opener(request, timeout=min(40, remaining))
+            except urllib.error.HTTPError as error:
+                delay = 2 ** attempt
+                if error.code != 503 or attempt + 1 == self.attempts or deadline - self.clock() <= delay:
+                    raise
+                error.close()
+                self.sleeper(delay)
 
     def __call__(self, parts):
         payload = {"contents": [{"role": "user", "parts": parts}], "generationConfig": {
@@ -107,7 +125,7 @@ class GeminiRecognizer:
             data=json.dumps(payload).encode(),
             headers={"Content-Type": "application/json", "x-goog-api-key": self.key}, method="POST")
         try:
-            with self.opener(request, timeout=40) as response:
+            with self._open(request) as response:
                 raw = response.read(MAX_RESPONSE + 1)
             if len(raw) > MAX_RESPONSE:
                 raise ValueError("oversized upstream response")
@@ -122,8 +140,15 @@ class GeminiRecognizer:
                              if not part.get("thought", False))
             return validate_result(json.loads(output))
         except urllib.error.HTTPError as error:
-            code = "RATE_LIMIT" if error.code == 429 else "UPSTREAM"
-            raise ApiError(503 if error.code == 429 else 502, code, "인식 서비스를 잠시 후 다시 시도해 주세요.") from None
+            if error.code == 503:
+                raise ApiError(503, "MODEL_BUSY", "Gemini가 일시적으로 요청을 처리하지 못하고 있어요. 잠시 후 다시 시도해 주세요.") from None
+            if error.code == 429:
+                raise ApiError(503, "RATE_LIMIT", "Gemini 요청 한도에 도달했어요. 서버 계정의 사용량을 확인해 주세요.") from None
+            if error.code in (401, 403):
+                raise ApiError(502, "API_AUTH", "서버의 Gemini API 키와 접근 권한을 확인해 주세요.") from None
+            if error.code == 404:
+                raise ApiError(502, "MODEL_NOT_FOUND", "서버에 설정한 Gemini 모델을 사용할 수 없어요.") from None
+            raise ApiError(502, "UPSTREAM", "Gemini 요청을 처리하지 못했어요. 서버의 키와 모델 설정을 확인해 주세요.") from None
         except (urllib.error.URLError, TimeoutError):
             raise ApiError(504, "NETWORK", "인식 서비스 연결 시간이 초과됐어요.") from None
         except (ValueError, KeyError, TypeError, AttributeError, IndexError):
@@ -154,8 +179,6 @@ def handler_for(recognizer):
 
         def do_POST(self):
             try:
-                if self.path != "/food/recognize":
-                    raise ApiError(404, "NOT_FOUND", "지원하지 않는 경로입니다.")
                 if self.headers.get_content_type() != "application/json" or self.headers.get("Transfer-Encoding"):
                     raise ApiError(415, "INPUT", "Content-Length가 있는 JSON 요청을 보내 주세요.")
                 try:
@@ -167,6 +190,10 @@ def handler_for(recognizer):
                 raw = self.rfile.read(length)
                 if len(raw) != length:
                     raise ApiError(400, "INPUT", "요청을 끝까지 받지 못했어요.")
+                # Drain a bounded request before replying, so Windows does not reset
+                # the connection with unread bytes and discard the error response.
+                if self.path != "/food/recognize":
+                    raise ApiError(404, "NOT_FOUND", "지원하지 않는 경로입니다.")
                 parts = validate_input(json.loads(raw))
                 self.reply(200, recognizer(parts))
             except ApiError as error:
