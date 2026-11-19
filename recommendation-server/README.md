@@ -2,7 +2,7 @@
 
 FastAPI + **Gemini 후보 생성 + 규칙 기반 점수화** 구현입니다. 새 AI 모델을 학습하지 않습니다.
 `real`이 기본이며 키/식약처 데이터가 없을 때 fixture로 자동 전환하지 않습니다.
-음식 인식은 기존 Android DemoServices에 남아 있습니다. 사용자가 확정한 음식과 g만 서버에 전달합니다.
+음식 인식은 `foodApiUrl` 지정 시 별도 Gemini 인식 서버를 사용하고 미지정 시 Android DemoServices를 사용합니다. 사용자가 확정한 음식과 g만 이 서버에 전달합니다. 두 서버의 연결 설정은 [통합 가이드](../docs/INTEGRATION.md)를 참고하세요.
 
 ## 실행
 

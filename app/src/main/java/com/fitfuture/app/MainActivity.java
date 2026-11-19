@@ -61,8 +61,10 @@ public final class MainActivity extends androidx.activity.ComponentActivity {
     avatarFuture = new AvatarFutureService(BODY_CELLS);
     RecommendationHttpClient recommendationClient =
         new RecommendationHttpClient(BuildConfig.RECOMMENDATION_BASE_URL);
+    FeatureServices.FoodAnalysisService recognition = BuildConfig.FOOD_API_URL.isEmpty()
+        ? demo : new RemoteFoodAnalysis(this, BuildConfig.FOOD_API_URL, demo);
     services = new FeatureServices(
-        new ServerFoodAnalysisService(demo, recommendationClient),
+        new ServerFoodAnalysisService(recognition, recommendationClient),
         new HttpMealRecommendationService(recommendationClient), avatarFuture);
     if (saved != null) {
       state = (AppState) saved.getSerializable("state");

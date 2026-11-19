@@ -5,6 +5,7 @@ import android.text.*;
 import android.view.*;
 import android.widget.*;
 import com.fitfuture.app.MainActivity;
+import com.fitfuture.app.BuildConfig;
 import com.fitfuture.app.R;
 import com.fitfuture.app.domain.Models.*;
 import java.text.SimpleDateFormat;
@@ -179,6 +180,9 @@ public final class MealScreens {
     u.menuRow(s("methods"), "갤러리", "저장된 사진을 가져오는 예시", R.drawable.ic_image, a::pickPhoto);
     u.menuRow(s("methods"), "텍스트 입력", "음식 이름을 직접 입력해요", R.drawable.ic_text, () -> a.go("s11"));
     u.small(s("note"), "음식을 인식한 뒤 음식 이름과 양을 확인할 수 있어요.");
+    u.small(s("note"), BuildConfig.FOOD_API_URL.isEmpty()
+        ? "데모 모드 · 사진 인식은 예시 결과예요."
+        : "음식 인식 시 사진을 서버와 Google Gemini로 전송해요.");
   }
 
   private void camera() {
@@ -260,12 +264,12 @@ public final class MealScreens {
     u.notice(
         s("notices"),
         "01 · 음식을 인식하고 있어요",
-        "Gemini가 "
+        (BuildConfig.FOOD_API_URL.isEmpty() ? "예시 인식이 " : "Gemini가 ")
             + (a.state.inputText.isEmpty() ? "음식 사진" : a.state.inputText)
             + "의 구성 항목을 찾는 중이에요.",
         0);
     u.gap(s("notices"), 12);
-    u.notice(s("notices"), "02 · 영양정보 확인 대기", "음식과 양을 확정하면 식약처 영양 DB에서 확인해요.", 0);
+    u.notice(s("notices"), "02 · 영양정보 확인 대기", "음식과 양을 확정하면 서버의 영양 DB에서 확인해요.", 0);
     u.gap(s("examples"), 20);
     u.link(s("examples"), "인식 실패 예시 보기", () -> a.go("s15"));
     u.link(s("examples"), "연결 오류 예시 보기", () -> a.go("s28"));
@@ -364,7 +368,7 @@ public final class MealScreens {
     u.photo(s("photo"), m.name + " 사진", 112, m.photoUri);
     u.gap(s("portions"), 12);
     for (FoodPortion f : new ArrayList<>(m.foods)) portion(s("portions"), f);
-    u.notice(s("warning"), "이 음식이 맞나요?", "음식 이름과 양을 확인해 주세요.", 1);
+    u.notice(s("warning"), "이 음식이 맞나요?", "분량은 추정값이에요. 음식 이름과 양을 수정해 주세요.", 1);
     u.gap(s("add"), 12);
     u.outline(s("add"), "＋ 음식 추가", () -> a.go("s14_add"));
     u.gap(s("examples"), 12);

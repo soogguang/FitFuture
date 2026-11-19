@@ -5,7 +5,7 @@ import com.fitfuture.app.domain.Models.*;
 import java.util.List;
 import org.json.*;
 
-/** Recognition is explicitly still a demo; confirmed quantities use the server DB. */
+/** Recognition uses the supplied adapter; confirmed quantities use the server DB. */
 public final class ServerFoodAnalysisService implements FeatureServices.FoodAnalysisService {
   private final FeatureServices.FoodAnalysisService recognition;
   private final RecommendationHttpClient client;

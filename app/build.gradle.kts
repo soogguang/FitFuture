@@ -1,4 +1,8 @@
 plugins { id("com.android.application") }
+val foodApiUrl = providers.gradleProperty("foodApiUrl").orElse("").get()
+require(foodApiUrl.isEmpty() || foodApiUrl.matches(Regex("https?://[A-Za-z0-9.\\-:]+/?"))) {
+    "foodApiUrl must be an http(s) origin without a path"
+}
 android {
     namespace = "com.fitfuture.app"
     compileSdk = 36
@@ -8,6 +12,7 @@ android {
         targetSdk = 36
         versionCode = 1
         versionName = "0.1.0"
+        buildConfigField("String", "FOOD_API_URL", "\"$foodApiUrl\"")
         testInstrumentationRunner = "com.fitfuture.app.FlowInstrumentation"
         buildConfigField("String", "RECOMMENDATION_BASE_URL", "\"" +
             providers.gradleProperty("recommendationBaseUrl").orElse("http://10.0.2.2:8000").get()
