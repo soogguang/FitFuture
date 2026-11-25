@@ -102,8 +102,9 @@ public final class RemoteFoodAnalysis implements FeatureServices.FoodAnalysisSer
   @Override
   public synchronized Nutrition analyze(List<FoodPortion> foods) throws ModuleException {
     try {
-      if (database == null) database = new NutritionDatabase(new InputStreamReader(
-          context.getAssets().open("nutrition/mfds-foods.tsv"), StandardCharsets.UTF_8));
+      if (database == null) database = new NutritionDatabase(
+          new InputStreamReader(context.getAssets().open("nutrition/mfds-foods.tsv"), StandardCharsets.UTF_8),
+          new InputStreamReader(context.getAssets().open("nutrition/aliases.tsv"), StandardCharsets.UTF_8));
       return database.analyze(foods);
     } catch (IOException | IllegalArgumentException e) {
       throw new ModuleException("NUTRITION", "영양정보 DB를 불러오지 못했어요.");

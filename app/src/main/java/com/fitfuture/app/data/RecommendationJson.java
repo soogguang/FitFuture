@@ -82,7 +82,8 @@ public final class RecommendationJson {
     alt.verification = o.getString("verification");
     alt.priceWon = o.getInt("price_won");
     alt.calorieDifference = o.getDouble("calorie_difference");
-    if (!Double.isFinite(alt.calorieDifference) || alt.priceWon <= 0) throw new JSONException("Invalid metadata");
+    // 0 = reducing the user's own meal: no additional purchase and no price evidence.
+    if (!Double.isFinite(alt.calorieDifference) || alt.priceWon < 0) throw new JSONException("Invalid metadata");
     alt.componentScores = new double[4];
     alt.scoreWeights = new double[4];
     String[] keys = {"N", "P", "C", "F"};

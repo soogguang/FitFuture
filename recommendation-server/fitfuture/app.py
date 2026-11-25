@@ -24,8 +24,14 @@ def build_pipeline(client):
     if mode not in ("real", "fixture"):
         raise RecommendationError("CONFIGURATION", "RECOMMENDATION_MODE는 real 또는 fixture여야 해요.", 503)
     fixture = mode == "fixture"
-    path = ROOT / "tests/fixtures/catalog.json" if fixture else Path(os.getenv("MFDS_CATALOG_PATH", "data/mfds.json"))
-    repo = NutritionRepository(path, fixture)
+    if fixture:
+        repo = NutritionRepository(ROOT / "tests/fixtures/catalog.json", True)
+    elif os.getenv("MFDS_CATALOG_PATH"):
+        # Reviewed JSON snapshot from `python -m fitfuture.import_mfds` (with curated offers).
+        repo = NutritionRepository(Path(os.environ["MFDS_CATALOG_PATH"]))
+    else:
+        # Default: the app's MFDS food DB + aliases, with NEIS allergen / Seoul price evidence.
+        repo = NutritionRepository.from_mfds()
     # Candidate generation can be connected separately from the upstream nutrition module.
     candidate_mode = os.getenv("CANDIDATE_GENERATOR", "fixture" if fixture else "gemini")
     if candidate_mode not in ("gemini", "fixture") or (not fixture and candidate_mode == "fixture"):
@@ -89,7 +95,9 @@ def create_app(pipeline=None):
     async def health():
         p = app.state.pipeline
         ready = p is not None and (not isinstance(p.generator, GeminiGenerator) or bool(p.generator.key))
-        return {"ready": ready, "mode": p.generator.source if p else "unconfigured"}
+        return {"ready": ready, "mode": p.generator.source if p else "unconfigured",
+                "nutrition": p.repo.source if p else None, "foods": len(p.repo.foods) if p else 0,
+                **(p.repo.evidence_summary if p else {})}
 
     @app.post("/nutrition", response_model=NutritionResponse)
     async def nutrition(request: NutritionRequest):

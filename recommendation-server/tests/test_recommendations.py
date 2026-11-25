@@ -107,7 +107,7 @@ def test_feedback_adjusts_preferences(pipeline, request_data):
 
 @pytest.mark.parametrize("field,value,reason", [
     ("allergies", ["밀"], "ALLERGY"), ("avoided", ["돼지고기"], "AVOIDED"),
-    ("budget_won", 5000, "BUDGET"), ("environment", "편의점", "PRICE_ENVIRONMENT_ALLERGEN_UNVERIFIABLE")])
+    ("budget_won", 5000, "BUDGET")])
 def test_constraints_shortage(pipeline, request_data, field, value, reason):
     request_data["profile"][field] = value
     with pytest.raises(RecommendationError) as error:
@@ -116,19 +116,44 @@ def test_constraints_shortage(pipeline, request_data, field, value, reason):
     assert error.value.details["rejected"][reason] > 0
 
 
-@pytest.mark.parametrize("mutation", ["unknown_allergen", "missing_allergen_evidence", "expired_allergen", "unknown_ingredient", "expired_price", "missing_offer", "missing_offer_allergens"])
+@pytest.mark.parametrize("mutation", ["unknown_allergen", "missing_allergen_evidence", "expired_allergen", "missing_offer_allergens"])
 def test_unverifiable_not_assumed_safe(pipeline, request_data, mutation):
     food = pipeline.repo.foods["cutlet"]
     if mutation == "unknown_allergen": food.allergens = None
     if mutation == "missing_allergen_evidence": food.allergen_source = None
     if mutation == "expired_allergen": food.allergen_valid_until = date.today() - timedelta(days=1)
-    if mutation == "unknown_ingredient": food.ingredients = None
-    if mutation == "expired_price": pipeline.repo.catalog.offers[0].valid_until = date.today() - timedelta(days=1)
-    if mutation == "missing_offer": pipeline.repo.catalog.offers.clear()
     if mutation == "missing_offer_allergens": pipeline.repo.catalog.offers[0].allergens = None
     with pytest.raises(RecommendationError, match="찾지 못했어요") as error:
         recommend(pipeline, request_data)
     assert error.value.code == "SHORTAGE"
+
+
+def assert_only_own_meal_reductions(request_data, result):
+    original = {f["name"]: f["grams"] for f in request_data["meal"]["foods"]}
+    for a in result.alternatives:
+        assert all(f.name in original and f.grams <= original[f.name] for f in a.foods)
+        assert a.price_won == 0 and "추가 비용이 들지 않아요" in a.reason
+
+
+@pytest.mark.parametrize("mutation,reason", [
+    ("environment", "PRICE_ENVIRONMENT_ALLERGEN_UNVERIFIABLE"),
+    ("expired_price", "PRICE_ENVIRONMENT_ALLERGEN_UNVERIFIABLE"),
+    ("missing_offer", "PRICE_ENVIRONMENT_ALLERGEN_UNVERIFIABLE"),
+    ("unknown_ingredient", "INGREDIENT_UNVERIFIABLE")])
+def test_without_price_or_recipe_evidence_only_own_meal_reductions(pipeline, request_data, mutation, reason):
+    # Eating less of the user's own meal buys nothing new; every other change still needs evidence.
+    if mutation == "environment": request_data["profile"]["environment"] = "편의점"
+    if mutation == "expired_price": pipeline.repo.catalog.offers[0].valid_until = date.today() - timedelta(days=1)
+    if mutation == "missing_offer": pipeline.repo.catalog.offers.clear()
+    if mutation == "unknown_ingredient": pipeline.repo.foods["cutlet"].ingredients = None
+    result = recommend(pipeline, request_data)
+    assert result.alternatives and result.rejected[reason] > 0
+    if mutation != "unknown_ingredient":
+        assert_only_own_meal_reductions(request_data, result)
+    else:
+        original = {f["name"]: f["grams"] for f in request_data["meal"]["foods"]}
+        assert all(f.name in original and f.grams <= original[f.name]
+                   for a in result.alternatives for f in a.foods)
 
 
 def test_unknown_original_no_fabrication(pipeline, request_data):
@@ -379,3 +404,170 @@ def test_gemini_errors_are_specific_bounded_and_do_not_log_secrets(
     asyncio.run(run())
     assert len(calls) == calls_expected
     assert "test-key" not in caplog.text and "private request content" not in caplog.text
+
+
+# --- MFDS food DB shared with the app, public allergen/price evidence -------------------------
+
+from fitfuture.foodnames import ALIASES_TSV, MFDS_TSV, NameIndex, key, load_aliases, load_mfds
+from fitfuture.import_neis import parse_dish
+from fitfuture.import_seoul_prices import aggregate as aggregate_prices
+
+
+def write_evidence(tmp_path, allergens=None, prices=None):
+    today = date.today().isoformat()
+    a = tmp_path / "allergens.json"
+    a.write_text(json.dumps({"collected": today, "numbers": {"1": "달걀", "5": "대두", "6": "밀",
+                                                             "9": "새우", "10": "돼지고기"},
+                             "dishes": allergens or {}}, ensure_ascii=False))
+    p = tmp_path / "prices.json"
+    p.write_text(json.dumps({"collected": today, "dishes": prices or {}}, ensure_ascii=False))
+    return a, p
+
+
+def mfds_repo(tmp_path, allergens=None, prices=None):
+    a, p = write_evidence(tmp_path, allergens, prices)
+    return NutritionRepository.from_mfds(allergens=a, prices=p)
+
+
+def test_aliases_point_to_existing_foods_and_never_shadow_exact_names():
+    index = NameIndex(load_mfds(MFDS_TSV), load_aliases(ALIASES_TSV))
+    aliases = load_aliases(ALIASES_TSV)
+    assert all(key(target) in index.by_key for target in aliases.values())
+    assert not [a for a, target in aliases.items() if a in index.by_key and key(target) != a]
+
+
+def test_mfds_repository_matches_like_the_app(tmp_path):
+    repo = mfds_repo(tmp_path)
+    assert not repo.fixture and len(repo.foods) > 2000 and repo.source.startswith("식약처")
+    assert repo.resolve("짜장면").name == "자장면"
+    assert repo.resolve("연어 초밥").name == "초밥_연어"
+    assert repo.resolve("공기밥").name == "쌀밥"
+    # Same per-100 g arithmetic as NutritionDatabase.java (돈가스 280 kcal, 쌀밥 166 kcal).
+    from fitfuture.schemas import FoodPortion
+    total = repo.calculate(repo.portions([FoodPortion(name="돈까스", grams=150), FoodPortion(name="밥", grams=200)]))
+    assert total.calories_kcal == pytest.approx(280 * 1.5 + 166 * 2)
+    with pytest.raises(RecommendationError) as error:
+        repo.resolve("세상에 없는 음식")
+    assert error.value.code == "NUTRITION"
+
+
+def test_allergen_evidence_needs_repeated_labels_and_uses_union(tmp_path):
+    repo = mfds_repo(tmp_path, allergens={
+        "김치찌개": {"count": 2, "allergens": {"5": 2, "10": 1}},
+        "짜장면": {"count": 1, "allergens": {"6": 1}},  # alias of 자장면, combined below
+        "자장면": {"count": 2, "allergens": {"5": 2}},
+        "비빔밥": {"count": 2, "allergens": {"1": 1}}})
+    assert repo.resolve("자장면").allergens == ["대두", "밀"]
+    assert "NEIS" in repo.resolve("자장면").allergen_source
+    assert repo.resolve("비빔밥").allergens is None  # 2 labels < 3: unverifiable, not "safe"
+    assert repo.resolve("김치찌개").allergens is None
+
+
+def candidates_for(repo, request, rows):
+    class Generator:
+        source = "test"
+        async def generate(self, request, repo):
+            return CandidateBatch.model_validate({"candidates": rows})
+    return RecommendationPipeline(repo, Generator(), RuleScorer(ROOT / "fitfuture/scoring.json"))
+
+
+def bibimbap_request(request_data, environment="학식", allergies=()):
+    request_data["meal"].update(name="비빔밥", foods=[{"name": "비빔밥", "grams": 500}])
+    request_data["profile"].update(environment=environment, allergies=list(allergies), avoided=["매운 음식"])
+    return request_data
+
+
+def bibimbap_rows(repo):
+    code = repo.resolve("비빔밥").id
+    return [{"title": f"{g}g", "kind": "portion", "portions": [{"food_id": code, "grams": g}]}
+            for g in (450, 420, 390, 360, 330)]
+
+
+def test_any_mfds_meal_gets_own_meal_reductions(tmp_path, request_data):
+    repo = mfds_repo(tmp_path)
+    request = bibimbap_request(request_data)
+    result = recommend(candidates_for(repo, request, bibimbap_rows(repo)), request)
+    assert len(result.alternatives) == 3
+    assert result.original_nutrition.calories_kcal == pytest.approx(142 * 5)
+    for a in result.alternatives:
+        assert a.price_won == 0 and "추가 구매 없음" in a.verification and "비빔밥" in a.title
+
+
+def test_allergy_still_requires_public_evidence(tmp_path, request_data):
+    request = bibimbap_request(request_data, allergies=["갑각류"])
+    repo = mfds_repo(tmp_path)
+    with pytest.raises(RecommendationError) as error:
+        recommend(candidates_for(repo, request, bibimbap_rows(repo)), request)
+    assert error.value.details["rejected"]["ALLERGEN_UNVERIFIABLE"] == 5
+    repo = mfds_repo(tmp_path, allergens={"비빔밥": {"count": 8, "allergens": {"5": 8}}})
+    result = recommend(candidates_for(repo, request, bibimbap_rows(repo)), request)
+    assert "NEIS" in result.alternatives[0].verification
+    repo = mfds_repo(tmp_path, allergens={"비빔밥": {"count": 8, "allergens": {"9": 1}}})
+    with pytest.raises(RecommendationError) as error:
+        recommend(candidates_for(repo, request, bibimbap_rows(repo)), request)
+    assert error.value.details["rejected"]["ALLERGY"] == 5
+
+
+def test_eating_out_uses_seoul_reference_price_and_budget(tmp_path, request_data):
+    prices = {"비빔밥": {"count": 12, "median_won": 8000, "min_won": 6000, "max_won": 9000}}
+    repo = mfds_repo(tmp_path, prices=prices)
+    request = bibimbap_request(request_data, environment="외식")
+    request["profile"]["budget_won"] = 9000
+    result = recommend(candidates_for(repo, request, bibimbap_rows(repo)), request)
+    assert all(a.price_won == 8000 and "모범업소" in a.verification for a in result.alternatives)
+    request["profile"]["budget_won"] = 7000
+    with pytest.raises(RecommendationError) as error:
+        recommend(candidates_for(repo, request, bibimbap_rows(repo)), request)
+    assert error.value.details["rejected"]["BUDGET"] == 5
+    # One store is not enough evidence for a reference price.
+    prices["비빔밥"]["count"] = 1
+    repo = mfds_repo(tmp_path, prices=prices)
+    result = recommend(candidates_for(repo, request, bibimbap_rows(repo)), request)
+    assert all(a.price_won == 0 for a in result.alternatives)
+
+
+def test_menu_changes_without_offers_are_rejected(tmp_path, request_data):
+    repo = mfds_repo(tmp_path)
+    request = bibimbap_request(request_data)
+    request["profile"]["avoided"] = []
+    rows = bibimbap_rows(repo)[:4] + [{"title": "교체", "kind": "menu", "portions": [
+        {"food_id": repo.resolve("김밥").id, "grams": 300}]}]
+    result = recommend(candidates_for(repo, request, rows), request)
+    assert result.rejected["PRICE_ENVIRONMENT_ALLERGEN_UNVERIFIABLE"] == 1
+
+
+def test_gemini_prompt_lists_only_original_and_offered_foods(tmp_path, request_data):
+    repo = mfds_repo(tmp_path)
+    request = bibimbap_request(request_data)
+    rows = bibimbap_rows(repo)
+    def handler(r):
+        data = json.loads(json.loads(r.content)["contents"][0]["parts"][0]["text"].split("\nDATA:\n", 1)[1])
+        assert [f["name"] for f in data["catalog"]] == ["비빔밥"] and data["offers"] == []
+        return httpx.Response(200, json={"candidates": [{"finishReason": "STOP", "content": {
+            "parts": [{"text": json.dumps({"candidates": rows})}]}}]})
+    async def run():
+        async with httpx.AsyncClient(transport=httpx.MockTransport(handler)) as client:
+            pipeline = RecommendationPipeline(repo, GeminiGenerator(client, "k", "gemini-3.8-flash"),
+                                              RuleScorer(ROOT / "fitfuture/scoring.json"))
+            return await pipeline.recommend(RecommendRequest.model_validate(request))
+    assert len(asyncio.run(run()).alternatives) == 3
+
+
+@pytest.mark.parametrize("item,expected", [
+    ("북어국 (5.6)", ("북어국", [5, 6])), ("[대체식]흰쌀밥 ", ("흰쌀밥", [])),
+    ("*수제돈까스1.2.5.6.10.", ("수제돈까스", [1, 2, 5, 6, 10])),
+    ("깍두기(9.13)(완)", ("깍두기", [9, 13])), ("쌀밥(국내산)", ("쌀밥", [])),
+    ("닭강정 (1.5.6.12.13.15)ⓢ", ("닭강정", [1, 5, 6, 12, 13, 15])),
+    ("음식 (25)", None), ("우유200", None)])
+def test_neis_dish_labels(item, expected):
+    assert parse_dish(item) == expected
+
+
+def test_seoul_prices_keep_restaurants_only():
+    rows = [{"SH_ID": "1", "INDUTY_CODE_SE_NAME": "한식", "IM_NAME": "비빔밥", "IM_PRICE": 7000.0},
+            {"SH_ID": "2", "INDUTY_CODE_SE_NAME": "한식", "IM_NAME": "비빔밥(특)", "IM_PRICE": 9000.0},
+            {"SH_ID": "3", "INDUTY_CODE_SE_NAME": "한식", "IM_NAME": "비빔밥", "IM_PRICE": 8000.0},
+            {"SH_ID": "4", "INDUTY_CODE_SE_NAME": "이미용", "IM_NAME": "커트", "IM_PRICE": 6000.0}]
+    result = aggregate_prices(rows)
+    assert result["dishes"] == {"비빔밥": {"count": 3, "median_won": 8000, "min_won": 7000, "max_won": 9000}}
+    assert result["stores"] == 3 and result["environment"] == "외식"

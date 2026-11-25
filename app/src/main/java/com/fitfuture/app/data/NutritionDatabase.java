@@ -8,25 +8,23 @@ import java.util.*;
 public final class NutritionDatabase {
   private record Entry(String code, String name, String origin, Nutrition per100) {}
   private final Map<String, Entry> entries = new HashMap<>();
-  private static final Map<String, String> ALIASES = Map.ofEntries(
-      Map.entry("돼지국밥", "국밥_돼지고기"),
-      Map.entry("돼지고기국밥", "국밥_돼지고기"),
-      Map.entry("순대국밥", "국밥_순대국밥"),
-      Map.entry("콩나물국밥", "국밥_콩나물"),
-      Map.entry("소고기국밥", "국밥_소고기"),
-      Map.entry("돈까스", "돈가스"),
-      Map.entry("밥", "쌀밥"),
-      Map.entry("공기밥", "쌀밥"),
-      Map.entry("흰밥", "쌀밥"),
-      Map.entry("양배추샐러드", "샐러드_양배추"),
-      Map.entry("김치볶음밥", "볶음밥_김치"),
-      Map.entry("돌솥비빔밥", "비빔밥_돌솥"));
+  /** Synonym → MFDS name, shared with the recommendation server (nutrition/aliases.tsv). */
+  private final Map<String, String> aliases = new HashMap<>();
 
   private static String key(String s) {
     return s.replaceAll("[\\s_]", "").toLowerCase(Locale.ROOT);
   }
 
-  public NutritionDatabase(Reader input) throws IOException {
+  public NutritionDatabase(Reader input, Reader aliasInput) throws IOException {
+    try (BufferedReader reader = new BufferedReader(aliasInput)) {
+      String line;
+      while ((line = reader.readLine()) != null) {
+        if (line.isBlank() || line.startsWith("#")) continue;
+        String[] v = line.split("\t", -1);
+        if (v.length != 2 || v[0].isBlank() || v[1].isBlank()) throw new IOException("Invalid alias file");
+        aliases.put(key(v[0]), v[1].trim());
+      }
+    }
     try (BufferedReader reader = new BufferedReader(input)) {
       String line;
       while ((line = reader.readLine()) != null) {
@@ -51,7 +49,7 @@ public final class NutritionDatabase {
       if (food.name == null || !Double.isFinite(food.grams) || food.grams <= 0 || food.grams > 5000)
         throw new ModuleException("NUTRITION", "섭취량을 0g 초과, 5,000g 이하로 입력해 주세요.");
       String name = key(food.name);
-      Entry entry = entries.get(key(ALIASES.getOrDefault(name, name)));
+      Entry entry = entries.get(key(aliases.getOrDefault(name, name)));
       if (entry == null)
         throw new ModuleException("NUTRITION", food.name + "의 영양정보가 없어요. DB에 등록된 음식 이름으로 수정해 주세요.");
       total = total.plus(entry.per100.times(food.grams / 100.0));

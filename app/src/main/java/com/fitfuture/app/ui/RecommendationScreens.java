@@ -180,8 +180,10 @@ public final class RecommendationScreens {
     u.notice(s("composition"), "구성과 양", alt.composition, 0);
     u.gap(s("conditions"), 12);
     u.notice(s("conditions"), "추천 조건 확인 결과",
-        alt.verification + "\n한 끼 비용 " + alt.priceWon + "원 · 예산 "
-            + a.state.profile.budgetWon + "원", 0);
+        alt.verification + "\n" + (alt.priceWon > 0
+            ? String.format(Locale.KOREA, "한 끼 비용 %,d원", alt.priceWon)
+            : "추가 비용 없음 · 원래 식사에서 양만 조절")
+            + String.format(Locale.KOREA, " · 예산 %,d원", a.state.profile.budgetWon), 0);
     u.gap(s("scores"), 14);
     LinearLayout scores = u.card(s("scores"));
     u.section(scores, "추천 기준 · 종합 점수 " + String.format(Locale.KOREA, "%.2f", alt.scoreValue) + "점");

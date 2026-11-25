@@ -1,0 +1,5240 @@
+{
+ "source": "서울시 가격안정 모범업소 메뉴 가격 (data.seoul.go.kr)",
+ "collected": "2026-11-26",
+ "environment": "외식",
+ "stores": 1323,
+ "dishes": {
+  "OK초밥": {
+   "count": 1,
+   "median_won": 8000,
+   "min_won": 8000,
+   "max_won": 8000
+  },
+  "self포장": {
+   "count": 1,
+   "median_won": 6600,
+   "min_won": 6600,
+   "max_won": 6600
+  },
+  "가브리살": {
+   "count": 2,
+   "median_won": 15000,
+   "min_won": 13000,
+   "max_won": 17000
+  },
+  "가쓰오우동": {
+   "count": 1,
+   "median_won": 6000,
+   "min_won": 6000,
+   "max_won": 6000
+  },
+  "가정식 백반": {
+   "count": 2,
+   "median_won": 6000,
+   "min_won": 5000,
+   "max_won": 7000
+  },
+  "가정식백반": {
+   "count": 7,
+   "median_won": 7000,
+   "min_won": 5000,
+   "max_won": 8000
+  },
+  "가정식백반뷔페": {
+   "count": 1,
+   "median_won": 7000,
+   "min_won": 7000,
+   "max_won": 7000
+  },
+  "가족모듬초밥": {
+   "count": 1,
+   "median_won": 16000,
+   "min_won": 16000,
+   "max_won": 16000
+  },
+  "가츠동": {
+   "count": 1,
+   "median_won": 8000,
+   "min_won": 8000,
+   "max_won": 8000
+  },
+  "가츠오우동": {
+   "count": 1,
+   "median_won": 7000,
+   "min_won": 7000,
+   "max_won": 7000
+  },
+  "간장게장": {
+   "count": 1,
+   "median_won": 10000,
+   "min_won": 10000,
+   "max_won": 10000
+  },
+  "간장치킨": {
+   "count": 2,
+   "median_won": 15000,
+   "min_won": 15000,
+   "max_won": 15000
+  },
+  "간짜장": {
+   "count": 6,
+   "median_won": 6250,
+   "min_won": 3000,
+   "max_won": 7000
+  },
+  "갈릭버터크림파스타": {
+   "count": 1,
+   "median_won": 10000,
+   "min_won": 10000,
+   "max_won": 10000
+  },
+  "갈매기살": {
+   "count": 2,
+   "median_won": 16500,
+   "min_won": 15000,
+   "max_won": 18000
+  },
+  "갈비": {
+   "count": 1,
+   "median_won": 13000,
+   "min_won": 13000,
+   "max_won": 13000
+  },
+  "갈비살": {
+   "count": 3,
+   "median_won": 16000,
+   "min_won": 8900,
+   "max_won": 17000
+  },
+  "갈비탕": {
+   "count": 25,
+   "median_won": 10000,
+   "min_won": 6000,
+   "max_won": 14000
+  },
+  "갈치구이": {
+   "count": 2,
+   "median_won": 7000,
+   "min_won": 7000,
+   "max_won": 7000
+  },
+  "갈치조림": {
+   "count": 5,
+   "median_won": 8000,
+   "min_won": 6000,
+   "max_won": 10000
+  },
+  "감자보리밥": {
+   "count": 2,
+   "median_won": 7000,
+   "min_won": 6000,
+   "max_won": 8000
+  },
+  "감자수제비": {
+   "count": 1,
+   "median_won": 9000,
+   "min_won": 9000,
+   "max_won": 9000
+  },
+  "감자옹심이칼국수": {
+   "count": 1,
+   "median_won": 7000,
+   "min_won": 7000,
+   "max_won": 7000
+  },
+  "감자탕": {
+   "count": 2,
+   "median_won": 22000,
+   "min_won": 19000,
+   "max_won": 25000
+  },
+  "감자탕 소": {
+   "count": 1,
+   "median_won": 25000,
+   "min_won": 25000,
+   "max_won": 25000
+  },
+  "감자탕 중": {
+   "count": 1,
+   "median_won": 32000,
+   "min_won": 32000,
+   "max_won": 32000
+  },
+  "게장백반": {
+   "count": 1,
+   "median_won": 6000,
+   "min_won": 6000,
+   "max_won": 6000
+  },
+  "계란말이": {
+   "count": 1,
+   "median_won": 8000,
+   "min_won": 8000,
+   "max_won": 8000
+  },
+  "계란찜": {
+   "count": 1,
+   "median_won": 4000,
+   "min_won": 4000,
+   "max_won": 4000
+  },
+  "계란후라이": {
+   "count": 1,
+   "median_won": 500,
+   "min_won": 500,
+   "max_won": 500
+  },
+  "계절비빔밥": {
+   "count": 1,
+   "median_won": 9000,
+   "min_won": 9000,
+   "max_won": 9000
+  },
+  "고기만두": {
+   "count": 2,
+   "median_won": 6000,
+   "min_won": 6000,
+   "max_won": 6000
+  },
+  "고기쌈밥": {
+   "count": 1,
+   "median_won": 12000,
+   "min_won": 12000,
+   "max_won": 12000
+  },
+  "고기왕만두": {
+   "count": 1,
+   "median_won": 5000,
+   "min_won": 5000,
+   "max_won": 5000
+  },
+  "고등어구이": {
+   "count": 4,
+   "median_won": 9250,
+   "min_won": 8000,
+   "max_won": 10000
+  },
+  "고등어김치찌개": {
+   "count": 1,
+   "median_won": 10000,
+   "min_won": 10000,
+   "max_won": 10000
+  },
+  "고등어쌈밥정식": {
+   "count": 1,
+   "median_won": 11000,
+   "min_won": 11000,
+   "max_won": 11000
+  },
+  "고등어조림": {
+   "count": 1,
+   "median_won": 6500,
+   "min_won": 6500,
+   "max_won": 6500
+  },
+  "고로케 카레": {
+   "count": 1,
+   "median_won": 8000,
+   "min_won": 8000,
+   "max_won": 8000
+  },
+  "고추장불고기": {
+   "count": 1,
+   "median_won": 10000,
+   "min_won": 10000,
+   "max_won": 10000
+  },
+  "고추장삼겹살": {
+   "count": 1,
+   "median_won": 7500,
+   "min_won": 7500,
+   "max_won": 7500
+  },
+  "고추전": {
+   "count": 1,
+   "median_won": 10000,
+   "min_won": 10000,
+   "max_won": 10000
+  },
+  "골뱅이비빔밥": {
+   "count": 1,
+   "median_won": 10000,
+   "min_won": 10000,
+   "max_won": 10000
+  },
+  "곰탕": {
+   "count": 3,
+   "median_won": 9000,
+   "min_won": 9000,
+   "max_won": 10000
+  },
+  "곱창전골": {
+   "count": 1,
+   "median_won": 20000,
+   "min_won": 20000,
+   "max_won": 20000
+  },
+  "광어": {
+   "count": 1,
+   "median_won": 40000,
+   "min_won": 40000,
+   "max_won": 40000
+  },
+  "교자만두": {
+   "count": 1,
+   "median_won": 4000,
+   "min_won": 4000,
+   "max_won": 4000
+  },
+  "국내산 갈매기살": {
+   "count": 1,
+   "median_won": 13000,
+   "min_won": 13000,
+   "max_won": 13000
+  },
+  "국내산 삼겹살": {
+   "count": 1,
+   "median_won": 11000,
+   "min_won": 11000,
+   "max_won": 11000
+  },
+  "국내산 직화곱창": {
+   "count": 2,
+   "median_won": 12900,
+   "min_won": 12900,
+   "max_won": 12900
+  },
+  "국밥": {
+   "count": 1,
+   "median_won": 6500,
+   "min_won": 6500,
+   "max_won": 6500
+  },
+  "국산차": {
+   "count": 5,
+   "median_won": 3000,
+   "min_won": 2500,
+   "max_won": 3500
+  },
+  "국산콩비지": {
+   "count": 1,
+   "median_won": 6000,
+   "min_won": 6000,
+   "max_won": 6000
+  },
+  "국수": {
+   "count": 3,
+   "median_won": 5000,
+   "min_won": 3000,
+   "max_won": 8000
+  },
+  "굴국밥": {
+   "count": 1,
+   "median_won": 8000,
+   "min_won": 8000,
+   "max_won": 8000
+  },
+  "규동": {
+   "count": 2,
+   "median_won": 7350,
+   "min_won": 7200,
+   "max_won": 7500
+  },
+  "기계짜장": {
+   "count": 1,
+   "median_won": 5000,
+   "min_won": 5000,
+   "max_won": 5000
+  },
+  "김가네김밥": {
+   "count": 1,
+   "median_won": 3000,
+   "min_won": 3000,
+   "max_won": 3000
+  },
+  "김밥": {
+   "count": 47,
+   "median_won": 2500,
+   "min_won": 1000,
+   "max_won": 3500
+  },
+  "김치가츠동": {
+   "count": 1,
+   "median_won": 8500,
+   "min_won": 8500,
+   "max_won": 8500
+  },
+  "김치고기만두": {
+   "count": 1,
+   "median_won": 5500,
+   "min_won": 5500,
+   "max_won": 5500
+  },
+  "김치고등어찜": {
+   "count": 1,
+   "median_won": 8000,
+   "min_won": 8000,
+   "max_won": 8000
+  },
+  "김치돌솥밥": {
+   "count": 1,
+   "median_won": 8500,
+   "min_won": 8500,
+   "max_won": 8500
+  },
+  "김치만두": {
+   "count": 1,
+   "median_won": 6000,
+   "min_won": 6000,
+   "max_won": 6000
+  },
+  "김치말이국수": {
+   "count": 2,
+   "median_won": 5750,
+   "min_won": 5000,
+   "max_won": 6500
+  },
+  "김치말이온국수": {
+   "count": 1,
+   "median_won": 5500,
+   "min_won": 5500,
+   "max_won": 5500
+  },
+  "김치볶음밥": {
+   "count": 9,
+   "median_won": 6500,
+   "min_won": 6000,
+   "max_won": 10000
+  },
+  "김치삼겹살찌개": {
+   "count": 1,
+   "median_won": 5000,
+   "min_won": 5000,
+   "max_won": 5000
+  },
+  "김치수육찜": {
+   "count": 1,
+   "median_won": 9000,
+   "min_won": 9000,
+   "max_won": 9000
+  },
+  "김치수제비": {
+   "count": 1,
+   "median_won": 9000,
+   "min_won": 9000,
+   "max_won": 9000
+  },
+  "김치야채볶음밥": {
+   "count": 1,
+   "median_won": 7500,
+   "min_won": 7500,
+   "max_won": 7500
+  },
+  "김치전골": {
+   "count": 1,
+   "median_won": 8000,
+   "min_won": 8000,
+   "max_won": 8000
+  },
+  "김치찌개": {
+   "count": 188,
+   "median_won": 7000,
+   "min_won": 3000,
+   "max_won": 18000
+  },
+  "김치찌개 된장찌개 등": {
+   "count": 1,
+   "median_won": 7000,
+   "min_won": 7000,
+   "max_won": 7000
+  },
+  "김치찌개 등 전품목": {
+   "count": 1,
+   "median_won": 6000,
+   "min_won": 6000,
+   "max_won": 6000
+  },
+  "김치찌개 백반": {
+   "count": 5,
+   "median_won": 6000,
+   "min_won": 5000,
+   "max_won": 6000
+  },
+  "김치찌개 순두부찌개 된장찌개": {
+   "count": 1,
+   "median_won": 6000,
+   "min_won": 6000,
+   "max_won": 6000
+  },
+  "김치찌개된장찌개백반": {
+   "count": 1,
+   "median_won": 5000,
+   "min_won": 5000,
+   "max_won": 5000
+  },
+  "김치찌개백반": {
+   "count": 4,
+   "median_won": 6500,
+   "min_won": 6000,
+   "max_won": 7500
+  },
+  "김치찌개백반정식": {
+   "count": 1,
+   "median_won": 8000,
+   "min_won": 8000,
+   "max_won": 8000
+  },
+  "김치찜": {
+   "count": 1,
+   "median_won": 7500,
+   "min_won": 7500,
+   "max_won": 7500
+  },
+  "김치칼국수": {
+   "count": 1,
+   "median_won": 8000,
+   "min_won": 8000,
+   "max_won": 8000
+  },
+  "깁     밥": {
+   "count": 1,
+   "median_won": 2000,
+   "min_won": 2000,
+   "max_won": 2000
+  },
+  "까르보나라": {
+   "count": 2,
+   "median_won": 8700,
+   "min_won": 8500,
+   "max_won": 8900
+  },
+  "까페라떼": {
+   "count": 2,
+   "median_won": 3000,
+   "min_won": 2500,
+   "max_won": 3500
+  },
+  "깻잎김밥": {
+   "count": 1,
+   "median_won": 3500,
+   "min_won": 3500,
+   "max_won": 3500
+  },
+  "깻잎전": {
+   "count": 1,
+   "median_won": 10000,
+   "min_won": 10000,
+   "max_won": 10000
+  },
+  "꼬마김밥": {
+   "count": 2,
+   "median_won": 3500,
+   "min_won": 3000,
+   "max_won": 4000
+  },
+  "꼬막비빔밥": {
+   "count": 1,
+   "median_won": 10000,
+   "min_won": 10000,
+   "max_won": 10000
+  },
+  "꽁보리밥정식": {
+   "count": 1,
+   "median_won": 4800,
+   "min_won": 4800,
+   "max_won": 4800
+  },
+  "꽃보다 라면 정식": {
+   "count": 1,
+   "median_won": 7000,
+   "min_won": 7000,
+   "max_won": 7000
+  },
+  "꽈배기": {
+   "count": 2,
+   "median_won": 1500,
+   "min_won": 500,
+   "max_won": 2500
+  },
+  "나물류": {
+   "count": 1,
+   "median_won": 2000,
+   "min_won": 2000,
+   "max_won": 2000
+  },
+  "나물비빔밥": {
+   "count": 1,
+   "median_won": 6000,
+   "min_won": 6000,
+   "max_won": 6000
+  },
+  "나주곰탕": {
+   "count": 1,
+   "median_won": 10000,
+   "min_won": 10000,
+   "max_won": 10000
+  },
+  "낙지돌솥밥": {
+   "count": 1,
+   "median_won": 7000,
+   "min_won": 7000,
+   "max_won": 7000
+  },
+  "낙지볶음": {
+   "count": 1,
+   "median_won": 38000,
+   "min_won": 38000,
+   "max_won": 38000
+  },
+  "남도정식": {
+   "count": 1,
+   "median_won": 20000,
+   "min_won": 20000,
+   "max_won": 20000
+  },
+  "냉     면": {
+   "count": 1,
+   "median_won": 4000,
+   "min_won": 4000,
+   "max_won": 4000
+  },
+  "냉김치말이국수": {
+   "count": 1,
+   "median_won": 7500,
+   "min_won": 7500,
+   "max_won": 7500
+  },
+  "냉동삼겹살": {
+   "count": 1,
+   "median_won": 8000,
+   "min_won": 8000,
+   "max_won": 8000
+  },
+  "냉동삽겹살": {
+   "count": 1,
+   "median_won": 10000,
+   "min_won": 10000,
+   "max_won": 10000
+  },
+  "냉메밀막국수": {
+   "count": 1,
+   "median_won": 7000,
+   "min_won": 7000,
+   "max_won": 7000
+  },
+  "냉면": {
+   "count": 82,
+   "median_won": 6000,
+   "min_won": 4500,
+   "max_won": 9000
+  },
+  "냉면 곱배기": {
+   "count": 1,
+   "median_won": 9000,
+   "min_won": 9000,
+   "max_won": 9000
+  },
+  "냉쌀국수": {
+   "count": 1,
+   "median_won": 9000,
+   "min_won": 9000,
+   "max_won": 9000
+  },
+  "녹두전": {
+   "count": 2,
+   "median_won": 8500,
+   "min_won": 7000,
+   "max_won": 10000
+  },
+  "녹차": {
+   "count": 3,
+   "median_won": 2000,
+   "min_won": 2000,
+   "max_won": 3000
+  },
+  "누룽지정식": {
+   "count": 1,
+   "median_won": 7000,
+   "min_won": 7000,
+   "max_won": 7000
+  },
+  "눈꽃목살": {
+   "count": 1,
+   "median_won": 12900,
+   "min_won": 12900,
+   "max_won": 12900
+  },
+  "능이 닭곰탕": {
+   "count": 1,
+   "median_won": 8000,
+   "min_won": 8000,
+   "max_won": 8000
+  },
+  "능이반계탕": {
+   "count": 1,
+   "median_won": 9000,
+   "min_won": 9000,
+   "max_won": 9000
+  },
+  "능이삼계탕": {
+   "count": 1,
+   "median_won": 15000,
+   "min_won": 15000,
+   "max_won": 15000
+  },
+  "다이어트박스": {
+   "count": 1,
+   "median_won": 6900,
+   "min_won": 6900,
+   "max_won": 6900
+  },
+  "단팥빵": {
+   "count": 1,
+   "median_won": 1200,
+   "min_won": 1200,
+   "max_won": 1200
+  },
+  "단팥죽": {
+   "count": 1,
+   "median_won": 5000,
+   "min_won": 5000,
+   "max_won": 5000
+  },
+  "단호박죽": {
+   "count": 1,
+   "median_won": 4000,
+   "min_won": 4000,
+   "max_won": 4000
+  },
+  "닭가슴살샐러드": {
+   "count": 1,
+   "median_won": 8900,
+   "min_won": 8900,
+   "max_won": 8900
+  },
+  "닭갈비": {
+   "count": 1,
+   "median_won": 9500,
+   "min_won": 9500,
+   "max_won": 9500
+  },
+  "닭강정": {
+   "count": 1,
+   "median_won": 10000,
+   "min_won": 10000,
+   "max_won": 10000
+  },
+  "닭계장": {
+   "count": 2,
+   "median_won": 6000,
+   "min_won": 4000,
+   "max_won": 8000
+  },
+  "닭곰탕": {
+   "count": 12,
+   "median_won": 7000,
+   "min_won": 6500,
+   "max_won": 9000
+  },
+  "닭곰탕국밥": {
+   "count": 1,
+   "median_won": 9000,
+   "min_won": 9000,
+   "max_won": 9000
+  },
+  "닭국수": {
+   "count": 1,
+   "median_won": 6500,
+   "min_won": 6500,
+   "max_won": 6500
+  },
+  "닭껍질꼬치": {
+   "count": 1,
+   "median_won": 6000,
+   "min_won": 6000,
+   "max_won": 6000
+  },
+  "닭도리뚝배기": {
+   "count": 1,
+   "median_won": 9000,
+   "min_won": 9000,
+   "max_won": 9000
+  },
+  "닭도리탕": {
+   "count": 1,
+   "median_won": 20000,
+   "min_won": 20000,
+   "max_won": 20000
+  },
+  "닭볶음탕": {
+   "count": 3,
+   "median_won": 25000,
+   "min_won": 9000,
+   "max_won": 35000
+  },
+  "닭불고기": {
+   "count": 1,
+   "median_won": 7500,
+   "min_won": 7500,
+   "max_won": 7500
+  },
+  "닭칼국수": {
+   "count": 9,
+   "median_won": 8000,
+   "min_won": 6000,
+   "max_won": 10000
+  },
+  "닭한마리": {
+   "count": 2,
+   "median_won": 18250,
+   "min_won": 12000,
+   "max_won": 24500
+  },
+  "대구탕지리": {
+   "count": 1,
+   "median_won": 7000,
+   "min_won": 7000,
+   "max_won": 7000
+  },
+  "대만샌드위치": {
+   "count": 1,
+   "median_won": 2900,
+   "min_won": 2900,
+   "max_won": 2900
+  },
+  "대박삼겹살": {
+   "count": 1,
+   "median_won": 5500,
+   "min_won": 5500,
+   "max_won": 5500
+  },
+  "대패목살": {
+   "count": 1,
+   "median_won": 11000,
+   "min_won": 11000,
+   "max_won": 11000
+  },
+  "대패삼겹살": {
+   "count": 3,
+   "median_won": 4500,
+   "min_won": 3300,
+   "max_won": 9000
+  },
+  "더블샷아메리카노": {
+   "count": 1,
+   "median_won": 1300,
+   "min_won": 1300,
+   "max_won": 1300
+  },
+  "덜미살": {
+   "count": 1,
+   "median_won": 13000,
+   "min_won": 13000,
+   "max_won": 13000
+  },
+  "도가니탕": {
+   "count": 2,
+   "median_won": 11000,
+   "min_won": 10000,
+   "max_won": 12000
+  },
+  "도너츠": {
+   "count": 1,
+   "median_won": 500,
+   "min_won": 500,
+   "max_won": 500
+  },
+  "돈가스": {
+   "count": 30,
+   "median_won": 7000,
+   "min_won": 3000,
+   "max_won": 9000
+  },
+  "돈까스": {
+   "count": 23,
+   "median_won": 7500,
+   "min_won": 5000,
+   "max_won": 10500
+  },
+  "돈까스 정식": {
+   "count": 1,
+   "median_won": 7000,
+   "min_won": 7000,
+   "max_won": 7000
+  },
+  "돈카츠": {
+   "count": 1,
+   "median_won": 4000,
+   "min_won": 4000,
+   "max_won": 4000
+  },
+  "돌손비빔밥": {
+   "count": 1,
+   "median_won": 8000,
+   "min_won": 8000,
+   "max_won": 8000
+  },
+  "돌솥밥": {
+   "count": 1,
+   "median_won": 6000,
+   "min_won": 6000,
+   "max_won": 6000
+  },
+  "돌솥비빔밥": {
+   "count": 11,
+   "median_won": 7000,
+   "min_won": 6000,
+   "max_won": 9000
+  },
+  "돌솥비빔밥된장찌개": {
+   "count": 1,
+   "median_won": 8500,
+   "min_won": 8500,
+   "max_won": 8500
+  },
+  "돌솥비빕밥": {
+   "count": 1,
+   "median_won": 5000,
+   "min_won": 5000,
+   "max_won": 5000
+  },
+  "돌솥오징어": {
+   "count": 1,
+   "median_won": 9000,
+   "min_won": 9000,
+   "max_won": 9000
+  },
+  "돌솥제육": {
+   "count": 1,
+   "median_won": 9000,
+   "min_won": 9000,
+   "max_won": 9000
+  },
+  "돌솥추어탕": {
+   "count": 1,
+   "median_won": 10000,
+   "min_won": 10000,
+   "max_won": 10000
+  },
+  "동과차": {
+   "count": 1,
+   "median_won": 4000,
+   "min_won": 4000,
+   "max_won": 4000
+  },
+  "동태전": {
+   "count": 1,
+   "median_won": 10000,
+   "min_won": 10000,
+   "max_won": 10000
+  },
+  "동태찌개": {
+   "count": 6,
+   "median_won": 7000,
+   "min_won": 5000,
+   "max_won": 8000
+  },
+  "동태찌개 소": {
+   "count": 1,
+   "median_won": 15000,
+   "min_won": 15000,
+   "max_won": 15000
+  },
+  "동태찌개 중": {
+   "count": 1,
+   "median_won": 25000,
+   "min_won": 25000,
+   "max_won": 25000
+  },
+  "동태찌개제육볶음": {
+   "count": 1,
+   "median_won": 7000,
+   "min_won": 7000,
+   "max_won": 7000
+  },
+  "동태탕": {
+   "count": 4,
+   "median_won": 9000,
+   "min_won": 6000,
+   "max_won": 20000
+  },
+  "돤장찌개": {
+   "count": 1,
+   "median_won": 6000,
+   "min_won": 6000,
+   "max_won": 6000
+  },
+  "돼지갈비": {
+   "count": 43,
+   "median_won": 14000,
+   "min_won": 5000,
+   "max_won": 20000
+  },
+  "돼지갈비김치찜": {
+   "count": 1,
+   "median_won": 13000,
+   "min_won": 13000,
+   "max_won": 13000
+  },
+  "돼지갈비찜": {
+   "count": 1,
+   "median_won": 6000,
+   "min_won": 6000,
+   "max_won": 6000
+  },
+  "돼지고기김치찌개": {
+   "count": 1,
+   "median_won": 5000,
+   "min_won": 5000,
+   "max_won": 5000
+  },
+  "돼지곰탕": {
+   "count": 1,
+   "median_won": 8500,
+   "min_won": 8500,
+   "max_won": 8500
+  },
+  "돼지국밥": {
+   "count": 2,
+   "median_won": 6000,
+   "min_won": 5000,
+   "max_won": 7000
+  },
+  "돼지김치전골": {
+   "count": 1,
+   "median_won": 8000,
+   "min_won": 8000,
+   "max_won": 8000
+  },
+  "돼지모듬": {
+   "count": 1,
+   "median_won": 16000,
+   "min_won": 16000,
+   "max_won": 16000
+  },
+  "돼지불고기": {
+   "count": 3,
+   "median_won": 8000,
+   "min_won": 7000,
+   "max_won": 11000
+  },
+  "돼지불백": {
+   "count": 2,
+   "median_won": 8000,
+   "min_won": 8000,
+   "max_won": 8000
+  },
+  "돼지왕갈비": {
+   "count": 5,
+   "median_won": 15000,
+   "min_won": 10900,
+   "max_won": 17000
+  },
+  "돼지제육볶음": {
+   "count": 1,
+   "median_won": 9000,
+   "min_won": 9000,
+   "max_won": 9000
+  },
+  "돼지한마리세트": {
+   "count": 1,
+   "median_won": 33000,
+   "min_won": 33000,
+   "max_won": 33000
+  },
+  "돼지함박까스": {
+   "count": 1,
+   "median_won": 8000,
+   "min_won": 8000,
+   "max_won": 8000
+  },
+  "된장뚝배기": {
+   "count": 3,
+   "median_won": 6300,
+   "min_won": 6000,
+   "max_won": 7000
+  },
+  "된장보리밥": {
+   "count": 1,
+   "median_won": 8000,
+   "min_won": 8000,
+   "max_won": 8000
+  },
+  "된장삼겹살": {
+   "count": 1,
+   "median_won": 7500,
+   "min_won": 7500,
+   "max_won": 7500
+  },
+  "된장지개": {
+   "count": 1,
+   "median_won": 5000,
+   "min_won": 5000,
+   "max_won": 5000
+  },
+  "된장찌개": {
+   "count": 158,
+   "median_won": 7000,
+   "min_won": 1000,
+   "max_won": 9000
+  },
+  "된장찌개 백반": {
+   "count": 6,
+   "median_won": 6000,
+   "min_won": 4000,
+   "max_won": 7000
+  },
+  "된장찌개 순두부찌개": {
+   "count": 1,
+   "median_won": 7000,
+   "min_won": 7000,
+   "max_won": 7000
+  },
+  "된장찌개백반": {
+   "count": 9,
+   "median_won": 5000,
+   "min_won": 4000,
+   "max_won": 8500
+  },
+  "된장찌게": {
+   "count": 2,
+   "median_won": 5500,
+   "min_won": 5000,
+   "max_won": 6000
+  },
+  "두부마을정식": {
+   "count": 1,
+   "median_won": 7000,
+   "min_won": 7000,
+   "max_won": 7000
+  },
+  "두부정식": {
+   "count": 1,
+   "median_won": 12000,
+   "min_won": 12000,
+   "max_won": 12000
+  },
+  "두부찌개": {
+   "count": 1,
+   "median_won": 8000,
+   "min_won": 8000,
+   "max_won": 8000
+  },
+  "들깨미역국밥": {
+   "count": 1,
+   "median_won": 7000,
+   "min_won": 7000,
+   "max_won": 7000
+  },
+  "들깨시래기국밥": {
+   "count": 1,
+   "median_won": 7000,
+   "min_won": 7000,
+   "max_won": 7000
+  },
+  "등갈비": {
+   "count": 1,
+   "median_won": 16000,
+   "min_won": 16000,
+   "max_won": 16000
+  },
+  "등심": {
+   "count": 5,
+   "median_won": 26000,
+   "min_won": 15000,
+   "max_won": 58000
+  },
+  "등심돈가스덮밥": {
+   "count": 1,
+   "median_won": 10000,
+   "min_won": 10000,
+   "max_won": 10000
+  },
+  "등심돈까스": {
+   "count": 2,
+   "median_won": 8000,
+   "min_won": 8000,
+   "max_won": 8000
+  },
+  "등심돈카츠 도시락": {
+   "count": 1,
+   "median_won": 6900,
+   "min_won": 6900,
+   "max_won": 6900
+  },
+  "등심카츠": {
+   "count": 1,
+   "median_won": 6900,
+   "min_won": 6900,
+   "max_won": 6900
+  },
+  "등심칼국수": {
+   "count": 1,
+   "median_won": 8000,
+   "min_won": 8000,
+   "max_won": 8000
+  },
+  "딸기생크림와플": {
+   "count": 2,
+   "median_won": 4000,
+   "min_won": 4000,
+   "max_won": 4000
+  },
+  "떡": {
+   "count": 1,
+   "median_won": 1500,
+   "min_won": 1500,
+   "max_won": 1500
+  },
+  "떡갈비 컵밥": {
+   "count": 1,
+   "median_won": 5900,
+   "min_won": 5900,
+   "max_won": 5900
+  },
+  "떡국": {
+   "count": 7,
+   "median_won": 6000,
+   "min_won": 4000,
+   "max_won": 8000
+  },
+  "떡만두국": {
+   "count": 6,
+   "median_won": 7000,
+   "min_won": 5500,
+   "max_won": 8500
+  },
+  "떡만둣국": {
+   "count": 2,
+   "median_won": 4750,
+   "min_won": 4500,
+   "max_won": 5000
+  },
+  "떡볶이": {
+   "count": 15,
+   "median_won": 3000,
+   "min_won": 2000,
+   "max_won": 4000
+  },
+  "떡볶이파스타": {
+   "count": 1,
+   "median_won": 9600,
+   "min_won": 9600,
+   "max_won": 9600
+  },
+  "또띠아": {
+   "count": 1,
+   "median_won": 7000,
+   "min_won": 7000,
+   "max_won": 7000
+  },
+  "똥집튀김": {
+   "count": 1,
+   "median_won": 8000,
+   "min_won": 8000,
+   "max_won": 8000
+  },
+  "뚝배기닭볶음": {
+   "count": 1,
+   "median_won": 8000,
+   "min_won": 8000,
+   "max_won": 8000
+  },
+  "뚝배기닭볶음탕": {
+   "count": 1,
+   "median_won": 9000,
+   "min_won": 9000,
+   "max_won": 9000
+  },
+  "뚝배기불고기": {
+   "count": 12,
+   "median_won": 8000,
+   "min_won": 6000,
+   "max_won": 9000
+  },
+  "뚝배기소불고기": {
+   "count": 1,
+   "median_won": 7000,
+   "min_won": 7000,
+   "max_won": 7000
+  },
+  "뚝배기청국장": {
+   "count": 2,
+   "median_won": 7000,
+   "min_won": 7000,
+   "max_won": 7000
+  },
+  "뚝불고기": {
+   "count": 2,
+   "median_won": 6500,
+   "min_won": 6000,
+   "max_won": 7000
+  },
+  "라떼": {
+   "count": 3,
+   "median_won": 4000,
+   "min_won": 3500,
+   "max_won": 4000
+  },
+  "라면": {
+   "count": 20,
+   "median_won": 3500,
+   "min_won": 2000,
+   "max_won": 4000
+  },
+  "라볶이": {
+   "count": 2,
+   "median_won": 4000,
+   "min_won": 4000,
+   "max_won": 4000
+  },
+  "레몬아이스티": {
+   "count": 1,
+   "median_won": 2000,
+   "min_won": 2000,
+   "max_won": 2000
+  },
+  "로제스파게티": {
+   "count": 1,
+   "median_won": 8900,
+   "min_won": 8900,
+   "max_won": 8900
+  },
+  "마늘간장소갈비살": {
+   "count": 1,
+   "median_won": 19000,
+   "min_won": 19000,
+   "max_won": 19000
+  },
+  "마라상궈": {
+   "count": 1,
+   "median_won": 16000,
+   "min_won": 16000,
+   "max_won": 16000
+  },
+  "마라탕": {
+   "count": 2,
+   "median_won": 7100,
+   "min_won": 7000,
+   "max_won": 7200
+  },
+  "마을국수": {
+   "count": 1,
+   "median_won": 5000,
+   "min_won": 5000,
+   "max_won": 5000
+  },
+  "마카롱": {
+   "count": 1,
+   "median_won": 2000,
+   "min_won": 2000,
+   "max_won": 2000
+  },
+  "마파두부밥": {
+   "count": 1,
+   "median_won": 8000,
+   "min_won": 8000,
+   "max_won": 8000
+  },
+  "막걸리식빵": {
+   "count": 1,
+   "median_won": 4000,
+   "min_won": 4000,
+   "max_won": 4000
+  },
+  "막고기": {
+   "count": 1,
+   "median_won": 8000,
+   "min_won": 8000,
+   "max_won": 8000
+  },
+  "막국수": {
+   "count": 1,
+   "median_won": 4000,
+   "min_won": 4000,
+   "max_won": 4000
+  },
+  "막창": {
+   "count": 1,
+   "median_won": 21000,
+   "min_won": 21000,
+   "max_won": 21000
+  },
+  "만두": {
+   "count": 3,
+   "median_won": 5000,
+   "min_won": 4000,
+   "max_won": 5000
+  },
+  "만두국": {
+   "count": 4,
+   "median_won": 7000,
+   "min_won": 5000,
+   "max_won": 9000
+  },
+  "만두전골": {
+   "count": 3,
+   "median_won": 11000,
+   "min_won": 8000,
+   "max_won": 20000
+  },
+  "만둣국": {
+   "count": 5,
+   "median_won": 7000,
+   "min_won": 7000,
+   "max_won": 9000
+  },
+  "맛있는비빔밥": {
+   "count": 1,
+   "median_won": 8000,
+   "min_won": 8000,
+   "max_won": 8000
+  },
+  "매기매운탕": {
+   "count": 1,
+   "median_won": 35000,
+   "min_won": 35000,
+   "max_won": 35000
+  },
+  "매운갈비찜": {
+   "count": 2,
+   "median_won": 11500,
+   "min_won": 11000,
+   "max_won": 12000
+  },
+  "매운국물닭발": {
+   "count": 2,
+   "median_won": 10500,
+   "min_won": 10500,
+   "max_won": 10500
+  },
+  "매운돈까스": {
+   "count": 2,
+   "median_won": 10000,
+   "min_won": 9000,
+   "max_won": 11000
+  },
+  "매운에그후라이돈까스": {
+   "count": 1,
+   "median_won": 10500,
+   "min_won": 10500,
+   "max_won": 10500
+  },
+  "매운탕": {
+   "count": 1,
+   "median_won": 11250,
+   "min_won": 11250,
+   "max_won": 11250
+  },
+  "매장식사": {
+   "count": 1,
+   "median_won": 8800,
+   "min_won": 8800,
+   "max_won": 8800
+  },
+  "매콤볶음면": {
+   "count": 1,
+   "median_won": 9000,
+   "min_won": 9000,
+   "max_won": 9000
+  },
+  "머리 고기": {
+   "count": 1,
+   "median_won": 7000,
+   "min_won": 7000,
+   "max_won": 7000
+  },
+  "머리고기": {
+   "count": 1,
+   "median_won": 8000,
+   "min_won": 8000,
+   "max_won": 8000
+  },
+  "머리국밥": {
+   "count": 1,
+   "median_won": 7000,
+   "min_won": 7000,
+   "max_won": 7000
+  },
+  "멍게비빔밥": {
+   "count": 1,
+   "median_won": 10000,
+   "min_won": 10000,
+   "max_won": 10000
+  },
+  "메밀짜장": {
+   "count": 1,
+   "median_won": 7000,
+   "min_won": 7000,
+   "max_won": 7000
+  },
+  "멸치국수": {
+   "count": 14,
+   "median_won": 5000,
+   "min_won": 4000,
+   "max_won": 6500
+  },
+  "멸치칼국수": {
+   "count": 1,
+   "median_won": 7000,
+   "min_won": 7000,
+   "max_won": 7000
+  },
+  "명태조림": {
+   "count": 1,
+   "median_won": 11000,
+   "min_won": 11000,
+   "max_won": 11000
+  },
+  "명태회냉면": {
+   "count": 1,
+   "median_won": 10000,
+   "min_won": 10000,
+   "max_won": 10000
+  },
+  "모둠초밥": {
+   "count": 1,
+   "median_won": 11000,
+   "min_won": 11000,
+   "max_won": 11000
+  },
+  "모듬곱창": {
+   "count": 1,
+   "median_won": 21000,
+   "min_won": 21000,
+   "max_won": 21000
+  },
+  "모듬물회": {
+   "count": 1,
+   "median_won": 40000,
+   "min_won": 40000,
+   "max_won": 40000
+  },
+  "모듬생선조림": {
+   "count": 1,
+   "median_won": 40000,
+   "min_won": 40000,
+   "max_won": 40000
+  },
+  "모듬숙성회": {
+   "count": 1,
+   "median_won": 28000,
+   "min_won": 28000,
+   "max_won": 28000
+  },
+  "모듬초밥": {
+   "count": 5,
+   "median_won": 5000,
+   "min_won": 3900,
+   "max_won": 17000
+  },
+  "모듬카츠": {
+   "count": 1,
+   "median_won": 9900,
+   "min_won": 9900,
+   "max_won": 9900
+  },
+  "모듬회": {
+   "count": 1,
+   "median_won": 20000,
+   "min_won": 20000,
+   "max_won": 20000
+  },
+  "모아김밥": {
+   "count": 1,
+   "median_won": 4000,
+   "min_won": 4000,
+   "max_won": 4000
+  },
+  "목등심": {
+   "count": 1,
+   "median_won": 14000,
+   "min_won": 14000,
+   "max_won": 14000
+  },
+  "목살": {
+   "count": 6,
+   "median_won": 16000,
+   "min_won": 12000,
+   "max_won": 18000
+  },
+  "목심김치찌개": {
+   "count": 1,
+   "median_won": 6000,
+   "min_won": 6000,
+   "max_won": 6000
+  },
+  "무청시래기밥": {
+   "count": 1,
+   "median_won": 9000,
+   "min_won": 9000,
+   "max_won": 9000
+  },
+  "묵은지고등어조림": {
+   "count": 1,
+   "median_won": 9000,
+   "min_won": 9000,
+   "max_won": 9000
+  },
+  "묵은지꽁치찌개": {
+   "count": 1,
+   "median_won": 6000,
+   "min_won": 6000,
+   "max_won": 6000
+  },
+  "묵은지돼지찜": {
+   "count": 1,
+   "median_won": 7000,
+   "min_won": 7000,
+   "max_won": 7000
+  },
+  "묵은지삼겹살": {
+   "count": 1,
+   "median_won": 16000,
+   "min_won": 16000,
+   "max_won": 16000
+  },
+  "묵은지찜": {
+   "count": 1,
+   "median_won": 6000,
+   "min_won": 6000,
+   "max_won": 6000
+  },
+  "물냉면": {
+   "count": 35,
+   "median_won": 6000,
+   "min_won": 3000,
+   "max_won": 8500
+  },
+  "물막국수": {
+   "count": 1,
+   "median_won": 7000,
+   "min_won": 7000,
+   "max_won": 7000
+  },
+  "미나리한돈목살": {
+   "count": 1,
+   "median_won": 16000,
+   "min_won": 16000,
+   "max_won": 16000
+  },
+  "미나리한돈삼겹살": {
+   "count": 1,
+   "median_won": 15000,
+   "min_won": 15000,
+   "max_won": 15000
+  },
+  "미니불족": {
+   "count": 1,
+   "median_won": 10000,
+   "min_won": 10000,
+   "max_won": 10000
+  },
+  "미니족": {
+   "count": 1,
+   "median_won": 10000,
+   "min_won": 10000,
+   "max_won": 10000
+  },
+  "미니족발": {
+   "count": 1,
+   "median_won": 8000,
+   "min_won": 8000,
+   "max_won": 8000
+  },
+  "미역국": {
+   "count": 2,
+   "median_won": 6000,
+   "min_won": 5000,
+   "max_won": 7000
+  },
+  "바나나케일주스": {
+   "count": 1,
+   "median_won": 4500,
+   "min_won": 4500,
+   "max_won": 4500
+  },
+  "바비큐치킨카츠": {
+   "count": 1,
+   "median_won": 10000,
+   "min_won": 10000,
+   "max_won": 10000
+  },
+  "바지락칼국수": {
+   "count": 13,
+   "median_won": 8000,
+   "min_won": 5000,
+   "max_won": 9000
+  },
+  "반계탕": {
+   "count": 1,
+   "median_won": 9000,
+   "min_won": 9000,
+   "max_won": 9000
+  },
+  "반도리탕": {
+   "count": 1,
+   "median_won": 9000,
+   "min_won": 9000,
+   "max_won": 9000
+  },
+  "배추전": {
+   "count": 1,
+   "median_won": 10000,
+   "min_won": 10000,
+   "max_won": 10000
+  },
+  "백반": {
+   "count": 47,
+   "median_won": 7000,
+   "min_won": 5000,
+   "max_won": 9000
+  },
+  "백반정식": {
+   "count": 1,
+   "median_won": 5500,
+   "min_won": 5500,
+   "max_won": 5500
+  },
+  "버섯 감자탕": {
+   "count": 1,
+   "median_won": 26000,
+   "min_won": 26000,
+   "max_won": 26000
+  },
+  "버섯들깨탕": {
+   "count": 1,
+   "median_won": 8000,
+   "min_won": 8000,
+   "max_won": 8000
+  },
+  "버섯불고기": {
+   "count": 1,
+   "median_won": 10000,
+   "min_won": 10000,
+   "max_won": 10000
+  },
+  "버섯샐러드": {
+   "count": 1,
+   "median_won": 7900,
+   "min_won": 7900,
+   "max_won": 7900
+  },
+  "버섯칼국수": {
+   "count": 1,
+   "median_won": 10000,
+   "min_won": 10000,
+   "max_won": 10000
+  },
+  "버터바": {
+   "count": 1,
+   "median_won": 4200,
+   "min_won": 4200,
+   "max_won": 4200
+  },
+  "베이글 세트": {
+   "count": 1,
+   "median_won": 4500,
+   "min_won": 4500,
+   "max_won": 4500
+  },
+  "베이컨김치짜글이덮밥": {
+   "count": 1,
+   "median_won": 7000,
+   "min_won": 7000,
+   "max_won": 7000
+  },
+  "볏짚칼삼겹": {
+   "count": 1,
+   "median_won": 7000,
+   "min_won": 7000,
+   "max_won": 7000
+  },
+  "보리밥": {
+   "count": 3,
+   "median_won": 6000,
+   "min_won": 6000,
+   "max_won": 7000
+  },
+  "보리밥된장찌개": {
+   "count": 1,
+   "median_won": 7000,
+   "min_won": 7000,
+   "max_won": 7000
+  },
+  "보리밥정식": {
+   "count": 1,
+   "median_won": 8000,
+   "min_won": 8000,
+   "max_won": 8000
+  },
+  "보리비빔밥": {
+   "count": 6,
+   "median_won": 7000,
+   "min_won": 6000,
+   "max_won": 7000
+  },
+  "보리비빕밥": {
+   "count": 1,
+   "median_won": 7000,
+   "min_won": 7000,
+   "max_won": 7000
+  },
+  "보쌈": {
+   "count": 2,
+   "median_won": 22500,
+   "min_won": 10000,
+   "max_won": 35000
+  },
+  "보쌈정식": {
+   "count": 4,
+   "median_won": 9000,
+   "min_won": 7000,
+   "max_won": 10000
+  },
+  "복숭아아이스티": {
+   "count": 1,
+   "median_won": 2300,
+   "min_won": 2300,
+   "max_won": 2300
+  },
+  "볶음밥": {
+   "count": 9,
+   "median_won": 7000,
+   "min_won": 3500,
+   "max_won": 8000
+  },
+  "볶음쌀국수": {
+   "count": 1,
+   "median_won": 10000,
+   "min_won": 10000,
+   "max_won": 10000
+  },
+  "부대찌개": {
+   "count": 22,
+   "median_won": 8000,
+   "min_won": 5000,
+   "max_won": 12000
+  },
+  "부산돼지머리국밥": {
+   "count": 1,
+   "median_won": 7000,
+   "min_won": 7000,
+   "max_won": 7000
+  },
+  "부추국수": {
+   "count": 1,
+   "median_won": 8000,
+   "min_won": 8000,
+   "max_won": 8000
+  },
+  "부추된장비빔밥": {
+   "count": 1,
+   "median_won": 8000,
+   "min_won": 8000,
+   "max_won": 8000
+  },
+  "부추전": {
+   "count": 1,
+   "median_won": 8000,
+   "min_won": 8000,
+   "max_won": 8000
+  },
+  "부페": {
+   "count": 1,
+   "median_won": 5500,
+   "min_won": 5500,
+   "max_won": 5500
+  },
+  "북어국": {
+   "count": 2,
+   "median_won": 7000,
+   "min_won": 6000,
+   "max_won": 8000
+  },
+  "불고기": {
+   "count": 8,
+   "median_won": 11000,
+   "min_won": 6000,
+   "max_won": 15000
+  },
+  "불고기덥밥": {
+   "count": 1,
+   "median_won": 8500,
+   "min_won": 8500,
+   "max_won": 8500
+  },
+  "불고기백반": {
+   "count": 1,
+   "median_won": 5000,
+   "min_won": 5000,
+   "max_won": 5000
+  },
+  "불고기비빔밥": {
+   "count": 1,
+   "median_won": 8000,
+   "min_won": 8000,
+   "max_won": 8000
+  },
+  "불고기쌈밥": {
+   "count": 1,
+   "median_won": 7000,
+   "min_won": 7000,
+   "max_won": 7000
+  },
+  "불고기쌈밥정식": {
+   "count": 1,
+   "median_won": 11000,
+   "min_won": 11000,
+   "max_won": 11000
+  },
+  "불고기양념치킨": {
+   "count": 1,
+   "median_won": 11000,
+   "min_won": 11000,
+   "max_won": 11000
+  },
+  "불고기전골": {
+   "count": 1,
+   "median_won": 25000,
+   "min_won": 25000,
+   "max_won": 25000
+  },
+  "불고기정식": {
+   "count": 2,
+   "median_won": 9000,
+   "min_won": 7000,
+   "max_won": 11000
+  },
+  "불뚝배기": {
+   "count": 1,
+   "median_won": 8000,
+   "min_won": 8000,
+   "max_won": 8000
+  },
+  "불해물쌀국수": {
+   "count": 1,
+   "median_won": 9000,
+   "min_won": 9000,
+   "max_won": 9000
+  },
+  "브리또": {
+   "count": 1,
+   "median_won": 4900,
+   "min_won": 4900,
+   "max_won": 4900
+  },
+  "비빔": {
+   "count": 2,
+   "median_won": 5500,
+   "min_won": 4500,
+   "max_won": 6500
+  },
+  "비빔국수": {
+   "count": 27,
+   "median_won": 6500,
+   "min_won": 5000,
+   "max_won": 7000
+  },
+  "비빔국수밥": {
+   "count": 1,
+   "median_won": 7000,
+   "min_won": 7000,
+   "max_won": 7000
+  },
+  "비빔냉면": {
+   "count": 9,
+   "median_won": 6000,
+   "min_won": 3500,
+   "max_won": 9000
+  },
+  "비빔막국수": {
+   "count": 1,
+   "median_won": 7000,
+   "min_won": 7000,
+   "max_won": 7000
+  },
+  "비빔면": {
+   "count": 1,
+   "median_won": 5000,
+   "min_won": 5000,
+   "max_won": 5000
+  },
+  "비빔물회": {
+   "count": 1,
+   "median_won": 12000,
+   "min_won": 12000,
+   "max_won": 12000
+  },
+  "비빔밥": {
+   "count": 83,
+   "median_won": 6000,
+   "min_won": 3500,
+   "max_won": 8500
+  },
+  "뺑오쇼콜라": {
+   "count": 1,
+   "median_won": 3800,
+   "min_won": 3800,
+   "max_won": 3800
+  },
+  "뼈삼겹갈비": {
+   "count": 1,
+   "median_won": 14000,
+   "min_won": 14000,
+   "max_won": 14000
+  },
+  "뼈해장국": {
+   "count": 10,
+   "median_won": 8000,
+   "min_won": 7000,
+   "max_won": 14000
+  },
+  "뽈살": {
+   "count": 1,
+   "median_won": 13000,
+   "min_won": 13000,
+   "max_won": 13000
+  },
+  "사골칼국수": {
+   "count": 1,
+   "median_won": 8000,
+   "min_won": 8000,
+   "max_won": 8000
+  },
+  "사루라멘": {
+   "count": 1,
+   "median_won": 9000,
+   "min_won": 9000,
+   "max_won": 9000
+  },
+  "사리": {
+   "count": 1,
+   "median_won": 1000,
+   "min_won": 1000,
+   "max_won": 1000
+  },
+  "사리류": {
+   "count": 1,
+   "median_won": 1000,
+   "min_won": 1000,
+   "max_won": 1000
+  },
+  "사와칵테일": {
+   "count": 1,
+   "median_won": 4000,
+   "min_won": 4000,
+   "max_won": 4000
+  },
+  "산낙지": {
+   "count": 1,
+   "median_won": 10000,
+   "min_won": 10000,
+   "max_won": 10000
+  },
+  "산채비빔밥": {
+   "count": 1,
+   "median_won": 7000,
+   "min_won": 7000,
+   "max_won": 7000
+  },
+  "삼결살": {
+   "count": 1,
+   "median_won": 15000,
+   "min_won": 15000,
+   "max_won": 15000
+  },
+  "삼겹": {
+   "count": 1,
+   "median_won": 12000,
+   "min_won": 12000,
+   "max_won": 12000
+  },
+  "삼겹보쌈": {
+   "count": 1,
+   "median_won": 13500,
+   "min_won": 13500,
+   "max_won": 13500
+  },
+  "삼겹살": {
+   "count": 115,
+   "median_won": 12000,
+   "min_won": 4500,
+   "max_won": 22000
+  },
+  "삼겹살 쌈밥 정식": {
+   "count": 1,
+   "median_won": 6500,
+   "min_won": 6500,
+   "max_won": 6500
+  },
+  "삼겹살생고기": {
+   "count": 1,
+   "median_won": 7000,
+   "min_won": 7000,
+   "max_won": 7000
+  },
+  "삼겹살숙주김치": {
+   "count": 1,
+   "median_won": 8500,
+   "min_won": 8500,
+   "max_won": 8500
+  },
+  "삼겹순대국": {
+   "count": 1,
+   "median_won": 8000,
+   "min_won": 8000,
+   "max_won": 8000
+  },
+  "삼계탕": {
+   "count": 12,
+   "median_won": 13000,
+   "min_won": 10000,
+   "max_won": 15000
+  },
+  "삼치구이": {
+   "count": 1,
+   "median_won": 10000,
+   "min_won": 10000,
+   "max_won": 10000
+  },
+  "삽겹살": {
+   "count": 2,
+   "median_won": 12000,
+   "min_won": 10000,
+   "max_won": 14000
+  },
+  "새싹보리밥정식": {
+   "count": 1,
+   "median_won": 9000,
+   "min_won": 9000,
+   "max_won": 9000
+  },
+  "새싹비빔밥": {
+   "count": 5,
+   "median_won": 7000,
+   "min_won": 6000,
+   "max_won": 8000
+  },
+  "새싹열부비빔밥": {
+   "count": 1,
+   "median_won": 6000,
+   "min_won": 6000,
+   "max_won": 6000
+  },
+  "새우볶음밥": {
+   "count": 2,
+   "median_won": 8250,
+   "min_won": 8000,
+   "max_won": 8500
+  },
+  "새우초밥": {
+   "count": 1,
+   "median_won": 5900,
+   "min_won": 5900,
+   "max_won": 5900
+  },
+  "샌드위치 세트": {
+   "count": 1,
+   "median_won": 5500,
+   "min_won": 5500,
+   "max_won": 5500
+  },
+  "샌드위치도시락": {
+   "count": 1,
+   "median_won": 6500,
+   "min_won": 6500,
+   "max_won": 6500
+  },
+  "샐러드": {
+   "count": 1,
+   "median_won": 6000,
+   "min_won": 6000,
+   "max_won": 6000
+  },
+  "생각비살": {
+   "count": 1,
+   "median_won": 19000,
+   "min_won": 19000,
+   "max_won": 19000
+  },
+  "생고기김치찌개": {
+   "count": 1,
+   "median_won": 9000,
+   "min_won": 9000,
+   "max_won": 9000
+  },
+  "생고기찌개": {
+   "count": 1,
+   "median_won": 6500,
+   "min_won": 6500,
+   "max_won": 6500
+  },
+  "생과일주스": {
+   "count": 1,
+   "median_won": 4000,
+   "min_won": 4000,
+   "max_won": 4000
+  },
+  "생도넛": {
+   "count": 1,
+   "median_won": 1200,
+   "min_won": 1200,
+   "max_won": 1200
+  },
+  "생목살": {
+   "count": 1,
+   "median_won": 17000,
+   "min_won": 17000,
+   "max_won": 17000
+  },
+  "생삼겹": {
+   "count": 4,
+   "median_won": 13000,
+   "min_won": 11000,
+   "max_won": 15000
+  },
+  "생삼겹살": {
+   "count": 19,
+   "median_won": 14000,
+   "min_won": 10000,
+   "max_won": 17000
+  },
+  "생삼겹주물럭": {
+   "count": 1,
+   "median_won": 15000,
+   "min_won": 15000,
+   "max_won": 15000
+  },
+  "생삽겹살": {
+   "count": 1,
+   "median_won": 14000,
+   "min_won": 14000,
+   "max_won": 14000
+  },
+  "생선가스": {
+   "count": 1,
+   "median_won": 9000,
+   "min_won": 9000,
+   "max_won": 9000
+  },
+  "생선구이": {
+   "count": 6,
+   "median_won": 7000,
+   "min_won": 6000,
+   "max_won": 13000
+  },
+  "생선구이 정식": {
+   "count": 3,
+   "median_won": 9000,
+   "min_won": 8000,
+   "max_won": 9000
+  },
+  "생선구이백반": {
+   "count": 1,
+   "median_won": 7000,
+   "min_won": 7000,
+   "max_won": 7000
+  },
+  "생선구이정식": {
+   "count": 1,
+   "median_won": 10000,
+   "min_won": 10000,
+   "max_won": 10000
+  },
+  "생선까스": {
+   "count": 4,
+   "median_won": 8000,
+   "min_won": 6500,
+   "max_won": 9000
+  },
+  "생선청국장": {
+   "count": 1,
+   "median_won": 7000,
+   "min_won": 7000,
+   "max_won": 7000
+  },
+  "생선초밥": {
+   "count": 2,
+   "median_won": 10000,
+   "min_won": 10000,
+   "max_won": 10000
+  },
+  "생야채비빔밥": {
+   "count": 1,
+   "median_won": 6000,
+   "min_won": 6000,
+   "max_won": 6000
+  },
+  "생양꼬치": {
+   "count": 1,
+   "median_won": 13000,
+   "min_won": 13000,
+   "max_won": 13000
+  },
+  "생오겹살": {
+   "count": 6,
+   "median_won": 14750,
+   "min_won": 8500,
+   "max_won": 15000
+  },
+  "생오리구이": {
+   "count": 1,
+   "median_won": 40000,
+   "min_won": 40000,
+   "max_won": 40000
+  },
+  "생오리정식": {
+   "count": 1,
+   "median_won": 13000,
+   "min_won": 13000,
+   "max_won": 13000
+  },
+  "생우동": {
+   "count": 1,
+   "median_won": 4000,
+   "min_won": 4000,
+   "max_won": 4000
+  },
+  "생육회": {
+   "count": 1,
+   "median_won": 33000,
+   "min_won": 33000,
+   "max_won": 33000
+  },
+  "생태찌개": {
+   "count": 1,
+   "median_won": 10000,
+   "min_won": 10000,
+   "max_won": 10000
+  },
+  "생항정살": {
+   "count": 1,
+   "median_won": 13000,
+   "min_won": 13000,
+   "max_won": 13000
+  },
+  "샤브소고기": {
+   "count": 1,
+   "median_won": 10000,
+   "min_won": 10000,
+   "max_won": 10000
+  },
+  "서울갈비": {
+   "count": 1,
+   "median_won": 14000,
+   "min_won": 14000,
+   "max_won": 14000
+  },
+  "서울초밥": {
+   "count": 1,
+   "median_won": 16000,
+   "min_won": 16000,
+   "max_won": 16000
+  },
+  "서울풍경정식": {
+   "count": 1,
+   "median_won": 15000,
+   "min_won": 15000,
+   "max_won": 15000
+  },
+  "석쇠구이닭발": {
+   "count": 2,
+   "median_won": 10000,
+   "min_won": 10000,
+   "max_won": 10000
+  },
+  "선지해장국": {
+   "count": 10,
+   "median_won": 7000,
+   "min_won": 4000,
+   "max_won": 9000
+  },
+  "선짓국": {
+   "count": 1,
+   "median_won": 5000,
+   "min_won": 5000,
+   "max_won": 5000
+  },
+  "설농탕": {
+   "count": 1,
+   "median_won": 7000,
+   "min_won": 7000,
+   "max_won": 7000
+  },
+  "설렁탕": {
+   "count": 17,
+   "median_won": 7000,
+   "min_won": 5000,
+   "max_won": 12000
+  },
+  "셀프백반": {
+   "count": 1,
+   "median_won": 7000,
+   "min_won": 7000,
+   "max_won": 7000
+  },
+  "소갈비": {
+   "count": 1,
+   "median_won": 12000,
+   "min_won": 12000,
+   "max_won": 12000
+  },
+  "소갈비살": {
+   "count": 3,
+   "median_won": 15000,
+   "min_won": 15000,
+   "max_won": 18000
+  },
+  "소고기": {
+   "count": 3,
+   "median_won": 18000,
+   "min_won": 15900,
+   "max_won": 35000
+  },
+  "소고기 쌀국수": {
+   "count": 2,
+   "median_won": 7500,
+   "min_won": 7000,
+   "max_won": 8000
+  },
+  "소고기국밥": {
+   "count": 1,
+   "median_won": 10000,
+   "min_won": 10000,
+   "max_won": 10000
+  },
+  "소고기국수": {
+   "count": 1,
+   "median_won": 5500,
+   "min_won": 5500,
+   "max_won": 5500
+  },
+  "소고기김밥": {
+   "count": 1,
+   "median_won": 4000,
+   "min_won": 4000,
+   "max_won": 4000
+  },
+  "소고기김밥 참치김밥": {
+   "count": 1,
+   "median_won": 3000,
+   "min_won": 3000,
+   "max_won": 3000
+  },
+  "소고기김치찌개": {
+   "count": 1,
+   "median_won": 5000,
+   "min_won": 5000,
+   "max_won": 5000
+  },
+  "소고기쌀국수": {
+   "count": 2,
+   "median_won": 9000,
+   "min_won": 9000,
+   "max_won": 9000
+  },
+  "소고기우거지국밥": {
+   "count": 1,
+   "median_won": 8000,
+   "min_won": 8000,
+   "max_won": 8000
+  },
+  "소고기콩나물밥": {
+   "count": 1,
+   "median_won": 5500,
+   "min_won": 5500,
+   "max_won": 5500
+  },
+  "소금구이": {
+   "count": 1,
+   "median_won": 15000,
+   "min_won": 15000,
+   "max_won": 15000
+  },
+  "소금빵": {
+   "count": 3,
+   "median_won": 2000,
+   "min_won": 1700,
+   "max_won": 2500
+  },
+  "소내장탕": {
+   "count": 1,
+   "median_won": 5000,
+   "min_won": 5000,
+   "max_won": 5000
+  },
+  "소돈갈비": {
+   "count": 1,
+   "median_won": 11000,
+   "min_won": 11000,
+   "max_won": 11000
+  },
+  "소뚝불고기": {
+   "count": 1,
+   "median_won": 7000,
+   "min_won": 7000,
+   "max_won": 7000
+  },
+  "소매떡": {
+   "count": 1,
+   "median_won": 3000,
+   "min_won": 3000,
+   "max_won": 3000
+  },
+  "소머리국밥": {
+   "count": 4,
+   "median_won": 10000,
+   "min_won": 7000,
+   "max_won": 12000
+  },
+  "소불고기": {
+   "count": 4,
+   "median_won": 9500,
+   "min_won": 8000,
+   "max_won": 10000
+  },
+  "소불고기덮밥": {
+   "count": 1,
+   "median_won": 6500,
+   "min_won": 6500,
+   "max_won": 6500
+  },
+  "소세지볶음": {
+   "count": 1,
+   "median_won": 10000,
+   "min_won": 10000,
+   "max_won": 10000
+  },
+  "소시지 핫도그": {
+   "count": 1,
+   "median_won": 1500,
+   "min_won": 1500,
+   "max_won": 1500
+  },
+  "소유돈카츠": {
+   "count": 1,
+   "median_won": 11000,
+   "min_won": 11000,
+   "max_won": 11000
+  },
+  "소한마리세트": {
+   "count": 1,
+   "median_won": 32000,
+   "min_won": 32000,
+   "max_won": 32000
+  },
+  "손수제비": {
+   "count": 7,
+   "median_won": 5000,
+   "min_won": 4000,
+   "max_won": 7000
+  },
+  "손짜장": {
+   "count": 1,
+   "median_won": 7000,
+   "min_won": 7000,
+   "max_won": 7000
+  },
+  "손짜장면": {
+   "count": 1,
+   "median_won": 4500,
+   "min_won": 4500,
+   "max_won": 4500
+  },
+  "손칼국수": {
+   "count": 13,
+   "median_won": 5500,
+   "min_won": 4000,
+   "max_won": 7000
+  },
+  "손칼국수만두": {
+   "count": 2,
+   "median_won": 5750,
+   "min_won": 5500,
+   "max_won": 6000
+  },
+  "쇠고기": {
+   "count": 1,
+   "median_won": 25000,
+   "min_won": 25000,
+   "max_won": 25000
+  },
+  "쇠고기 스페셜모듬": {
+   "count": 1,
+   "median_won": 23000,
+   "min_won": 23000,
+   "max_won": 23000
+  },
+  "수구레국밥": {
+   "count": 1,
+   "median_won": 9000,
+   "min_won": 9000,
+   "max_won": 9000
+  },
+  "수제 돈까스": {
+   "count": 1,
+   "median_won": 6000,
+   "min_won": 6000,
+   "max_won": 6000
+  },
+  "수제 칼국수": {
+   "count": 1,
+   "median_won": 6000,
+   "min_won": 6000,
+   "max_won": 6000
+  },
+  "수제고기떡만두국": {
+   "count": 1,
+   "median_won": 7500,
+   "min_won": 7500,
+   "max_won": 7500
+  },
+  "수제고기만두국": {
+   "count": 1,
+   "median_won": 7500,
+   "min_won": 7500,
+   "max_won": 7500
+  },
+  "수제돈까스": {
+   "count": 4,
+   "median_won": 7500,
+   "min_won": 6000,
+   "max_won": 8500
+  },
+  "수제돼지갈비": {
+   "count": 1,
+   "median_won": 15000,
+   "min_won": 15000,
+   "max_won": 15000
+  },
+  "수제등심돈까스": {
+   "count": 1,
+   "median_won": 9000,
+   "min_won": 9000,
+   "max_won": 9000
+  },
+  "수제떡갈비정식": {
+   "count": 1,
+   "median_won": 7500,
+   "min_won": 7500,
+   "max_won": 7500
+  },
+  "수제로스까스": {
+   "count": 1,
+   "median_won": 9500,
+   "min_won": 9500,
+   "max_won": 9500
+  },
+  "수제만두얼큰탕": {
+   "count": 1,
+   "median_won": 7500,
+   "min_won": 7500,
+   "max_won": 7500
+  },
+  "수제비": {
+   "count": 13,
+   "median_won": 6000,
+   "min_won": 5000,
+   "max_won": 8000
+  },
+  "수제생선까스": {
+   "count": 1,
+   "median_won": 8000,
+   "min_won": 8000,
+   "max_won": 8000
+  },
+  "수제왕돈까스": {
+   "count": 1,
+   "median_won": 10000,
+   "min_won": 10000,
+   "max_won": 10000
+  },
+  "수제치즈버거": {
+   "count": 1,
+   "median_won": 3600,
+   "min_won": 3600,
+   "max_won": 3600
+  },
+  "수제치킨까스": {
+   "count": 2,
+   "median_won": 9250,
+   "min_won": 9000,
+   "max_won": 9500
+  },
+  "순대": {
+   "count": 2,
+   "median_won": 3000,
+   "min_won": 2000,
+   "max_won": 4000
+  },
+  "순대곱창": {
+   "count": 2,
+   "median_won": 11500,
+   "min_won": 11000,
+   "max_won": 12000
+  },
+  "순대국": {
+   "count": 20,
+   "median_won": 7000,
+   "min_won": 5000,
+   "max_won": 15000
+  },
+  "순대국밥": {
+   "count": 1,
+   "median_won": 7000,
+   "min_won": 7000,
+   "max_won": 7000
+  },
+  "순대떡볶음": {
+   "count": 1,
+   "median_won": 3900,
+   "min_won": 3900,
+   "max_won": 3900
+  },
+  "순대해장국": {
+   "count": 1,
+   "median_won": 7000,
+   "min_won": 7000,
+   "max_won": 7000
+  },
+  "순댓국": {
+   "count": 2,
+   "median_won": 6250,
+   "min_won": 5500,
+   "max_won": 7000
+  },
+  "순두부": {
+   "count": 6,
+   "median_won": 6500,
+   "min_won": 6000,
+   "max_won": 9000
+  },
+  "순두부 부대찌개": {
+   "count": 1,
+   "median_won": 9500,
+   "min_won": 9500,
+   "max_won": 9500
+  },
+  "순두부뚝배기": {
+   "count": 1,
+   "median_won": 6300,
+   "min_won": 6300,
+   "max_won": 6300
+  },
+  "순두부정식": {
+   "count": 1,
+   "median_won": 7000,
+   "min_won": 7000,
+   "max_won": 7000
+  },
+  "순두부찌개": {
+   "count": 42,
+   "median_won": 7000,
+   "min_won": 4000,
+   "max_won": 9000
+  },
+  "순두부찌개 된장찌개 김치짜개": {
+   "count": 1,
+   "median_won": 6500,
+   "min_won": 6500,
+   "max_won": 6500
+  },
+  "순살북족발": {
+   "count": 1,
+   "median_won": 10000,
+   "min_won": 10000,
+   "max_won": 10000
+  },
+  "순살족발": {
+   "count": 1,
+   "median_won": 10000,
+   "min_won": 10000,
+   "max_won": 10000
+  },
+  "술된장": {
+   "count": 1,
+   "median_won": 6000,
+   "min_won": 6000,
+   "max_won": 6000
+  },
+  "숯불고기물냉면": {
+   "count": 1,
+   "median_won": 9000,
+   "min_won": 9000,
+   "max_won": 9000
+  },
+  "숯불돼지갈비": {
+   "count": 1,
+   "median_won": 15000,
+   "min_won": 15000,
+   "max_won": 15000
+  },
+  "숯불불백": {
+   "count": 1,
+   "median_won": 8000,
+   "min_won": 8000,
+   "max_won": 8000
+  },
+  "숯불생삼겹": {
+   "count": 1,
+   "median_won": 7500,
+   "min_won": 7500,
+   "max_won": 7500
+  },
+  "숯불생삼겹살": {
+   "count": 1,
+   "median_won": 15000,
+   "min_won": 15000,
+   "max_won": 15000
+  },
+  "슈크림빵": {
+   "count": 1,
+   "median_won": 1700,
+   "min_won": 1700,
+   "max_won": 1700
+  },
+  "스태미너덮밥": {
+   "count": 1,
+   "median_won": 3800,
+   "min_won": 3800,
+   "max_won": 3800
+  },
+  "스파게티": {
+   "count": 1,
+   "median_won": 4500,
+   "min_won": 4500,
+   "max_won": 4500
+  },
+  "시골애청국장": {
+   "count": 1,
+   "median_won": 7000,
+   "min_won": 7000,
+   "max_won": 7000
+  },
+  "시래기밥상": {
+   "count": 1,
+   "median_won": 8000,
+   "min_won": 8000,
+   "max_won": 8000
+  },
+  "시래기밥정식": {
+   "count": 1,
+   "median_won": 9000,
+   "min_won": 9000,
+   "max_won": 9000
+  },
+  "시레기비빔밥": {
+   "count": 1,
+   "median_won": 8000,
+   "min_won": 8000,
+   "max_won": 8000
+  },
+  "신라면": {
+   "count": 1,
+   "median_won": 4000,
+   "min_won": 4000,
+   "max_won": 4000
+  },
+  "쌀국수": {
+   "count": 1,
+   "median_won": 8900,
+   "min_won": 8900,
+   "max_won": 8900
+  },
+  "쌀비빔밥": {
+   "count": 1,
+   "median_won": 7000,
+   "min_won": 7000,
+   "max_won": 7000
+  },
+  "쌀쿠키": {
+   "count": 1,
+   "median_won": 2000,
+   "min_won": 2000,
+   "max_won": 2000
+  },
+  "쌈밥정식": {
+   "count": 2,
+   "median_won": 9500,
+   "min_won": 9000,
+   "max_won": 10000
+  },
+  "아구찜": {
+   "count": 3,
+   "median_won": 29000,
+   "min_won": 24000,
+   "max_won": 38000
+  },
+  "아구찜 대": {
+   "count": 1,
+   "median_won": 55000,
+   "min_won": 55000,
+   "max_won": 55000
+  },
+  "아구찜 소": {
+   "count": 1,
+   "median_won": 35000,
+   "min_won": 35000,
+   "max_won": 35000
+  },
+  "아구찜 중": {
+   "count": 1,
+   "median_won": 45000,
+   "min_won": 45000,
+   "max_won": 45000
+  },
+  "아메리카노": {
+   "count": 55,
+   "median_won": 2500,
+   "min_won": 1000,
+   "max_won": 3500
+  },
+  "아메리카노 S": {
+   "count": 1,
+   "median_won": 1200,
+   "min_won": 1200,
+   "max_won": 1200
+  },
+  "아메리카노 hot": {
+   "count": 1,
+   "median_won": 2000,
+   "min_won": 2000,
+   "max_won": 2000
+  },
+  "아메리카노 ice": {
+   "count": 1,
+   "median_won": 2500,
+   "min_won": 2500,
+   "max_won": 2500
+  },
+  "아메리카노 아이스": {
+   "count": 1,
+   "median_won": 2000,
+   "min_won": 2000,
+   "max_won": 2000
+  },
+  "아메리카노 핫": {
+   "count": 1,
+   "median_won": 1500,
+   "min_won": 1500,
+   "max_won": 1500
+  },
+  "아이스티": {
+   "count": 3,
+   "median_won": 2000,
+   "min_won": 1900,
+   "max_won": 3200
+  },
+  "아인슈페너": {
+   "count": 1,
+   "median_won": 4800,
+   "min_won": 4800,
+   "max_won": 4800
+  },
+  "아침국밥": {
+   "count": 1,
+   "median_won": 3000,
+   "min_won": 3000,
+   "max_won": 3000
+  },
+  "안심돈가스덮밥": {
+   "count": 1,
+   "median_won": 12000,
+   "min_won": 12000,
+   "max_won": 12000
+  },
+  "안심카츠": {
+   "count": 1,
+   "median_won": 7900,
+   "min_won": 7900,
+   "max_won": 7900
+  },
+  "안창살": {
+   "count": 1,
+   "median_won": 15000,
+   "min_won": 15000,
+   "max_won": 15000
+  },
+  "알곱창": {
+   "count": 2,
+   "median_won": 18500,
+   "min_won": 10000,
+   "max_won": 27000
+  },
+  "알리오올리오": {
+   "count": 4,
+   "median_won": 7750,
+   "min_won": 6500,
+   "max_won": 8900
+  },
+  "알리오올리오 스파게티": {
+   "count": 1,
+   "median_won": 8900,
+   "min_won": 8900,
+   "max_won": 8900
+  },
+  "알밥": {
+   "count": 3,
+   "median_won": 8000,
+   "min_won": 6000,
+   "max_won": 8000
+  },
+  "알밥우동": {
+   "count": 1,
+   "median_won": 8500,
+   "min_won": 8500,
+   "max_won": 8500
+  },
+  "알타리냉면": {
+   "count": 1,
+   "median_won": 7000,
+   "min_won": 7000,
+   "max_won": 7000
+  },
+  "알탕": {
+   "count": 4,
+   "median_won": 7500,
+   "min_won": 6000,
+   "max_won": 10000
+  },
+  "알탕라면": {
+   "count": 1,
+   "median_won": 9000,
+   "min_won": 9000,
+   "max_won": 9000
+  },
+  "암퇘지삼겹살": {
+   "count": 1,
+   "median_won": 13000,
+   "min_won": 13000,
+   "max_won": 13000
+  },
+  "야채곱창": {
+   "count": 3,
+   "median_won": 11000,
+   "min_won": 10000,
+   "max_won": 20000
+  },
+  "야채김밥": {
+   "count": 14,
+   "median_won": 3000,
+   "min_won": 2000,
+   "max_won": 3500
+  },
+  "야채비빔밥": {
+   "count": 4,
+   "median_won": 5500,
+   "min_won": 5000,
+   "max_won": 6000
+  },
+  "야채쌈밥": {
+   "count": 1,
+   "median_won": 9000,
+   "min_won": 9000,
+   "max_won": 9000
+  },
+  "양 선지해장국": {
+   "count": 1,
+   "median_won": 8500,
+   "min_won": 8500,
+   "max_won": 8500
+  },
+  "양갈비": {
+   "count": 1,
+   "median_won": 35000,
+   "min_won": 35000,
+   "max_won": 35000
+  },
+  "양귀비짬뽕": {
+   "count": 1,
+   "median_won": 7000,
+   "min_won": 7000,
+   "max_won": 7000
+  },
+  "양념게장백반": {
+   "count": 1,
+   "median_won": 6000,
+   "min_won": 6000,
+   "max_won": 6000
+  },
+  "양념꽃게돌솥밥정식": {
+   "count": 1,
+   "median_won": 13000,
+   "min_won": 13000,
+   "max_won": 13000
+  },
+  "양념돼지갈비": {
+   "count": 1,
+   "median_won": 13000,
+   "min_won": 13000,
+   "max_won": 13000
+  },
+  "양념돼지갈비찜": {
+   "count": 1,
+   "median_won": 10000,
+   "min_won": 10000,
+   "max_won": 10000
+  },
+  "양념돼지왕갈비": {
+   "count": 1,
+   "median_won": 17000,
+   "min_won": 17000,
+   "max_won": 17000
+  },
+  "양념치킨": {
+   "count": 3,
+   "median_won": 15000,
+   "min_won": 15000,
+   "max_won": 19000
+  },
+  "양선지국밥": {
+   "count": 1,
+   "median_won": 9000,
+   "min_won": 9000,
+   "max_won": 9000
+  },
+  "양지된장찌개": {
+   "count": 1,
+   "median_won": 7500,
+   "min_won": 7500,
+   "max_won": 7500
+  },
+  "양지쌀국수": {
+   "count": 2,
+   "median_won": 8450,
+   "min_won": 7900,
+   "max_won": 9000
+  },
+  "양지차돌국수": {
+   "count": 1,
+   "median_won": 7500,
+   "min_won": 7500,
+   "max_won": 7500
+  },
+  "양평해장국": {
+   "count": 1,
+   "median_won": 7000,
+   "min_won": 7000,
+   "max_won": 7000
+  },
+  "양푼비빔밥": {
+   "count": 2,
+   "median_won": 7000,
+   "min_won": 6000,
+   "max_won": 8000
+  },
+  "양푼비빔밥된장찌개": {
+   "count": 1,
+   "median_won": 8500,
+   "min_won": 8500,
+   "max_won": 8500
+  },
+  "어묵": {
+   "count": 2,
+   "median_won": 2250,
+   "min_won": 2000,
+   "max_won": 2500
+  },
+  "어묵국수": {
+   "count": 1,
+   "median_won": 7000,
+   "min_won": 7000,
+   "max_won": 7000
+  },
+  "어묵매운탕": {
+   "count": 1,
+   "median_won": 8000,
+   "min_won": 8000,
+   "max_won": 8000
+  },
+  "어묵우동": {
+   "count": 1,
+   "median_won": 6000,
+   "min_won": 6000,
+   "max_won": 6000
+  },
+  "언니네김밥": {
+   "count": 1,
+   "median_won": 3500,
+   "min_won": 3500,
+   "max_won": 3500
+  },
+  "얼큰닭칼국수": {
+   "count": 1,
+   "median_won": 7000,
+   "min_won": 7000,
+   "max_won": 7000
+  },
+  "얼큰수제비": {
+   "count": 1,
+   "median_won": 7000,
+   "min_won": 7000,
+   "max_won": 7000
+  },
+  "얼큰이칼국수": {
+   "count": 1,
+   "median_won": 6000,
+   "min_won": 6000,
+   "max_won": 6000
+  },
+  "얼큰해장국": {
+   "count": 1,
+   "median_won": 4000,
+   "min_won": 4000,
+   "max_won": 4000
+  },
+  "얼큰해장라면": {
+   "count": 1,
+   "median_won": 4000,
+   "min_won": 4000,
+   "max_won": 4000
+  },
+  "에그타르트": {
+   "count": 1,
+   "median_won": 2800,
+   "min_won": 2800,
+   "max_won": 2800
+  },
+  "에그후라이돈까스": {
+   "count": 1,
+   "median_won": 9500,
+   "min_won": 9500,
+   "max_won": 9500
+  },
+  "에스프레소": {
+   "count": 6,
+   "median_won": 2200,
+   "min_won": 1300,
+   "max_won": 3500
+  },
+  "에이드": {
+   "count": 1,
+   "median_won": 4500,
+   "min_won": 4500,
+   "max_won": 4500
+  },
+  "연어숙성회": {
+   "count": 1,
+   "median_won": 26000,
+   "min_won": 26000,
+   "max_won": 26000
+  },
+  "연유라떼": {
+   "count": 1,
+   "median_won": 4500,
+   "min_won": 4500,
+   "max_won": 4500
+  },
+  "열무국수": {
+   "count": 2,
+   "median_won": 7000,
+   "min_won": 7000,
+   "max_won": 7000
+  },
+  "열무냉면": {
+   "count": 1,
+   "median_won": 7000,
+   "min_won": 7000,
+   "max_won": 7000
+  },
+  "열무비빔밥": {
+   "count": 1,
+   "median_won": 8000,
+   "min_won": 8000,
+   "max_won": 8000
+  },
+  "염통꼬치": {
+   "count": 1,
+   "median_won": 6000,
+   "min_won": 6000,
+   "max_won": 6000
+  },
+  "영동우동": {
+   "count": 1,
+   "median_won": 4000,
+   "min_won": 4000,
+   "max_won": 4000
+  },
+  "영양돌솥밥": {
+   "count": 1,
+   "median_won": 7000,
+   "min_won": 7000,
+   "max_won": 7000
+  },
+  "영양떡": {
+   "count": 1,
+   "median_won": 3000,
+   "min_won": 3000,
+   "max_won": 3000
+  },
+  "옛날 손짜장": {
+   "count": 1,
+   "median_won": 4500,
+   "min_won": 4500,
+   "max_won": 4500
+  },
+  "옛날돈까스": {
+   "count": 1,
+   "median_won": 9000,
+   "min_won": 9000,
+   "max_won": 9000
+  },
+  "옛날불고기": {
+   "count": 1,
+   "median_won": 9000,
+   "min_won": 9000,
+   "max_won": 9000
+  },
+  "옛날손칼국수": {
+   "count": 1,
+   "median_won": 5000,
+   "min_won": 5000,
+   "max_won": 5000
+  },
+  "옛날짜장": {
+   "count": 1,
+   "median_won": 4000,
+   "min_won": 4000,
+   "max_won": 4000
+  },
+  "옛날찐빵": {
+   "count": 1,
+   "median_won": 5000,
+   "min_won": 5000,
+   "max_won": 5000
+  },
+  "옛날토스트": {
+   "count": 1,
+   "median_won": 2000,
+   "min_won": 2000,
+   "max_won": 2000
+  },
+  "옛맛서울불고기": {
+   "count": 1,
+   "median_won": 17000,
+   "min_won": 17000,
+   "max_won": 17000
+  },
+  "오겹살": {
+   "count": 8,
+   "median_won": 15000,
+   "min_won": 10000,
+   "max_won": 16000
+  },
+  "오늘의 메뉴": {
+   "count": 1,
+   "median_won": 7000,
+   "min_won": 7000,
+   "max_won": 7000
+  },
+  "오늘의메뉴": {
+   "count": 7,
+   "median_won": 7000,
+   "min_won": 5000,
+   "max_won": 9000
+  },
+  "오늘의밥상": {
+   "count": 1,
+   "median_won": 9000,
+   "min_won": 9000,
+   "max_won": 9000
+  },
+  "오늘의백반": {
+   "count": 1,
+   "median_won": 5000,
+   "min_won": 5000,
+   "max_won": 5000
+  },
+  "오늘의베뉴": {
+   "count": 1,
+   "median_won": 7000,
+   "min_won": 7000,
+   "max_won": 7000
+  },
+  "오늘의정식": {
+   "count": 1,
+   "median_won": 8000,
+   "min_won": 8000,
+   "max_won": 8000
+  },
+  "오대쌀김밥": {
+   "count": 1,
+   "median_won": 3500,
+   "min_won": 3500,
+   "max_won": 3500
+  },
+  "오뎅정식": {
+   "count": 1,
+   "median_won": 9000,
+   "min_won": 9000,
+   "max_won": 9000
+  },
+  "오란다": {
+   "count": 1,
+   "median_won": 1500,
+   "min_won": 1500,
+   "max_won": 1500
+  },
+  "오리 회전구이": {
+   "count": 1,
+   "median_won": 40000,
+   "min_won": 40000,
+   "max_won": 40000
+  },
+  "오리로스": {
+   "count": 1,
+   "median_won": 48000,
+   "min_won": 48000,
+   "max_won": 48000
+  },
+  "오리로스주물럭": {
+   "count": 1,
+   "median_won": 8000,
+   "min_won": 8000,
+   "max_won": 8000
+  },
+  "오리육개장": {
+   "count": 1,
+   "median_won": 9000,
+   "min_won": 9000,
+   "max_won": 9000
+  },
+  "오리주물럭": {
+   "count": 2,
+   "median_won": 46500,
+   "min_won": 40000,
+   "max_won": 53000
+  },
+  "오리지널 버팔로윙": {
+   "count": 1,
+   "median_won": 21000,
+   "min_won": 21000,
+   "max_won": 21000
+  },
+  "오리훈제": {
+   "count": 1,
+   "median_won": 50000,
+   "min_won": 50000,
+   "max_won": 50000
+  },
+  "오마카세": {
+   "count": 1,
+   "median_won": 35000,
+   "min_won": 35000,
+   "max_won": 35000
+  },
+  "오므라이스": {
+   "count": 2,
+   "median_won": 7500,
+   "min_won": 7000,
+   "max_won": 8000
+  },
+  "오삼": {
+   "count": 1,
+   "median_won": 12000,
+   "min_won": 12000,
+   "max_won": 12000
+  },
+  "오삼불고기": {
+   "count": 2,
+   "median_won": 10500,
+   "min_won": 9000,
+   "max_won": 12000
+  },
+  "오일파스타": {
+   "count": 1,
+   "median_won": 13000,
+   "min_won": 13000,
+   "max_won": 13000
+  },
+  "오징어 볶음": {
+   "count": 1,
+   "median_won": 10000,
+   "min_won": 10000,
+   "max_won": 10000
+  },
+  "오징어덮밥": {
+   "count": 3,
+   "median_won": 7000,
+   "min_won": 7000,
+   "max_won": 7000
+  },
+  "오징어볶음": {
+   "count": 3,
+   "median_won": 9000,
+   "min_won": 8000,
+   "max_won": 10000
+  },
+  "오징어제육": {
+   "count": 2,
+   "median_won": 9500,
+   "min_won": 9000,
+   "max_won": 10000
+  },
+  "오징어탕수육 소": {
+   "count": 1,
+   "median_won": 11000,
+   "min_won": 11000,
+   "max_won": 11000
+  },
+  "오징어탕수육 중": {
+   "count": 1,
+   "median_won": 13000,
+   "min_won": 13000,
+   "max_won": 13000
+  },
+  "온우동": {
+   "count": 1,
+   "median_won": 5900,
+   "min_won": 5900,
+   "max_won": 5900
+  },
+  "옹심이칼국수": {
+   "count": 1,
+   "median_won": 5000,
+   "min_won": 5000,
+   "max_won": 5000
+  },
+  "옻닭": {
+   "count": 1,
+   "median_won": 38000,
+   "min_won": 38000,
+   "max_won": 38000
+  },
+  "와규갈비살": {
+   "count": 3,
+   "median_won": 20000,
+   "min_won": 18000,
+   "max_won": 23000
+  },
+  "와규꽃등심": {
+   "count": 1,
+   "median_won": 24000,
+   "min_won": 24000,
+   "max_won": 24000
+  },
+  "왕갈비": {
+   "count": 2,
+   "median_won": 9950,
+   "min_won": 7900,
+   "max_won": 12000
+  },
+  "왕갈비탕": {
+   "count": 3,
+   "median_won": 12000,
+   "min_won": 12000,
+   "max_won": 12000
+  },
+  "왕돈까스": {
+   "count": 4,
+   "median_won": 8000,
+   "min_won": 8000,
+   "max_won": 9000
+  },
+  "왕돼지갈비": {
+   "count": 1,
+   "median_won": 13000,
+   "min_won": 13000,
+   "max_won": 13000
+  },
+  "왕만두": {
+   "count": 2,
+   "median_won": 5000,
+   "min_won": 4000,
+   "max_won": 6000
+  },
+  "왕에그돈까스": {
+   "count": 1,
+   "median_won": 12500,
+   "min_won": 12500,
+   "max_won": 12500
+  },
+  "왕족발": {
+   "count": 1,
+   "median_won": 12000,
+   "min_won": 12000,
+   "max_won": 12000
+  },
+  "요일백반": {
+   "count": 1,
+   "median_won": 6000,
+   "min_won": 6000,
+   "max_won": 6000
+  },
+  "요일별식사": {
+   "count": 1,
+   "median_won": 7000,
+   "min_won": 7000,
+   "max_won": 7000
+  },
+  "우거지곰탕": {
+   "count": 1,
+   "median_won": 9000,
+   "min_won": 9000,
+   "max_won": 9000
+  },
+  "우국수": {
+   "count": 1,
+   "median_won": 8000,
+   "min_won": 8000,
+   "max_won": 8000
+  },
+  "우동": {
+   "count": 14,
+   "median_won": 5000,
+   "min_won": 3500,
+   "max_won": 7500
+  },
+  "우동정식": {
+   "count": 1,
+   "median_won": 9000,
+   "min_won": 9000,
+   "max_won": 9000
+  },
+  "우렁강된장": {
+   "count": 1,
+   "median_won": 10000,
+   "min_won": 10000,
+   "max_won": 10000
+  },
+  "우렁된장": {
+   "count": 1,
+   "median_won": 6000,
+   "min_won": 6000,
+   "max_won": 6000
+  },
+  "우렁된장찌개": {
+   "count": 4,
+   "median_won": 7500,
+   "min_won": 6000,
+   "max_won": 8000
+  },
+  "우렁쌈밥": {
+   "count": 1,
+   "median_won": 8000,
+   "min_won": 8000,
+   "max_won": 8000
+  },
+  "우삼겹": {
+   "count": 1,
+   "median_won": 4500,
+   "min_won": 4500,
+   "max_won": 4500
+  },
+  "우삼겹 부대찌개": {
+   "count": 1,
+   "median_won": 9500,
+   "min_won": 9500,
+   "max_won": 9500
+  },
+  "우삼겹볶음밥": {
+   "count": 1,
+   "median_won": 7000,
+   "min_won": 7000,
+   "max_won": 7000
+  },
+  "우삼겹살": {
+   "count": 1,
+   "median_won": 9000,
+   "min_won": 9000,
+   "max_won": 9000
+  },
+  "우유식빵": {
+   "count": 1,
+   "median_won": 2500,
+   "min_won": 2500,
+   "max_won": 2500
+  },
+  "우육짬뽕": {
+   "count": 1,
+   "median_won": 7500,
+   "min_won": 7500,
+   "max_won": 7500
+  },
+  "원두커피": {
+   "count": 1,
+   "median_won": 2000,
+   "min_won": 2000,
+   "max_won": 2000
+  },
+  "원우동": {
+   "count": 1,
+   "median_won": 7000,
+   "min_won": 7000,
+   "max_won": 7000
+  },
+  "원조김밥": {
+   "count": 2,
+   "median_won": 2750,
+   "min_won": 2000,
+   "max_won": 3500
+  },
+  "원조냉면": {
+   "count": 1,
+   "median_won": 4000,
+   "min_won": 4000,
+   "max_won": 4000
+  },
+  "월남쌈": {
+   "count": 1,
+   "median_won": 24000,
+   "min_won": 24000,
+   "max_won": 24000
+  },
+  "월남쌈 성인": {
+   "count": 1,
+   "median_won": 24000,
+   "min_won": 24000,
+   "max_won": 24000
+  },
+  "월남쌈 초등학생": {
+   "count": 1,
+   "median_won": 12000,
+   "min_won": 12000,
+   "max_won": 12000
+  },
+  "웨지감자": {
+   "count": 1,
+   "median_won": 8500,
+   "min_won": 8500,
+   "max_won": 8500
+  },
+  "웰빙비빔밥": {
+   "count": 2,
+   "median_won": 7500,
+   "min_won": 7000,
+   "max_won": 8000
+  },
+  "유니짜장": {
+   "count": 1,
+   "median_won": 7000,
+   "min_won": 7000,
+   "max_won": 7000
+  },
+  "유부우동": {
+   "count": 1,
+   "median_won": 7500,
+   "min_won": 7500,
+   "max_won": 7500
+  },
+  "육개장": {
+   "count": 12,
+   "median_won": 8000,
+   "min_won": 6000,
+   "max_won": 9000
+  },
+  "육장국수": {
+   "count": 1,
+   "median_won": 9000,
+   "min_won": 9000,
+   "max_won": 9000
+  },
+  "육칼": {
+   "count": 1,
+   "median_won": 9000,
+   "min_won": 9000,
+   "max_won": 9000
+  },
+  "육회": {
+   "count": 1,
+   "median_won": 17000,
+   "min_won": 17000,
+   "max_won": 17000
+  },
+  "이가초밥": {
+   "count": 1,
+   "median_won": 11000,
+   "min_won": 11000,
+   "max_won": 11000
+  },
+  "이베리코": {
+   "count": 1,
+   "median_won": 12000,
+   "min_won": 12000,
+   "max_won": 12000
+  },
+  "인절미": {
+   "count": 1,
+   "median_won": 3000,
+   "min_won": 3000,
+   "max_won": 3000
+  },
+  "일반김밥": {
+   "count": 1,
+   "median_won": 3000,
+   "min_won": 3000,
+   "max_won": 3000
+  },
+  "일반돈까스": {
+   "count": 1,
+   "median_won": 10000,
+   "min_won": 10000,
+   "max_won": 10000
+  },
+  "일반순두부": {
+   "count": 1,
+   "median_won": 8000,
+   "min_won": 8000,
+   "max_won": 8000
+  },
+  "자몽에이드": {
+   "count": 1,
+   "median_won": 3500,
+   "min_won": 3500,
+   "max_won": 3500
+  },
+  "자반고등어구이": {
+   "count": 1,
+   "median_won": 10000,
+   "min_won": 10000,
+   "max_won": 10000
+  },
+  "자반구이": {
+   "count": 3,
+   "median_won": 8000,
+   "min_won": 8000,
+   "max_won": 12000
+  },
+  "자장면": {
+   "count": 55,
+   "median_won": 4000,
+   "min_won": 2000,
+   "max_won": 7000
+  },
+  "잔치국수": {
+   "count": 26,
+   "median_won": 5000,
+   "min_won": 3000,
+   "max_won": 6500
+  },
+  "잔치국수밥": {
+   "count": 1,
+   "median_won": 6000,
+   "min_won": 6000,
+   "max_won": 6000
+  },
+  "잠봉뵈르 샌드": {
+   "count": 1,
+   "median_won": 5900,
+   "min_won": 5900,
+   "max_won": 5900
+  },
+  "잠봉뵈르샌드위치": {
+   "count": 1,
+   "median_won": 8900,
+   "min_won": 8900,
+   "max_won": 8900
+  },
+  "잠봉프로마쥬샌드위치": {
+   "count": 1,
+   "median_won": 8900,
+   "min_won": 8900,
+   "max_won": 8900
+  },
+  "잡채밥": {
+   "count": 2,
+   "median_won": 8000,
+   "min_won": 8000,
+   "max_won": 8000
+  },
+  "장수꽁보리밥": {
+   "count": 1,
+   "median_won": 8000,
+   "min_won": 8000,
+   "max_won": 8000
+  },
+  "장수된장찌개": {
+   "count": 1,
+   "median_won": 7000,
+   "min_won": 7000,
+   "max_won": 7000
+  },
+  "장안김밥": {
+   "count": 1,
+   "median_won": 2000,
+   "min_won": 2000,
+   "max_won": 2000
+  },
+  "장어정식": {
+   "count": 1,
+   "median_won": 9900,
+   "min_won": 9900,
+   "max_won": 9900
+  },
+  "장어탕": {
+   "count": 2,
+   "median_won": 7000,
+   "min_won": 7000,
+   "max_won": 7000
+  },
+  "장어탕공기밥": {
+   "count": 1,
+   "median_won": 9000,
+   "min_won": 9000,
+   "max_won": 9000
+  },
+  "장조림": {
+   "count": 1,
+   "median_won": 12000,
+   "min_won": 12000,
+   "max_won": 12000
+  },
+  "쟁반막국수": {
+   "count": 1,
+   "median_won": 9000,
+   "min_won": 9000,
+   "max_won": 9000
+  },
+  "전주비빔밥": {
+   "count": 3,
+   "median_won": 7000,
+   "min_won": 7000,
+   "max_won": 7500
+  },
+  "점심백반": {
+   "count": 4,
+   "median_won": 6000,
+   "min_won": 5500,
+   "max_won": 7000
+  },
+  "점심뷔페": {
+   "count": 1,
+   "median_won": 8000,
+   "min_won": 8000,
+   "max_won": 8000
+  },
+  "점심식사": {
+   "count": 1,
+   "median_won": 10000,
+   "min_won": 10000,
+   "max_won": 10000
+  },
+  "점심특선초밥": {
+   "count": 2,
+   "median_won": 10000,
+   "min_won": 9000,
+   "max_won": 11000
+  },
+  "점심한식뷔페": {
+   "count": 1,
+   "median_won": 6000,
+   "min_won": 6000,
+   "max_won": 6000
+  },
+  "정식": {
+   "count": 1,
+   "median_won": 6000,
+   "min_won": 6000,
+   "max_won": 6000
+  },
+  "제육덮밥": {
+   "count": 15,
+   "median_won": 7000,
+   "min_won": 5000,
+   "max_won": 8500
+  },
+  "제육돌솥비빔밥": {
+   "count": 1,
+   "median_won": 8000,
+   "min_won": 8000,
+   "max_won": 8000
+  },
+  "제육뚝배기": {
+   "count": 1,
+   "median_won": 8000,
+   "min_won": 8000,
+   "max_won": 8000
+  },
+  "제육볶음": {
+   "count": 39,
+   "median_won": 8000,
+   "min_won": 5000,
+   "max_won": 10000
+  },
+  "제육볶음 오징어볶음": {
+   "count": 1,
+   "median_won": 7000,
+   "min_won": 7000,
+   "max_won": 7000
+  },
+  "제육비빔밥": {
+   "count": 1,
+   "median_won": 7000,
+   "min_won": 7000,
+   "max_won": 7000
+  },
+  "제육쌈": {
+   "count": 1,
+   "median_won": 8000,
+   "min_won": 8000,
+   "max_won": 8000
+  },
+  "제육쌈밥": {
+   "count": 2,
+   "median_won": 7500,
+   "min_won": 7000,
+   "max_won": 8000
+  },
+  "제육쌈밥된장찌개": {
+   "count": 1,
+   "median_won": 8500,
+   "min_won": 8500,
+   "max_won": 8500
+  },
+  "제육쌈정식": {
+   "count": 3,
+   "median_won": 9000,
+   "min_won": 9000,
+   "max_won": 9000
+  },
+  "제육정식": {
+   "count": 2,
+   "median_won": 8000,
+   "min_won": 8000,
+   "max_won": 8000
+  },
+  "제주산생고기": {
+   "count": 1,
+   "median_won": 9000,
+   "min_won": 9000,
+   "max_won": 9000
+  },
+  "제주생오겹살": {
+   "count": 1,
+   "median_won": 9000,
+   "min_won": 9000,
+   "max_won": 9000
+  },
+  "제주오겹살": {
+   "count": 1,
+   "median_won": 12000,
+   "min_won": 12000,
+   "max_won": 12000
+  },
+  "제주흑돼지 오겹살": {
+   "count": 1,
+   "median_won": 13000,
+   "min_won": 13000,
+   "max_won": 13000
+  },
+  "제주흑돼지 전지": {
+   "count": 1,
+   "median_won": 12000,
+   "min_won": 12000,
+   "max_won": 12000
+  },
+  "조기구이": {
+   "count": 3,
+   "median_won": 7000,
+   "min_won": 7000,
+   "max_won": 7000
+  },
+  "조기백반": {
+   "count": 1,
+   "median_won": 5000,
+   "min_won": 5000,
+   "max_won": 5000
+  },
+  "조리라면": {
+   "count": 4,
+   "median_won": 3000,
+   "min_won": 2500,
+   "max_won": 4000
+  },
+  "주먹밥": {
+   "count": 2,
+   "median_won": 2000,
+   "min_won": 1500,
+   "max_won": 2500
+  },
+  "주문포장": {
+   "count": 1,
+   "median_won": 7700,
+   "min_won": 7700,
+   "max_won": 7700
+  },
+  "주인밥상": {
+   "count": 1,
+   "median_won": 8000,
+   "min_won": 8000,
+   "max_won": 8000
+  },
+  "즉석떡볶이": {
+   "count": 4,
+   "median_won": 5450,
+   "min_won": 4500,
+   "max_won": 6000
+  },
+  "지리산흑돼지  삼겹살": {
+   "count": 1,
+   "median_won": 15000,
+   "min_won": 15000,
+   "max_won": 15000
+  },
+  "진국수": {
+   "count": 1,
+   "median_won": 8000,
+   "min_won": 8000,
+   "max_won": 8000
+  },
+  "진미김밥": {
+   "count": 1,
+   "median_won": 4000,
+   "min_won": 4000,
+   "max_won": 4000
+  },
+  "짜글이": {
+   "count": 1,
+   "median_won": 10000,
+   "min_won": 10000,
+   "max_won": 10000
+  },
+  "짜장": {
+   "count": 2,
+   "median_won": 6250,
+   "min_won": 6000,
+   "max_won": 6500
+  },
+  "짜장면": {
+   "count": 57,
+   "median_won": 5000,
+   "min_won": 2000,
+   "max_won": 7000
+  },
+  "짜장밥": {
+   "count": 1,
+   "median_won": 8000,
+   "min_won": 8000,
+   "max_won": 8000
+  },
+  "짜장짬뽕set": {
+   "count": 1,
+   "median_won": 9000,
+   "min_won": 9000,
+   "max_won": 9000
+  },
+  "짜장탕수육 점심특선": {
+   "count": 1,
+   "median_won": 13000,
+   "min_won": 13000,
+   "max_won": 13000
+  },
+  "짬뽕": {
+   "count": 99,
+   "median_won": 6000,
+   "min_won": 3000,
+   "max_won": 11000
+  },
+  "짬뽕밥": {
+   "count": 1,
+   "median_won": 8000,
+   "min_won": 8000,
+   "max_won": 8000
+  },
+  "짭뽕": {
+   "count": 1,
+   "median_won": 4000,
+   "min_won": 4000,
+   "max_won": 4000
+  },
+  "짱뽕": {
+   "count": 1,
+   "median_won": 5000,
+   "min_won": 5000,
+   "max_won": 5000
+  },
+  "쫄면": {
+   "count": 5,
+   "median_won": 6000,
+   "min_won": 5500,
+   "max_won": 7000
+  },
+  "차돌된장찌개": {
+   "count": 9,
+   "median_won": 8000,
+   "min_won": 6000,
+   "max_won": 10000
+  },
+  "차돌박이": {
+   "count": 2,
+   "median_won": 8900,
+   "min_won": 7900,
+   "max_won": 9900
+  },
+  "차돌부대찌개": {
+   "count": 1,
+   "median_won": 8500,
+   "min_won": 8500,
+   "max_won": 8500
+  },
+  "차돌짬뽕": {
+   "count": 1,
+   "median_won": 7000,
+   "min_won": 7000,
+   "max_won": 7000
+  },
+  "착즙주스": {
+   "count": 1,
+   "median_won": 3500,
+   "min_won": 3500,
+   "max_won": 3500
+  },
+  "참숯불구이": {
+   "count": 1,
+   "median_won": 40000,
+   "min_won": 40000,
+   "max_won": 40000
+  },
+  "참숯불돼지갈비": {
+   "count": 2,
+   "median_won": 15000,
+   "min_won": 15000,
+   "max_won": 15000
+  },
+  "참치김밥": {
+   "count": 6,
+   "median_won": 4000,
+   "min_won": 3000,
+   "max_won": 4500
+  },
+  "참치김치찌개": {
+   "count": 2,
+   "median_won": 6500,
+   "min_won": 5000,
+   "max_won": 8000
+  },
+  "참치깁밥": {
+   "count": 1,
+   "median_won": 3500,
+   "min_won": 3500,
+   "max_won": 3500
+  },
+  "참치찌개": {
+   "count": 2,
+   "median_won": 8000,
+   "min_won": 8000,
+   "max_won": 8000
+  },
+  "참치회 한접시": {
+   "count": 1,
+   "median_won": 49000,
+   "min_won": 49000,
+   "max_won": 49000
+  },
+  "찹쌀도너츠": {
+   "count": 1,
+   "median_won": 1300,
+   "min_won": 1300,
+   "max_won": 1300
+  },
+  "천국김밥": {
+   "count": 1,
+   "median_won": 2500,
+   "min_won": 2500,
+   "max_won": 2500
+  },
+  "철판쭈꾸미": {
+   "count": 1,
+   "median_won": 13500,
+   "min_won": 13500,
+   "max_won": 13500
+  },
+  "청국된장": {
+   "count": 1,
+   "median_won": 6000,
+   "min_won": 6000,
+   "max_won": 6000
+  },
+  "청국장": {
+   "count": 49,
+   "median_won": 7000,
+   "min_won": 4000,
+   "max_won": 9000
+  },
+  "청국장보리밥": {
+   "count": 1,
+   "median_won": 8000,
+   "min_won": 8000,
+   "max_won": 8000
+  },
+  "초밥": {
+   "count": 5,
+   "median_won": 10000,
+   "min_won": 1000,
+   "max_won": 15000
+  },
+  "초벌구이목살": {
+   "count": 1,
+   "median_won": 12000,
+   "min_won": 12000,
+   "max_won": 12000
+  },
+  "초벌구이삼겹살": {
+   "count": 1,
+   "median_won": 11000,
+   "min_won": 11000,
+   "max_won": 11000
+  },
+  "추어돈가스": {
+   "count": 1,
+   "median_won": 8000,
+   "min_won": 8000,
+   "max_won": 8000
+  },
+  "추어장어탕": {
+   "count": 1,
+   "median_won": 11000,
+   "min_won": 11000,
+   "max_won": 11000
+  },
+  "추어탕": {
+   "count": 9,
+   "median_won": 8000,
+   "min_won": 6000,
+   "max_won": 10000
+  },
+  "추천초밥": {
+   "count": 1,
+   "median_won": 14000,
+   "min_won": 14000,
+   "max_won": 14000
+  },
+  "춘천닭갈비": {
+   "count": 1,
+   "median_won": 10000,
+   "min_won": 10000,
+   "max_won": 10000
+  },
+  "충정로김밥": {
+   "count": 2,
+   "median_won": 2750,
+   "min_won": 2500,
+   "max_won": 3000
+  },
+  "치맛살": {
+   "count": 1,
+   "median_won": 15000,
+   "min_won": 15000,
+   "max_won": 15000
+  },
+  "치미창가": {
+   "count": 1,
+   "median_won": 9500,
+   "min_won": 9500,
+   "max_won": 9500
+  },
+  "치아바타샌드위치": {
+   "count": 1,
+   "median_won": 6000,
+   "min_won": 6000,
+   "max_won": 6000
+  },
+  "치아비타": {
+   "count": 1,
+   "median_won": 3500,
+   "min_won": 3500,
+   "max_won": 3500
+  },
+  "치즈 카레": {
+   "count": 1,
+   "median_won": 8000,
+   "min_won": 8000,
+   "max_won": 8000
+  },
+  "치즈김밥": {
+   "count": 1,
+   "median_won": 3500,
+   "min_won": 3500,
+   "max_won": 3500
+  },
+  "치즈까스": {
+   "count": 1,
+   "median_won": 11000,
+   "min_won": 11000,
+   "max_won": 11000
+  },
+  "치즈라면": {
+   "count": 1,
+   "median_won": 4000,
+   "min_won": 4000,
+   "max_won": 4000
+  },
+  "치즈즉석떡볶이": {
+   "count": 1,
+   "median_won": 6900,
+   "min_won": 6900,
+   "max_won": 6900
+  },
+  "치즈카츠": {
+   "count": 1,
+   "median_won": 8900,
+   "min_won": 8900,
+   "max_won": 8900
+  },
+  "치즈토마토 파스타": {
+   "count": 1,
+   "median_won": 8500,
+   "min_won": 8500,
+   "max_won": 8500
+  },
+  "치킨": {
+   "count": 10,
+   "median_won": 11250,
+   "min_won": 8000,
+   "max_won": 16000
+  },
+  "치킨까스": {
+   "count": 2,
+   "median_won": 9000,
+   "min_won": 8000,
+   "max_won": 10000
+  },
+  "치킨브리또": {
+   "count": 1,
+   "median_won": 6500,
+   "min_won": 6500,
+   "max_won": 6500
+  },
+  "칡물냉면": {
+   "count": 2,
+   "median_won": 7500,
+   "min_won": 7000,
+   "max_won": 8000
+  },
+  "칡비빔냉면": {
+   "count": 1,
+   "median_won": 8000,
+   "min_won": 8000,
+   "max_won": 8000
+  },
+  "카라멜마끼아또": {
+   "count": 1,
+   "median_won": 4400,
+   "min_won": 4400,
+   "max_won": 4400
+  },
+  "카레": {
+   "count": 2,
+   "median_won": 7500,
+   "min_won": 7000,
+   "max_won": 8000
+  },
+  "카레덮밥": {
+   "count": 4,
+   "median_won": 7250,
+   "min_won": 7000,
+   "max_won": 9000
+  },
+  "카레라이스": {
+   "count": 2,
+   "median_won": 7250,
+   "min_won": 6000,
+   "max_won": 8500
+  },
+  "카레밥": {
+   "count": 1,
+   "median_won": 6000,
+   "min_won": 6000,
+   "max_won": 6000
+  },
+  "카모마일": {
+   "count": 1,
+   "median_won": 4500,
+   "min_won": 4500,
+   "max_won": 4500
+  },
+  "카츠동": {
+   "count": 1,
+   "median_won": 8000,
+   "min_won": 8000,
+   "max_won": 8000
+  },
+  "카페라떼": {
+   "count": 27,
+   "median_won": 3000,
+   "min_won": 2000,
+   "max_won": 4000
+  },
+  "카페라떼 hot": {
+   "count": 1,
+   "median_won": 3000,
+   "min_won": 3000,
+   "max_won": 3000
+  },
+  "카페라떼 ice": {
+   "count": 1,
+   "median_won": 3000,
+   "min_won": 3000,
+   "max_won": 3000
+  },
+  "카페라떼 핫": {
+   "count": 1,
+   "median_won": 2000,
+   "min_won": 2000,
+   "max_won": 2000
+  },
+  "카페라면": {
+   "count": 1,
+   "median_won": 3500,
+   "min_won": 3500,
+   "max_won": 3500
+  },
+  "카페모카": {
+   "count": 1,
+   "median_won": 3500,
+   "min_won": 3500,
+   "max_won": 3500
+  },
+  "카푸치노": {
+   "count": 2,
+   "median_won": 3750,
+   "min_won": 3500,
+   "max_won": 4000
+  },
+  "카푸티노": {
+   "count": 1,
+   "median_won": 3500,
+   "min_won": 3500,
+   "max_won": 3500
+  },
+  "칼국수": {
+   "count": 100,
+   "median_won": 6000,
+   "min_won": 2500,
+   "max_won": 8500
+  },
+  "칼국수보리밥": {
+   "count": 1,
+   "median_won": 6000,
+   "min_won": 6000,
+   "max_won": 6000
+  },
+  "칼만두": {
+   "count": 3,
+   "median_won": 6000,
+   "min_won": 6000,
+   "max_won": 6000
+  },
+  "칼만두국": {
+   "count": 2,
+   "median_won": 8250,
+   "min_won": 8000,
+   "max_won": 8500
+  },
+  "칼만둣국": {
+   "count": 1,
+   "median_won": 7000,
+   "min_won": 7000,
+   "max_won": 7000
+  },
+  "칼제비": {
+   "count": 3,
+   "median_won": 7000,
+   "min_won": 6000,
+   "max_won": 8000
+  },
+  "칼제비수제비": {
+   "count": 1,
+   "median_won": 4000,
+   "min_won": 4000,
+   "max_won": 4000
+  },
+  "칼집삼겹살": {
+   "count": 1,
+   "median_won": 10000,
+   "min_won": 10000,
+   "max_won": 10000
+  },
+  "커피": {
+   "count": 24,
+   "median_won": 2350,
+   "min_won": 1500,
+   "max_won": 3000
+  },
+  "커피라떼": {
+   "count": 1,
+   "median_won": 2500,
+   "min_won": 2500,
+   "max_won": 2500
+  },
+  "컵밥 대": {
+   "count": 1,
+   "median_won": 4500,
+   "min_won": 4500,
+   "max_won": 4500
+  },
+  "컵밥 소": {
+   "count": 1,
+   "median_won": 3500,
+   "min_won": 3500,
+   "max_won": 3500
+  },
+  "코다리강정": {
+   "count": 1,
+   "median_won": 9000,
+   "min_won": 9000,
+   "max_won": 9000
+  },
+  "콜드브루": {
+   "count": 3,
+   "median_won": 4500,
+   "min_won": 3000,
+   "max_won": 4500
+  },
+  "콤비네이션": {
+   "count": 1,
+   "median_won": 16900,
+   "min_won": 16900,
+   "max_won": 16900
+  },
+  "콤비네이션L": {
+   "count": 1,
+   "median_won": 23000,
+   "min_won": 23000,
+   "max_won": 23000
+  },
+  "콤비네이션M": {
+   "count": 1,
+   "median_won": 19900,
+   "min_won": 19900,
+   "max_won": 19900
+  },
+  "콩국수": {
+   "count": 6,
+   "median_won": 6750,
+   "min_won": 6000,
+   "max_won": 9000
+  },
+  "콩나물국밥": {
+   "count": 14,
+   "median_won": 6000,
+   "min_won": 4500,
+   "max_won": 9000
+  },
+  "콩나물라면": {
+   "count": 1,
+   "median_won": 3000,
+   "min_won": 3000,
+   "max_won": 3000
+  },
+  "콩나물밥": {
+   "count": 1,
+   "median_won": 3500,
+   "min_won": 3500,
+   "max_won": 3500
+  },
+  "콩나물보리비빔밥 미니수제비": {
+   "count": 1,
+   "median_won": 9000,
+   "min_won": 9000,
+   "max_won": 9000
+  },
+  "콩나물비빔밥": {
+   "count": 6,
+   "median_won": 6000,
+   "min_won": 4000,
+   "max_won": 9000
+  },
+  "콩나물해장국": {
+   "count": 1,
+   "median_won": 4000,
+   "min_won": 4000,
+   "max_won": 4000
+  },
+  "콩비지찌개": {
+   "count": 1,
+   "median_won": 7000,
+   "min_won": 7000,
+   "max_won": 7000
+  },
+  "큐브스테이크덮밥": {
+   "count": 1,
+   "median_won": 8000,
+   "min_won": 8000,
+   "max_won": 8000
+  },
+  "크로플": {
+   "count": 2,
+   "median_won": 3900,
+   "min_won": 3800,
+   "max_won": 4000
+  },
+  "크리스피": {
+   "count": 2,
+   "median_won": 12500,
+   "min_won": 12000,
+   "max_won": 13000
+  },
+  "크리스피반양념반": {
+   "count": 1,
+   "median_won": 15000,
+   "min_won": 15000,
+   "max_won": 15000
+  },
+  "크림파스타": {
+   "count": 1,
+   "median_won": 14000,
+   "min_won": 14000,
+   "max_won": 14000
+  },
+  "클래식": {
+   "count": 2,
+   "median_won": 6250,
+   "min_won": 5500,
+   "max_won": 7000
+  },
+  "키즈네우동": {
+   "count": 1,
+   "median_won": 5500,
+   "min_won": 5500,
+   "max_won": 5500
+  },
+  "탕수육": {
+   "count": 54,
+   "median_won": 15000,
+   "min_won": 2000,
+   "max_won": 24000
+  },
+  "탕수육 대": {
+   "count": 1,
+   "median_won": 13000,
+   "min_won": 13000,
+   "max_won": 13000
+  },
+  "탕수육 소": {
+   "count": 1,
+   "median_won": 10000,
+   "min_won": 10000,
+   "max_won": 10000
+  },
+  "탕수육 중": {
+   "count": 1,
+   "median_won": 18000,
+   "min_won": 18000,
+   "max_won": 18000
+  },
+  "탕수육대": {
+   "count": 1,
+   "median_won": 15000,
+   "min_won": 15000,
+   "max_won": 15000
+  },
+  "탕수육소": {
+   "count": 1,
+   "median_won": 11000,
+   "min_won": 11000,
+   "max_won": 11000
+  },
+  "탕수육중": {
+   "count": 1,
+   "median_won": 14000,
+   "min_won": 14000,
+   "max_won": 14000
+  },
+  "탕수육짜장set": {
+   "count": 1,
+   "median_won": 10000,
+   "min_won": 10000,
+   "max_won": 10000
+  },
+  "텀블러 아메리카노": {
+   "count": 1,
+   "median_won": 1500,
+   "min_won": 1500,
+   "max_won": 1500
+  },
+  "텐더": {
+   "count": 1,
+   "median_won": 14000,
+   "min_won": 14000,
+   "max_won": 14000
+  },
+  "토마토스파게티": {
+   "count": 3,
+   "median_won": 15000,
+   "min_won": 12800,
+   "max_won": 16000
+  },
+  "통닭": {
+   "count": 1,
+   "median_won": 9000,
+   "min_won": 9000,
+   "max_won": 9000
+  },
+  "통돈까스": {
+   "count": 1,
+   "median_won": 6500,
+   "min_won": 6500,
+   "max_won": 6500
+  },
+  "통삼겹": {
+   "count": 1,
+   "median_won": 10000,
+   "min_won": 10000,
+   "max_won": 10000
+  },
+  "통새우볶음밥": {
+   "count": 2,
+   "median_won": 6750,
+   "min_won": 6000,
+   "max_won": 7500
+  },
+  "통추어탕": {
+   "count": 1,
+   "median_won": 10000,
+   "min_won": 10000,
+   "max_won": 10000
+  },
+  "튀김": {
+   "count": 2,
+   "median_won": 2000,
+   "min_won": 2000,
+   "max_won": 2000
+  },
+  "특곰탕": {
+   "count": 1,
+   "median_won": 8000,
+   "min_won": 8000,
+   "max_won": 8000
+  },
+  "특모듬초밥": {
+   "count": 1,
+   "median_won": 11000,
+   "min_won": 11000,
+   "max_won": 11000
+  },
+  "파닭꼬치": {
+   "count": 1,
+   "median_won": 3000,
+   "min_won": 3000,
+   "max_won": 3000
+  },
+  "파닭치킨": {
+   "count": 1,
+   "median_won": 17000,
+   "min_won": 17000,
+   "max_won": 17000
+  },
+  "파스타": {
+   "count": 2,
+   "median_won": 10000,
+   "min_won": 8000,
+   "max_won": 12000
+  },
+  "팥빙수": {
+   "count": 1,
+   "median_won": 5000,
+   "min_won": 5000,
+   "max_won": 5000
+  },
+  "팥칼국수": {
+   "count": 1,
+   "median_won": 7000,
+   "min_won": 7000,
+   "max_won": 7000
+  },
+  "페퍼로니 피자": {
+   "count": 1,
+   "median_won": 12900,
+   "min_won": 12900,
+   "max_won": 12900
+  },
+  "평양만두국": {
+   "count": 1,
+   "median_won": 8000,
+   "min_won": 8000,
+   "max_won": 8000
+  },
+  "평일 점심 보쌈정식": {
+   "count": 1,
+   "median_won": 7000,
+   "min_won": 7000,
+   "max_won": 7000
+  },
+  "피자": {
+   "count": 5,
+   "median_won": 10900,
+   "min_won": 9000,
+   "max_won": 15900
+  },
+  "피자돈까스": {
+   "count": 1,
+   "median_won": 9000,
+   "min_won": 9000,
+   "max_won": 9000
+  },
+  "하하우동": {
+   "count": 1,
+   "median_won": 6500,
+   "min_won": 6500,
+   "max_won": 6500
+  },
+  "한끼 삼겹 도시락": {
+   "count": 1,
+   "median_won": 10400,
+   "min_won": 10400,
+   "max_won": 10400
+  },
+  "한돈김치찌개": {
+   "count": 1,
+   "median_won": 7000,
+   "min_won": 7000,
+   "max_won": 7000
+  },
+  "한방토종닭백숙": {
+   "count": 1,
+   "median_won": 51000,
+   "min_won": 51000,
+   "max_won": 51000
+  },
+  "한식": {
+   "count": 1,
+   "median_won": 6000,
+   "min_won": 6000,
+   "max_won": 6000
+  },
+  "한식부페": {
+   "count": 3,
+   "median_won": 7000,
+   "min_won": 7000,
+   "max_won": 9000
+  },
+  "한식뷔페": {
+   "count": 5,
+   "median_won": 6500,
+   "min_won": 5000,
+   "max_won": 8000
+  },
+  "한우 등심구이": {
+   "count": 5,
+   "median_won": 45000,
+   "min_won": 45000,
+   "max_won": 46000
+  },
+  "한우 육회": {
+   "count": 5,
+   "median_won": 29000,
+   "min_won": 29000,
+   "max_won": 29000
+  },
+  "한우갈비탕": {
+   "count": 2,
+   "median_won": 15000,
+   "min_won": 15000,
+   "max_won": 15000
+  },
+  "한우곰탕": {
+   "count": 1,
+   "median_won": 6000,
+   "min_won": 6000,
+   "max_won": 6000
+  },
+  "한우국밥": {
+   "count": 2,
+   "median_won": 7500,
+   "min_won": 6000,
+   "max_won": 9000
+  },
+  "한우된장전골": {
+   "count": 1,
+   "median_won": 8000,
+   "min_won": 8000,
+   "max_won": 8000
+  },
+  "한우된장찌개": {
+   "count": 2,
+   "median_won": 7000,
+   "min_won": 7000,
+   "max_won": 7000
+  },
+  "한우등심": {
+   "count": 2,
+   "median_won": 22000,
+   "min_won": 15000,
+   "max_won": 29000
+  },
+  "한우뚝배기불고기": {
+   "count": 1,
+   "median_won": 9000,
+   "min_won": 9000,
+   "max_won": 9000
+  },
+  "한우불고기전골": {
+   "count": 1,
+   "median_won": 11000,
+   "min_won": 11000,
+   "max_won": 11000
+  },
+  "한우생등심": {
+   "count": 1,
+   "median_won": 40000,
+   "min_won": 40000,
+   "max_won": 40000
+  },
+  "한우설렁탕": {
+   "count": 2,
+   "median_won": 8500,
+   "min_won": 7000,
+   "max_won": 10000
+  },
+  "한우소머리국밥": {
+   "count": 2,
+   "median_won": 9000,
+   "min_won": 8000,
+   "max_won": 10000
+  },
+  "한우해장국": {
+   "count": 1,
+   "median_won": 6000,
+   "min_won": 6000,
+   "max_won": 6000
+  },
+  "한정식": {
+   "count": 1,
+   "median_won": 7000,
+   "min_won": 7000,
+   "max_won": 7000
+  },
+  "할머니토스트": {
+   "count": 1,
+   "median_won": 2500,
+   "min_won": 2500,
+   "max_won": 2500
+  },
+  "함흥냉면": {
+   "count": 2,
+   "median_won": 7000,
+   "min_won": 5000,
+   "max_won": 9000
+  },
+  "핫도그": {
+   "count": 2,
+   "median_won": 1800,
+   "min_won": 1300,
+   "max_won": 2300
+  },
+  "항정살": {
+   "count": 1,
+   "median_won": 18000,
+   "min_won": 18000,
+   "max_won": 18000
+  },
+  "해물된장비빔밥": {
+   "count": 1,
+   "median_won": 7000,
+   "min_won": 7000,
+   "max_won": 7000
+  },
+  "해물된장찌개": {
+   "count": 3,
+   "median_won": 8000,
+   "min_won": 6000,
+   "max_won": 9000
+  },
+  "해물부추전": {
+   "count": 1,
+   "median_won": 13000,
+   "min_won": 13000,
+   "max_won": 13000
+  },
+  "해물수제비": {
+   "count": 1,
+   "median_won": 8500,
+   "min_won": 8500,
+   "max_won": 8500
+  },
+  "해물순두부": {
+   "count": 4,
+   "median_won": 7000,
+   "min_won": 6000,
+   "max_won": 9000
+  },
+  "해물순두부찌개": {
+   "count": 1,
+   "median_won": 6000,
+   "min_won": 6000,
+   "max_won": 6000
+  },
+  "해물칼국수": {
+   "count": 1,
+   "median_won": 6000,
+   "min_won": 6000,
+   "max_won": 6000
+  },
+  "해물탕": {
+   "count": 1,
+   "median_won": 45000,
+   "min_won": 45000,
+   "max_won": 45000
+  },
+  "해장국": {
+   "count": 4,
+   "median_won": 5250,
+   "min_won": 4300,
+   "max_won": 7000
+  },
+  "햄김치볶음밥": {
+   "count": 1,
+   "median_won": 7000,
+   "min_won": 7000,
+   "max_won": 7000
+  },
+  "햄추가토스트": {
+   "count": 1,
+   "median_won": 3000,
+   "min_won": 3000,
+   "max_won": 3000
+  },
+  "행복한밥상": {
+   "count": 1,
+   "median_won": 7000,
+   "min_won": 7000,
+   "max_won": 7000
+  },
+  "허니브레드": {
+   "count": 1,
+   "median_won": 3000,
+   "min_won": 3000,
+   "max_won": 3000
+  },
+  "허브 후라이드 치킨": {
+   "count": 1,
+   "median_won": 13000,
+   "min_won": 13000,
+   "max_won": 13000
+  },
+  "허브차": {
+   "count": 1,
+   "median_won": 3000,
+   "min_won": 3000,
+   "max_won": 3000
+  },
+  "헤이즐넛아메리카노": {
+   "count": 1,
+   "median_won": 3000,
+   "min_won": 3000,
+   "max_won": 3000
+  },
+  "헤이즐넛아메리카노 S": {
+   "count": 1,
+   "median_won": 2100,
+   "min_won": 2100,
+   "max_won": 2100
+  },
+  "호박전": {
+   "count": 1,
+   "median_won": 10000,
+   "min_won": 10000,
+   "max_won": 10000
+  },
+  "홀로생칼국수": {
+   "count": 1,
+   "median_won": 5500,
+   "min_won": 5500,
+   "max_won": 5500
+  },
+  "홍곰탕": {
+   "count": 1,
+   "median_won": 9000,
+   "min_won": 9000,
+   "max_won": 9000
+  },
+  "홍순두부": {
+   "count": 1,
+   "median_won": 5500,
+   "min_won": 5500,
+   "max_won": 5500
+  },
+  "홍어삼합": {
+   "count": 1,
+   "median_won": 35000,
+   "min_won": 35000,
+   "max_won": 35000
+  },
+  "홍합짬뽕": {
+   "count": 1,
+   "median_won": 10000,
+   "min_won": 10000,
+   "max_won": 10000
+  },
+  "화이트롤케이크": {
+   "count": 1,
+   "median_won": 12000,
+   "min_won": 12000,
+   "max_won": 12000
+  },
+  "황기백숙": {
+   "count": 1,
+   "median_won": 38000,
+   "min_won": 38000,
+   "max_won": 38000
+  },
+  "황태국": {
+   "count": 2,
+   "median_won": 8750,
+   "min_won": 7500,
+   "max_won": 10000
+  },
+  "황태들깨미역국": {
+   "count": 1,
+   "median_won": 8000,
+   "min_won": 8000,
+   "max_won": 8000
+  },
+  "황태해장국": {
+   "count": 5,
+   "median_won": 7000,
+   "min_won": 5000,
+   "max_won": 10000
+  },
+  "회덮밥": {
+   "count": 5,
+   "median_won": 9000,
+   "min_won": 8000,
+   "max_won": 11000
+  },
+  "후라이드": {
+   "count": 1,
+   "median_won": 12000,
+   "min_won": 12000,
+   "max_won": 12000
+  },
+  "후라이드반양념반": {
+   "count": 1,
+   "median_won": 19000,
+   "min_won": 19000,
+   "max_won": 19000
+  },
+  "후라이드치킨": {
+   "count": 2,
+   "median_won": 17500,
+   "min_won": 17000,
+   "max_won": 18000
+  },
+  "훈제연어 샌드": {
+   "count": 1,
+   "median_won": 7900,
+   "min_won": 7900,
+   "max_won": 7900
+  },
+  "훈제치킨": {
+   "count": 1,
+   "median_won": 18000,
+   "min_won": 18000,
+   "max_won": 18000
+  },
+  "휘낭시에": {
+   "count": 1,
+   "median_won": 2300,
+   "min_won": 2300,
+   "max_won": 2300
+  },
+  "흑임자바게트": {
+   "count": 1,
+   "median_won": 3600,
+   "min_won": 3600,
+   "max_won": 3600
+  }
+ }
+}

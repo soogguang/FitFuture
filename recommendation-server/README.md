@@ -44,6 +44,38 @@ curl -s http://127.0.0.1:8000/recommend -H 'Content-Type: application/json' --da
 `examples/response.fixture.json`은 Python 파이프라인으로 만든 **검증용 응답**이며 Android 계약 테스트도 동일 파일을 읽습니다.
 직접 foreground 실행할 때는 환경변수를 export한 후 `.venv/bin/uvicorn fitfuture.app:app --host 127.0.0.1 --port 8000`을 사용합니다 (`.env` 자동 로드는 scripts/server.py에서 수행).
 
+## 실제 모드 기본 데이터: 앱과 같은 식약처 음식 DB + 공공 근거
+
+`MFDS_CATALOG_PATH`를 지정하지 않은 `real` 모드는 앱에 포함된 식약처 음식 DB
+(`../app/src/main/assets/nutrition/mfds-foods.tsv`, 2,502개 음식명)와 동의어 파일 `aliases.tsv`를 그대로 읽습니다.
+앱(`NutritionDatabase`)과 서버(`fitfuture/foodnames.py`)가 같은 파일·같은 정규화(공백/`_` 제거)를 쓰므로,
+앱에서 영양이 계산된 음식은 서버에서도 같은 식품으로 매칭됩니다. 퍼지 매칭은 하지 않습니다.
+
+식약처 DB에는 영양값만 있으므로 알레르기·가격은 별도 공공데이터에서 가져와 **음식명이 정확히 일치할 때만** 연결합니다.
+
+| 근거 | 출처 | 파일 | 연결 규칙 |
+| --- | --- | --- | --- |
+| 알레르기 | 교육부 NEIS 급식식단정보, 고등학교 중식의 메뉴별 알레르기 번호(1~19) | `evidence/neis-allergens.json` | 같은 음식이 3회 이상 표시된 경우 모든 표시의 합집합. 표시가 하나도 없는 날의 식단은 제외 (미표시를 "없음"으로 오해하지 않음). 유효 1년 |
+| 가격 | 서울시 가격안정 모범업소 메뉴 가격 | `evidence/seoul-prices.json` | 2곳 이상 업소의 중앙값을 `외식` 참고 가격으로 사용. 유효 180일 |
+
+```bash
+# 알레르기 (키 없이도 가능하나 5건씩 느림, NEIS_API_KEY가 있으면 1000건씩)
+.venv/bin/python -m fitfuture.import_neis --from 20260901 --to 20261125 --schools-per-office 6
+# 가격 (서울 열린데이터광장 무료 키 필요, 해당 API는 HTTP만 지원)
+SEOUL_API_KEY=... .venv/bin/python -m fitfuture.import_seoul_prices
+```
+
+학교 조리법과 식당 조리법은 다를 수 있으며, 모범업소는 주변보다 저렴한 업소라 중앙값은 참고 가격입니다.
+화면의 검증 문구에 출처와 수집일을 표시합니다.
+
+**원래 식사 양 조절 정책**: 해당 식사 환경에 검증된 판매 조건(`offers`)이 없으면, 원래 식사의 음식을 **줄이기만 하는**
+후보(portion/sauce)는 새로 구매하는 음식이 없으므로 허용합니다. 가격은 `외식`이면 모범업소 참고 가격, 그 밖에는
+`price_won=0`(추가 비용 없음)으로 표시합니다. 이때 재료 정보가 없어도 기피 재료 검사로 제외하지 않습니다(새 재료가 추가되지 않음).
+**알레르기는 완화하지 않습니다**: 사용자가 알레르기를 입력했으면 모든 음식에 근거가 있어야 하며, 근거가 없으면 제외합니다.
+메뉴 교체·음식 추가·대체는 여전히 검증된 `offers`가 있을 때만 가능합니다. 환경에 검증된 판매 조건이 있으면 그 가격을 우선합니다.
+
+Gemini에는 전체 DB 대신 원래 식사의 음식과 판매 조건에 있는 음식만 보냅니다.
+
 ## 공식 식약처 데이터 확보와 검증 근거
 
 공식 인터페이스: `NutritionRepository`가 식약처에서 가져와 검토한 스냅샷을 읽고,
@@ -75,7 +107,7 @@ HTTPS 접근만 시도하며 HTTP로 키를 보내는 fallback은 없습니다. 
 스키마는 `fitfuture/nutrition.py`를 참고하세요. 검증용 구조 예시는 `tests/fixtures/catalog.json`에 있지만,
 이 파일의 합성 영양값/가격/알레르기 정보를 실제 서비스로 복사하면 안 됩니다.
 실제 모드는 `provenance=mfds`, 모든 식품 `source=mfds`만 수용합니다. 출처 표기만 바꾸는 것은 데이터 확보가 아닙니다.
-현재 레포에는 공식 영양/레시피/가격 데이터가 포함되어 있지 않습니다.
+레포에는 앱과 공유하는 식약처 음식 DB와 위 공공 근거 파일만 포함되어 있습니다. 식당별 실제 레시피·판매 조건은 포함되어 있지 않습니다.
 
 ## API와 오류
 

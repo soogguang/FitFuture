@@ -1,6 +1,7 @@
 import hashlib
 import json
 from collections import Counter
+from dataclasses import dataclass
 from datetime import date
 from pathlib import Path
 
@@ -11,6 +12,20 @@ from .schemas import Alternative, FoodPortion, RecommendResponse
 
 class Rejected(Exception):
     pass
+
+
+@dataclass(frozen=True)
+class OwnMealOffer:
+    """Price basis for eating less of the meal the user already has: nothing new is bought.
+
+    Used only for reduction-only candidates when no verified offer exists for the environment.
+    price_won is a reference price of the original meal (0 when unknown); it is never a quote.
+    """
+    price_won: int
+    source: str
+    valid_until: date | None
+    additional_purchase: bool = False
+    cooking_required: bool = False
 
 
 def contains(term, values):
@@ -48,6 +63,9 @@ class RecommendationPipeline:
         if candidate.kind == "balance" and not increases:
             raise Rejected("IMPOSSIBLE_OPERATION")
         foods = [self.repo.foods[p.food_id] for p in candidate.portions]
+        # portion/sauce candidates passed the no-increase check above, so they only reduce or drop
+        # foods from the original meal.
+        reduction_only = candidate.kind in ("portion", "sauce")
         excluded_ingredients = avoided_ingredients(request.profile)
         today = date.today()
         for f in foods:
@@ -61,10 +79,13 @@ class RecommendationPipeline:
                 if conflict:
                     raise Rejected("ALLERGY")
             if excluded_ingredients:
-                if f.ingredients is None or not f.ingredient_source or not f.ingredient_valid_until \
-                        or f.ingredient_valid_until < today:
+                verified = f.ingredients is not None and f.ingredient_source and f.ingredient_valid_until \
+                    and f.ingredient_valid_until >= today
+                # Reducing the user's own meal adds nothing they chose to avoid; unknown recipes
+                # only block candidates that would introduce or keep other foods.
+                if not verified and not reduction_only:
                     raise Rejected("INGREDIENT_UNVERIFIABLE")
-                if any(contains(a, [f.name, *f.ingredients]) for a in excluded_ingredients):
+                if any(contains(a, [f.name, *(f.ingredients if verified else [])]) for a in excluded_ingredients):
                     raise Rejected("AVOIDED")
         offers = [o for o in self.repo.catalog.offers
                   if o.environment == request.profile.environment and o.valid_until >= today
@@ -74,7 +95,9 @@ class RecommendationPipeline:
             offers = [o for o in offers if o.allergens is not None and o.allergen_source
                       and conflicts(request.profile.allergies, o.allergens) is False]
         if not offers:
-            raise Rejected("PRICE_ENVIRONMENT_ALLERGEN_UNVERIFIABLE")
+            if not reduction_only or self.environment_has_offers(request.profile.environment, today):
+                raise Rejected("PRICE_ENVIRONMENT_ALLERGEN_UNVERIFIABLE")
+            offers = [self.own_meal_offer(request, before)]
         offer = min(offers, key=lambda o: o.price_won)
         if offer.price_won > request.profile.budget_won:
             raise Rejected("BUDGET")
@@ -85,6 +108,22 @@ class RecommendationPipeline:
         if candidate.kind != "menu" and nutrition.calories_kcal < original_nutrition.calories_kcal * safety["min_original_ratio"]:
             raise Rejected("EXCESSIVE_RESTRICTION")
         return nutrition, foods, offer
+
+    def environment_has_offers(self, environment, today):
+        # A verified menu price for this environment must not be bypassed by the own-meal basis.
+        return any(o.environment == environment and o.valid_until >= today for o in self.repo.catalog.offers)
+
+    def own_meal_offer(self, request, before):
+        prices = getattr(self.repo, "reference_prices", {})
+        if request.profile.environment == "외식":
+            known = [prices[k] for k in before if k in prices and prices[k].valid_until >= date.today()]
+            if known:
+                main = max(known, key=lambda p: p.price_won)
+                return OwnMealOffer(main.price_won, main.source + " · 원래 식사 양 조절", main.valid_until)
+        return OwnMealOffer(0, "원래 식사 양 조절 (추가 구매 없음 · 가격 근거 없음)", None)
+
+    def display(self, food_id):
+        return self.repo.foods[food_id].name.replace("_", " ")
 
     async def recommend(self, request):
         original = self.repo.portions(request.meal.foods)
@@ -110,7 +149,7 @@ class RecommendationPipeline:
                     old, new = before.get(k, 0), after.get(k, 0)
                     if abs(old - new) <= 1:
                         continue
-                    name = self.repo.foods[k].name
+                    name = self.display(k)
                     actions.append(f"{name} {old:g}g → {new:g}g" if old and new
                                    else f"{name} {new:g}g 추가" if new else f"{name} 덜어두기")
                 portions = [FoodPortion(name=f.name, grams=p.grams) for p, f in zip(candidate.portions, foods)]
@@ -125,20 +164,24 @@ class RecommendationPipeline:
                 results.append(Alternative(
                     id=hashlib.sha256(signature.encode()).hexdigest()[:20], index=0,
                     # Derive titles/instructions from verified changes; never repeat unsupported AI claims.
-                    title=" · ".join(f"{self.repo.foods[k].name} 양 조절" for k in sorted(before.keys() | after.keys())
+                    title=" · ".join(f"{self.display(k)} 양 조절" for k in sorted(before.keys() | after.keys())
                                      if abs(before.get(k, 0) - after.get(k, 0)) > 1),
                     instructions=" / ".join(actions), foods=portions, nutrition=n,
-                    composition=" · ".join(f"{f.name} {f.grams:g} g" for f in portions),
+                    composition=" · ".join(f"{f.name.replace('_', ' ')} {f.grams:g} g" for f in portions),
                     calorie_difference=difference,
                     score=score, scores=scores, weights=self.scorer.weights,
                     reason=f"{request.meal.name}, 이렇게도 드실 수 있어요! "
                            + " / ".join(actions) + ". " + energy_reason
-                           + f"한 끼 {offer.price_won:,}원으로 예산 안에 들어요. " + feasibility
+                           + (f"한 끼 {offer.price_won:,}원으로 예산 안에 들어요. " if offer.price_won
+                              else "원래 식사에서 양만 줄여 추가 비용이 들지 않아요. ") + feasibility
                            + "목표 열량·영양 균형, 음식 선호와 과거 피드백, 가격·접근성, 실천 가능성을 점수에 반영했어요.",
                     price_won=offer.price_won,
                     verification=("검증용 예시 데이터 · 실제 영양·알레르기·가격 보장 아님" if fixture
-                                  else f"식약처 영양 재계산 · 가격/환경 근거: {offer.source} · 유효일 {offer.valid_until}"
-                                  + (" · 알레르기 조건 대조 완료 (안전 보장 아님)" if request.profile.allergies
+                                  else f"식약처 영양 재계산 · 가격/환경 근거: {offer.source}"
+                                  + (f" · 유효일 {offer.valid_until}" if offer.valid_until else "")
+                                  + (" · 알레르기 근거: " + " / ".join(dict.fromkeys(
+                                         f.allergen_source.split(" · ")[0] for f in foods))
+                                     + " 대조 완료 (안전 보장 아님)" if request.profile.allergies
                                      else " · 알레르기 조건 미입력")),
                     source=f"{self.generator.source} + {self.repo.source}"))
                 accepted.append(after)
@@ -152,6 +195,7 @@ class RecommendationPipeline:
                 "INGREDIENT_UNVERIFIABLE": "기피 재료를 확인할 근거가 부족해요.",
                 "BUDGET": "한 끼 예산을 초과한 후보를 제외했어요.",
                 "PRICE_ENVIRONMENT_ALLERGEN_UNVERIFIABLE": "선택한 식사 환경의 가격·제공 조건을 확인할 근거가 부족해요.",
+                "EXCESSIVE_RESTRICTION": "열량을 지나치게 줄이는 후보를 제외했어요.",
             }
             explanation = " ".join(reasons[code] for code in rejected if code in reasons)
             raise RecommendationError("SHORTAGE", "조건에 맞는 대안을 찾지 못했어요. "
