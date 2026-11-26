@@ -155,7 +155,7 @@ public final class StateStore {
       v.heightCm = p.optDouble("height", 163);
       v.weightKg = p.optDouble("weight", 58);
       v.targetWeightKg = p.optDouble("target", 55);
-      v.preferences = stringList(p.optJSONArray("preferences"));
+      v.preferences = Profile.migratePreferences(stringList(p.optJSONArray("preferences")));
       v.avoided = stringList(p.optJSONArray("avoided"));
       v.allergies = stringList(p.optJSONArray("allergies"));
       s.onboarded = o.optBoolean("onboarded");

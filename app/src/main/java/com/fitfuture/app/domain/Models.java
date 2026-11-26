@@ -16,7 +16,26 @@ public final class Models {
         environment = "학식";
     public int age = 21, budgetWon = 8000;
     public double heightCm = 163, weightKg = 58, targetWeightKg = 55;
-    public List<String> preferences = new ArrayList<>(List.of("돈가스"));
+    /** 좋아하는 음식 종류 보기 (여러 개 선택) */
+    public static final String[] CUISINES = {
+      "한식", "중식", "일식", "양식", "분식", "아시안", "패스트푸드", "샐러드·건강식"
+    };
+
+    public List<String> preferences = new ArrayList<>(List.of("일식"));
+
+    /** 예전 버전의 메뉴 이름(돈가스·비빔밥·샐러드)을 종류로 바꾼다. 중복은 하나만 남긴다. */
+    public static List<String> migratePreferences(List<String> old) {
+      List<String> out = new ArrayList<>();
+      for (String v : old) {
+        String c =
+            v.equals("돈가스") ? "일식"
+                : v.equals("비빔밥") ? "한식"
+                : v.equals("샐러드") ? "샐러드·건강식"
+                : v;
+        if (!out.contains(c)) out.add(c);
+      }
+      return out;
+    }
     public List<String> avoided = new ArrayList<>(List.of("매운 음식"));
     public List<String> allergies = new ArrayList<>(List.of("갑각류"));
   }
