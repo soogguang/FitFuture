@@ -239,7 +239,8 @@ public final class OnboardingScreens {
     if (!edit) u.progress(s("progress"), 3);
     u.heading(s("heading"), edit ? "식사 취향을 수정해요" : "평소 식사 취향을 알려주세요", "");
     LinearLayout parent = s("preferences");
-    group(parent, "좋아하는 음식", new String[] {"돈가스", "비빔밥", "샐러드"}, p.preferences);
+    group(parent, "좋아하는 음식 종류", Profile.CUISINES, p.preferences);
+    u.small(parent, "여러 개 골라도 돼요. 대안을 만들 때 좋아하는 종류의 구성을 참고해요.");
     u.gap(parent, 18);
     group(parent, "피하고 싶은 음식", new String[] {"매운 음식", "기름진 음식"}, p.avoided);
     u.small(parent, "기름진 음식은 지방을 줄인 구성을 우선 추천해요.");

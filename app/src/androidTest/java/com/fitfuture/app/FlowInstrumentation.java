@@ -339,7 +339,7 @@ public final class FlowInstrumentation extends Instrumentation {
     screen("s04");
     input("목표 체중", "60");
     click("다음");
-    click("비빔밥");
+    click("한식");
     click("다음");
     screen("s06");
     click("설정 완료");
