@@ -73,8 +73,8 @@ public final class AvatarFutureService implements FeatureServices.FutureAvatarSe
     WeightSimulator.Point a = c.a[i], b = c.b[i];
 
     int base = spec.currentCell(config, profile.heightCm, profile.weightKg);
-    BodyCellMapper.Future fa = BodyCellMapper.future(base, a.changeRate);
-    BodyCellMapper.Future fb = BodyCellMapper.future(base, b.changeRate);
+    BodyCellMapper.Future fa = BodyCellMapper.future(base, a.changeRate, config);
+    BodyCellMapper.Future fb = BodyCellMapper.future(base, b.changeRate, config);
 
     FutureComparison f = new FutureComparison();
     f.months = months;
@@ -167,7 +167,7 @@ public final class AvatarFutureService implements FeatureServices.FutureAvatarSe
             Locale.KOREA,
             " B는 매일 그 한 끼를 대안(%,.0f kcal)으로 바꾼 경우예요 (하루 %,.0f kcal)."
                 + " 기초대사량 %,.0f kcal, 하루 소비 열량 %,.0f kcal 기준이며, 체지방 1kg ≈ 7,700kcal로 계산하고 ±20%% 범위로 봐요."
-                + " 아바타 체형은 지금 체형 칸에서 체중 변화율 2%%·5%%마다 한 칸씩 움직여요.",
+                + " 아바타 체형은 지금 체형 칸에서 체중 변화율 2%%·5%%마다 한 칸씩 움직이고, 볼 윤곽은 체형 구간(1~2칸 갸름·3~5칸 기본·6~7칸 도톰)을 따라가요.",
             altKcal,
             dailyB,
             c.bmr,

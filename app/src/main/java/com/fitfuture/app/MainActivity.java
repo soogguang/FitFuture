@@ -4,6 +4,7 @@ import android.app.*;
 import android.content.*;
 import android.net.Uri;
 import android.os.*;
+import android.provider.MediaStore;
 import android.view.*;
 import android.widget.*;
 import com.fitfuture.app.data.*;
@@ -13,6 +14,7 @@ import com.fitfuture.app.ui.*;
 import com.fitfuture.avatar.AvatarStore;
 import com.fitfuture.avatar.core.AvatarSpec;
 import com.fitfuture.avatar.core.BodyCellConfig;
+import java.io.File;
 import java.util.*;
 import java.util.concurrent.*;
 
@@ -210,6 +212,24 @@ public final class MainActivity extends androidx.activity.ComponentActivity {
   }
 
   public void back() {
+    // 아바타를 고치다가 저장하지 않고 나가면 한 번 확인한다
+    if (screen.equals("s07")
+        && state.onboarded
+        && avatarDraft != null
+        && !avatarDraft.equals(avatar())) {
+      new android.app.AlertDialog.Builder(this)
+          .setTitle("저장하지 않고 나갈까요?")
+          .setMessage("바꾼 아바타는 저장되지 않아요.")
+          .setPositiveButton(
+              "나가기",
+              (dialog, which) -> {
+                avatarDraft = null;
+                back();
+              })
+          .setNegativeButton("계속 고치기", null)
+          .show();
+      return;
+    }
     if (screen.equals("s02") && state.introPage > 0) {
       state.introPage--;
       render();
@@ -269,6 +289,7 @@ public final class MainActivity extends androidx.activity.ComponentActivity {
     mealCamera.close();
     if (activeDialog != null) activeDialog.dismiss();
     worker.shutdownNow();
+    if (selfieAnalyzer != null) selfieAnalyzer.close();
     super.onDestroy();
   }
 
@@ -750,6 +771,10 @@ public final class MainActivity extends androidx.activity.ComponentActivity {
   @Override
   protected void onActivityResult(int request, int result, Intent data) {
     super.onActivityResult(request, result, data);
+    if (request == REQ_SELFIE_PICK || request == REQ_SELFIE_CAMERA) {
+      onSelfieResult(request, result, data);
+      return;
+    }
     if (result != RESULT_OK) return;
     Uri uri = null;
     if (request == 42 && data != null) {
@@ -798,6 +823,141 @@ public final class MainActivity extends androidx.activity.ComponentActivity {
 
   public double heightScale() {
     return BODY_CELLS.heightScale(state.profile.heightCm);
+  }
+
+  // ── 셀카로 닮은 파츠 추천 ──
+  private static final int REQ_SELFIE_PICK = 44, REQ_SELFIE_CAMERA = 45;
+  private final androidx.activity.result.ActivityResultLauncher<String> selfieCameraPermission =
+      registerForActivityResult(
+          new androidx.activity.result.contract.ActivityResultContracts.RequestPermission(),
+          granted -> {
+            if (granted) {
+              startSelfie(true);
+            } else {
+              selfieOk = false;
+              selfieMessage =
+                  "카메라 권한이 없어서 셀카를 찍을 수 없어요. '사진 고르기'를 쓰거나 설정에서 카메라 권한을 허용해 주세요.";
+              render();
+            }
+          });
+  private com.fitfuture.avatar.face.SelfieAnalyzer selfieAnalyzer;
+  private Uri pendingSelfieUri;
+  private File pendingSelfieFile;
+  /** 아바타 만들기 화면에 보여줄 상태 */
+  public boolean selfieBusy;
+  public String selfieMessage = "";
+  public boolean selfieOk;
+  public Map<com.fitfuture.avatar.core.AvatarCatalog.Category, String> selfieReasons =
+      new LinkedHashMap<>();
+  public Map<String, Double> selfieZ = new LinkedHashMap<>();
+
+  public void clearSelfie() {
+    selfieBusy = false;
+    selfieMessage = "";
+    selfieOk = false;
+    selfieReasons.clear();
+    selfieZ.clear();
+  }
+
+  /** 처음 한 번 사진 분석 안내·동의를 받고 셀카 촬영 또는 사진 고르기를 연다. */
+  public void startSelfie(boolean camera) {
+    android.content.SharedPreferences prefs = getSharedPreferences("fitfuture.avatar", MODE_PRIVATE);
+    if (!prefs.getBoolean("selfieConsent", false)) {
+      new android.app.AlertDialog.Builder(this)
+          .setTitle("사진으로 닮은 얼굴 추천")
+          .setMessage(
+              "사진은 이 기기 안에서만 분석하고 서버로 보내지 않아요. 분석이 끝나면 사진은 바로 지우고,"
+                  + " 저장되는 건 고른 파츠 이름뿐이에요.")
+          .setPositiveButton(
+              "동의하고 계속",
+              (d, w) -> {
+                prefs.edit().putBoolean("selfieConsent", true).apply();
+                startSelfie(camera);
+              })
+          .setNegativeButton("취소", null)
+          .show();
+      return;
+    }
+    if (camera
+        && checkSelfPermission(android.Manifest.permission.CAMERA)
+            != android.content.pm.PackageManager.PERMISSION_GRANTED) {
+      // 앱이 CAMERA 권한을 선언했으므로, 허용 전에 시스템 카메라를 열면 Android가 막는다
+      selfieCameraPermission.launch(android.Manifest.permission.CAMERA);
+      return;
+    }
+    try {
+      if (camera) {
+        File directory = new File(getFilesDir(), "photos");
+        if (!directory.exists() && !directory.mkdirs()) throw new java.io.IOException();
+        // PhotoProvider가 허용하는 이름 형식(meal-*.jpg)을 쓴다
+        pendingSelfieFile = File.createTempFile("meal-selfie-", ".jpg", directory);
+        pendingSelfieUri =
+            Uri.parse("content://" + getPackageName() + ".photos/" + pendingSelfieFile.getName());
+        Intent i = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        i.putExtra(MediaStore.EXTRA_OUTPUT, pendingSelfieUri);
+        i.putExtra("android.intent.extras.CAMERA_FACING", 1); // 가능하면 전면 카메라
+        i.setClipData(ClipData.newRawUri("selfie", pendingSelfieUri));
+        i.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION | Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        startActivityForResult(i, REQ_SELFIE_CAMERA);
+      } else {
+        Intent i = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+        i.setType("image/*");
+        i.addCategory(Intent.CATEGORY_OPENABLE);
+        i.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        startActivityForResult(i, REQ_SELFIE_PICK);
+      }
+    } catch (Exception ex) {
+      selfieOk = false;
+      selfieMessage = camera ? "카메라를 열지 못했어요. 사진 고르기로 시도해 주세요." : "사진 선택 화면을 열지 못했어요.";
+      deleteSelfieFile();
+      render();
+    }
+  }
+
+  private void onSelfieResult(int request, int result, Intent data) {
+    Uri uri = request == REQ_SELFIE_CAMERA ? pendingSelfieUri : (data != null ? data.getData() : null);
+    if (result != RESULT_OK || uri == null) {
+      deleteSelfieFile();
+      return;
+    }
+    if (avatarDraft == null) avatarDraft = avatar();
+    com.fitfuture.avatar.core.AvatarSpec base = avatarDraft;
+    if (selfieAnalyzer == null) selfieAnalyzer = new com.fitfuture.avatar.face.SelfieAnalyzer();
+    com.fitfuture.avatar.face.SelfieAnalyzer analyzer = selfieAnalyzer;
+    clearSelfie();
+    selfieBusy = true;
+    selfieMessage = "얼굴을 살펴보는 중이에요…";
+    render();
+    async(
+        () ->
+            analyzer.analyze(
+                this, uri, base, com.fitfuture.avatar.core.face.FaceNorms.DEFAULT),
+        (com.fitfuture.avatar.face.SelfieAnalyzer.Outcome outcome) -> {
+          deleteSelfieFile();
+          selfieBusy = false;
+          selfieOk = outcome.ok;
+          if (outcome.ok) {
+            avatarDraft = outcome.result.spec;
+            selfieReasons.putAll(outcome.result.reasons);
+            selfieZ.putAll(outcome.result.z);
+            selfieMessage =
+                "사진과 닮은 얼굴형·눈·눈썹·코·입을 골랐어요. 마음에 안 드는 부위는 아래에서 바꿀 수 있어요."
+                    + (outcome.message.isEmpty() ? "" : " " + outcome.message);
+          } else {
+            selfieMessage = outcome.message;
+          }
+          if (screen.equals("s07")) render();
+        });
+  }
+
+  /** 촬영한 셀카 파일은 분석 뒤 바로 지운다 (갤러리 사진은 원래 자리에 그대로). */
+  private void deleteSelfieFile() {
+    if (pendingSelfieFile != null) {
+      //noinspection ResultOfMethodCallIgnored
+      pendingSelfieFile.delete();
+    }
+    pendingSelfieFile = null;
+    pendingSelfieUri = null;
   }
 
   private String futureKey = "";
