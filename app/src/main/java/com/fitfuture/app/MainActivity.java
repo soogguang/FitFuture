@@ -940,6 +940,9 @@ public final class MainActivity extends androidx.activity.ComponentActivity {
             avatarDraft = outcome.result.spec;
             selfieReasons.putAll(outcome.result.reasons);
             selfieZ.putAll(outcome.result.z);
+            // 기준값 조정용 측정값(z)은 화면 대신 Logcat에만 남긴다 (디버그 빌드, 태그 FitFutureSelfie)
+            if (com.fitfuture.app.BuildConfig.DEBUG)
+              android.util.Log.d("FitFutureSelfie", "z=" + outcome.result.z);
             selfieMessage =
                 "사진과 닮은 얼굴형·눈·눈썹·코·입을 골랐어요. 마음에 안 드는 부위는 아래에서 바꿀 수 있어요."
                     + (outcome.message.isEmpty() ? "" : " " + outcome.message);

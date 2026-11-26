@@ -98,6 +98,57 @@ public final class AvatarFutureService implements FeatureServices.FutureAvatarSe
     return f;
   }
 
+  /** 기록 화면용: 지금 식단을 이어가면 1·3·6개월 뒤 체중과 체형 칸. */
+  public static final class Trend {
+    /** A와 같은 방식으로 정한 하루 섭취 열량 */
+    public final double dailyKcal;
+    /** true: 아침·점심·저녁 기록 평균 / false: 최근 한 끼로 가정 */
+    public final boolean fromRecords;
+    public final int baseCell;
+    /** 1·3·6개월 순서 */
+    public final double[] changeKg = new double[3];
+    public final int[] cells = new int[3];
+    public final boolean[] clamped = new boolean[3];
+
+    Trend(double dailyKcal, boolean fromRecords, int baseCell) {
+      this.dailyKcal = dailyKcal;
+      this.fromRecords = fromRecords;
+      this.baseCell = baseCell;
+    }
+  }
+
+  /**
+   * 하루 섭취는 미래 비교의 A와 같은 규칙: 기록 평균(3일 이상) → 없으면 최근 한 끼(lastMealKcal)를 매일 먹는다고 가정.
+   * 둘 다 없으면 null (화면에서 "식사를 기록하면 보여요" 안내).
+   */
+  public static Trend currentTrend(
+      Profile profile, AvatarSpec avatar, BodyCellConfig config,
+      List<MealRecord> recordsSnapshot, Double lastMealKcal) {
+    WeightSimulator.Profile p;
+    try {
+      p = toProfile(profile);
+    } catch (IllegalArgumentException e) {
+      return null;
+    }
+    Double recorded = recordedDailyKcal(recordsSnapshot != null ? recordsSnapshot : new ArrayList<>());
+    double tdee = WeightSimulator.tdee(p);
+    double daily;
+    if (recorded != null) daily = recorded;
+    else if (lastMealKcal != null && lastMealKcal > 0) daily = tdee - tdee / 3.0 + lastMealKcal;
+    else return null;
+
+    int base = avatar.currentCell(config, profile.heightCm, profile.weightKg);
+    Trend t = new Trend(daily, recorded != null, base);
+    WeightSimulator.Point[] points = WeightSimulator.simulate(p, daily);
+    for (int i = 0; i < 3; i++) {
+      BodyCellMapper.Future f = BodyCellMapper.future(base, points[i].changeRate, config);
+      t.changeKg[i] = points[i].changeKg;
+      t.cells[i] = f.cell;
+      t.clamped[i] = f.clamped();
+    }
+    return t;
+  }
+
   static WeightSimulator.Profile toProfile(Profile profile) {
     WeightSimulator.Sex sex =
         "남성".equals(profile.gender) ? WeightSimulator.Sex.MALE : WeightSimulator.Sex.FEMALE;

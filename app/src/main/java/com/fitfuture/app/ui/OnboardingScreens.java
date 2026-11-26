@@ -526,14 +526,5 @@ public final class OnboardingScreens {
       u.gap(c, 4);
       u.small(c, "추천은 초안이에요. 저장해야 내 아바타에 반영돼요.");
     }
-    // 기준값 조정용: 디버그 빌드에서만 측정값(z)을 보여준다
-    if (com.fitfuture.app.BuildConfig.DEBUG && a.selfieOk && !a.selfieZ.isEmpty()) {
-      StringBuilder sb = new StringBuilder("측정 z값 (기준값 조정용, 디버그만)\n");
-      for (java.util.Map.Entry<String, Double> e : a.selfieZ.entrySet()) {
-        sb.append(e.getKey()).append(" ").append(String.format(java.util.Locale.US, "%+.2f", e.getValue())).append("  ");
-      }
-      u.gap(c, 6);
-      u.small(c, sb.toString());
-    }
   }
 }
