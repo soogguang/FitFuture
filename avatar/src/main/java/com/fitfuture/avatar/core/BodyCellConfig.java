@@ -20,9 +20,13 @@ public final class BodyCellConfig {
     /** 초기 설정값. 한국 기준(18.5 저체중 / 23 과체중 / 25 비만)이 칸 경계와 겹친다. */
     public static final BodyCellConfig DEFAULT = new BodyCellConfig(
             new double[]{18.5, 20.5, 23.0, 25.0, 27.5, 30.0},
-            140, 200, 0.80, 1.00);
+            140, 200, 0.80, 1.00, 2, 6);
 
     private final double[] bmiBoundaries;
+    /** 이 칸 이하는 갸름한 볼 (기본 2 → 1~2칸) */
+    public final int slimMaxCell;
+    /** 이 칸 이상은 도톰한 볼 (기본 6 → 6~7칸). 그 사이는 기본 볼. */
+    public final int fullMinCell;
     public final double heightMinCm;
     public final double heightMaxCm;
     public final double scaleAtMin;
@@ -37,6 +41,15 @@ public final class BodyCellConfig {
      */
     public BodyCellConfig(double[] bmiBoundaries, double heightMinCm, double heightMaxCm,
                           double scaleAtMin, double scaleAtMax) {
+        this(bmiBoundaries, heightMinCm, heightMaxCm, scaleAtMin, scaleAtMax, 2, 6);
+    }
+
+    /**
+     * @param slimMaxCell 이 칸 이하는 갸름한 볼
+     * @param fullMinCell 이 칸 이상은 도톰한 볼
+     */
+    public BodyCellConfig(double[] bmiBoundaries, double heightMinCm, double heightMaxCm,
+                          double scaleAtMin, double scaleAtMax, int slimMaxCell, int fullMinCell) {
         if (bmiBoundaries == null || bmiBoundaries.length != CELL_COUNT - 1) {
             throw new IllegalArgumentException("BMI 경계는 " + (CELL_COUNT - 1) + "개여야 해요");
         }
@@ -54,6 +67,22 @@ public final class BodyCellConfig {
         this.heightMaxCm = heightMaxCm;
         this.scaleAtMin = scaleAtMin;
         this.scaleAtMax = scaleAtMax;
+        if (slimMaxCell < MIN_CELL - 1 || fullMinCell > MAX_CELL + 1 || slimMaxCell >= fullMinCell) {
+            throw new IllegalArgumentException("볼 구간은 갸름 최대 칸 < 도톰 최소 칸 이어야 해요");
+        }
+        this.slimMaxCell = slimMaxCell;
+        this.fullMinCell = fullMinCell;
+    }
+
+    /**
+     * 체형 칸 → 볼 윤곽 (−1 갸름, 0 기본, +1 도톰).
+     * 얼굴형은 그대로 두고 볼만 체형 구간을 따라간다. 편집·미래 비교·홈 모든 화면이 이 규칙을 쓴다.
+     */
+    public int cheekForCell(int cell) {
+        int c = clampCell(cell);
+        if (c <= slimMaxCell) return BodyCellMapper.CHEEK_SLIM;
+        if (c >= fullMinCell) return BodyCellMapper.CHEEK_FULL;
+        return BodyCellMapper.CHEEK_BASE;
     }
 
     public double[] bmiBoundaries() {

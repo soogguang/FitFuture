@@ -142,7 +142,7 @@ public final class Models {
     public int baseCell;
     /** 기간 뒤 체형 칸(1~7). */
     public int currentCell, alternativeCell;
-    /** 볼 윤곽 −1·0·+1. 실제로 2칸 이동했을 때만 ±1. */
+    /** 볼 윤곽 −1·0·+1. 기간 뒤 체형 칸의 구간을 따름 (1~2 갸름, 3~5 기본, 6~7 도톰). */
     public int currentCheek, alternativeCheek;
     /** 예상 체중 변화량(kg). 끝 칸에서 그림이 멈춰도 이 값은 그대로 표시한다. */
     public double currentChangeKg, alternativeChangeKg;

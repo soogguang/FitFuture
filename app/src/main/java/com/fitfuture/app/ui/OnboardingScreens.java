@@ -7,6 +7,10 @@ import android.widget.*;
 import com.fitfuture.app.MainActivity;
 import com.fitfuture.app.R;
 import com.fitfuture.app.domain.Models.*;
+import com.fitfuture.avatar.PartThumbView;
+import com.fitfuture.avatar.core.AvatarCatalog.Category;
+import com.fitfuture.avatar.core.AvatarSpec;
+import com.fitfuture.avatar.core.PartGroups;
 import java.util.*;
 
 public final class OnboardingScreens {
@@ -333,7 +337,10 @@ public final class OnboardingScreens {
 
   /** S07 아바타 만들기: 파츠를 직접 고르고 현재 체형 칸을 확정한다. 설정의 "아바타 다시 만들기"도 이 화면. */
   private void avatar() {
-    if (a.avatarDraft == null) a.avatarDraft = a.avatar();
+    if (a.avatarDraft == null) {
+      a.avatarDraft = a.avatar();
+      a.clearSelfie();
+    }
     com.fitfuture.avatar.core.AvatarSpec d =
         a.avatarDraft.withPreset(com.fitfuture.app.data.AvatarFutureService.preset(a.state.profile));
     a.avatarDraft = d;
@@ -348,11 +355,17 @@ public final class OnboardingScreens {
     center.setGravity(Gravity.CENTER);
     u.gap(center, 8);
     int cell = a.currentCell(d);
-    u.figure(center, d, cell, 0, a.heightScale(), 120, 290);
+    u.figure(center, d, cell, a.heightScale(), 120, 290);
     u.gap(center, 8);
     TextView label =
         u.text(
-            "지금 체형 " + cell + "칸" + (d.bodyCell == com.fitfuture.avatar.core.AvatarSpec.CELL_AUTO ? " (BMI 초안)" : ""),
+            "지금 체형 "
+                + cell
+                + "칸"
+                + (d.bodyCell == com.fitfuture.avatar.core.AvatarSpec.CELL_AUTO ? " (BMI 초안)" : "")
+                + " · 볼 "
+                + new String[] {"갸름", "기본", "도톰"}[
+                    com.fitfuture.app.MainActivity.BODY_CELLS.cheekForCell(cell) + 1],
             12,
             R.color.primary,
             true);
@@ -365,7 +378,7 @@ public final class OnboardingScreens {
     // 현재 체형 칸
     u.section(p, "지금 체형");
     u.gap(p, 4);
-    u.small(p, "키·체중으로 고른 초안이에요. 같은 BMI라도 근육량·체형이 다르니 나와 가까운 칸을 골라 주세요.");
+    u.small(p, "키·체중으로 고른 초안이에요. 같은 BMI라도 근육량·체형이 다르니 나와 가까운 칸을 골라 주세요. 체형에 따라 볼 윤곽도 함께 바뀌어요.");
     u.gap(p, 8);
     String auto = "자동 (" + a.draftCell() + "칸)";
     String[] cells = new String[8];
@@ -381,51 +394,34 @@ public final class OnboardingScreens {
           a.refresh();
         });
 
-    // 파츠: 부위 탭 → 선택지
+    // 셀카로 초안을 고른 뒤 아래 파츠에서 다듬는다
+    selfieCard(p);
+
+    // 파츠: 부위 탭 → 그림 타일(종류) → 크기·굵기 단계
     u.gap(p, 18);
     u.section(p, "얼굴·머리·옷");
     u.gap(p, 8);
-    com.fitfuture.avatar.core.AvatarCatalog.Category[] cats =
-        com.fitfuture.avatar.core.AvatarCatalog.Category.values();
+    Category[] cats = {
+      Category.FACE, Category.EYES, Category.BROWS, Category.NOSE,
+      Category.MOUTH, Category.HAIR, Category.OUTFIT, Category.ACCESSORY
+    };
     String[] tabs = new String[cats.length];
     for (int i = 0; i < cats.length; i++) tabs[i] = cats[i].label;
-    com.fitfuture.avatar.core.AvatarCatalog.Category cat = cats[Math.min(a.avatarTab, cats.length - 1)];
+    int tab = Math.max(0, Math.min(a.avatarTab, cats.length - 1));
+    Category cat = cats[tab];
     u.chips(
         p,
         tabs,
-        Set.of(cat.label),
+        Set.of(tabs[tab]),
         false,
         v -> {
           a.avatarTab = Arrays.asList(tabs).indexOf(v);
           a.refresh();
         });
-    u.gap(p, 10);
-    com.fitfuture.avatar.core.AvatarCatalog.Part[] parts =
-        com.fitfuture.avatar.core.AvatarCatalog.parts(cat);
-    String[] labels = new String[parts.length];
-    String selected = "";
-    for (int i = 0; i < parts.length; i++) {
-      labels[i] = parts[i].label;
-      if (parts[i].id.equals(d.get(cat))) selected = parts[i].label;
-    }
-    u.chips(
-        p,
-        labels,
-        Set.of(selected),
-        false,
-        v -> {
-          String id = parts[Arrays.asList(labels).indexOf(v)].id;
-          // 앞머리는 맞는 뒷머리를 함께 고른다 (그 뒤 뒷머리 탭에서 따로 바꿀 수 있음)
-          a.avatarDraft =
-              cat == com.fitfuture.avatar.core.AvatarCatalog.Category.HAIR
-                  ? d.withHairStyle(id)
-                  : d.with(cat, id);
-          a.refresh();
-        });
+    u.gap(p, 12);
+    partTiles(p, d, cell, cat);
 
-    // 사진 기반 추천은 다음 단계
-    u.gap(p, 18);
-    u.notice(p, "사진으로 닮은 파츠 추천 · 다음 단계", "셀카의 얼굴 윤곽으로 얼굴형·눈·눈썹을 추천하는 기능은 이어서 붙일 예정이에요.", 0);
+    // 헤어는 헤어스타일 하나로 고르고, 뒷머리는 스타일에 맞춰 자동으로 붙는다
 
     a.primary(
         editing ? "아바타 저장" : "이 아바타로 시작",
@@ -440,5 +436,104 @@ public final class OnboardingScreens {
             a.root("s08");
           }
         });
+  }
+
+  /** 종류별 그림 타일 + (있으면) 크기·굵기 단계 버튼. 타일에는 지금 아바타에 그 파츠를 입힌 모습이 보인다. */
+  private void partTiles(LinearLayout p, AvatarSpec d, int cell, Category cat) {
+    PartGroups.Group[] groups = PartGroups.groups(cat);
+    String current = d.get(cat);
+    int[] at = PartGroups.locate(cat, current);
+    int cheek = MainActivity.BODY_CELLS.cheekForCell(cell);
+
+    FlowLayout flow = new FlowLayout(a);
+    p.addView(flow, new LinearLayout.LayoutParams(-1, -2));
+    for (int gi = 0; gi < groups.length; gi++) {
+      PartGroups.Group g = groups[gi];
+      AvatarSpec candidate =
+          cat == Category.HAIR
+              ? d.withHairStyle(g.ids[0])
+              : d.with(cat, PartGroups.switchGroup(cat, current, gi));
+      boolean selected = gi == at[0];
+
+      LinearLayout tile = u.column();
+      tile.setGravity(Gravity.CENTER_HORIZONTAL);
+      tile.setPadding(u.dp(4), u.dp(6), u.dp(4), u.dp(6));
+      tile.setBackgroundResource(selected ? R.drawable.bg_selected_card : R.drawable.bg_card);
+      PartThumbView thumb = new PartThumbView(a);
+      thumb.setPart(candidate, cell, cheek, cat);
+      tile.addView(thumb, new LinearLayout.LayoutParams(u.dp(76), u.dp(cat == Category.HAIR ? 96 : 64)));
+      TextView label = u.text(g.label, 11, selected ? R.color.primary_dark : R.color.text, selected);
+      label.setGravity(Gravity.CENTER);
+      tile.addView(label, new LinearLayout.LayoutParams(-1, -2));
+      tile.setContentDescription(cat.label + " " + g.label + (selected ? ", 선택됨" : ""));
+      tile.setOnClickListener(
+          v -> {
+            a.avatarDraft = candidate;
+            a.refresh();
+          });
+      flow.addView(tile, new android.view.ViewGroup.MarginLayoutParams(u.dp(92), -2));
+    }
+
+    // 같은 종류 안에서 크기·굵기·두께 3단계
+    PartGroups.Group sel = groups[at[0]];
+    if (sel.hasLevels()) {
+      String[] levels = PartGroups.levelLabels(cat);
+      u.gap(p, 10);
+      u.small(p, cat == Category.BROWS ? "굵기" : cat == Category.MOUTH ? "두께" : "크기");
+      u.gap(p, 6);
+      int group = at[0];
+      u.chips(
+          p,
+          levels,
+          Set.of(levels[at[1]]),
+          false,
+          v -> {
+            a.avatarDraft = d.with(cat, PartGroups.idFor(cat, group, Arrays.asList(levels).indexOf(v)));
+            a.refresh();
+          });
+    }
+  }
+
+  /** 셀카 한 장으로 얼굴형·눈·눈썹·코·입 초안을 고른다. 헤어·옷·체형은 그대로. */
+  private void selfieCard(LinearLayout p) {
+    u.gap(p, 18);
+    LinearLayout c = u.card(p);
+    u.section(c, "사진으로 닮은 얼굴 추천");
+    u.gap(c, 4);
+    u.small(c, "정면 셀카 한 장으로 얼굴형·눈·눈썹·코·입을 골라요. 사진은 기기 안에서만 분석하고 저장하지 않아요.");
+    u.gap(c, 10);
+    LinearLayout buttons = u.row();
+    Button camera = u.button(buttons, "셀카 찍기", () -> a.startSelfie(true));
+    camera.setLayoutParams(new LinearLayout.LayoutParams(0, u.dp(44), 1));
+    View gap = new View(a);
+    buttons.addView(gap, new LinearLayout.LayoutParams(u.dp(8), 1));
+    Button pick = u.outline(buttons, "사진 고르기", () -> a.startSelfie(false));
+    pick.setLayoutParams(new LinearLayout.LayoutParams(0, u.dp(44), 1));
+    camera.setEnabled(!a.selfieBusy);
+    pick.setEnabled(!a.selfieBusy);
+    c.addView(buttons);
+    if (!a.selfieMessage.isEmpty()) {
+      u.gap(c, 10);
+      u.notice(c, a.selfieBusy ? "분석 중" : a.selfieOk ? "추천 완료" : "다시 시도해 주세요", a.selfieMessage,
+          a.selfieOk || a.selfieBusy ? 0 : 1);
+    }
+    if (a.selfieOk && !a.selfieReasons.isEmpty()) {
+      u.gap(c, 8);
+      for (java.util.Map.Entry<com.fitfuture.avatar.core.AvatarCatalog.Category, String> e :
+          a.selfieReasons.entrySet()) {
+        u.small(c, "· " + e.getKey().label + ": " + e.getValue());
+      }
+      u.gap(c, 4);
+      u.small(c, "추천은 초안이에요. 저장해야 내 아바타에 반영돼요.");
+    }
+    // 기준값 조정용: 디버그 빌드에서만 측정값(z)을 보여준다
+    if (com.fitfuture.app.BuildConfig.DEBUG && a.selfieOk && !a.selfieZ.isEmpty()) {
+      StringBuilder sb = new StringBuilder("측정 z값 (기준값 조정용, 디버그만)\n");
+      for (java.util.Map.Entry<String, Double> e : a.selfieZ.entrySet()) {
+        sb.append(e.getKey()).append(" ").append(String.format(java.util.Locale.US, "%+.2f", e.getValue())).append("  ");
+      }
+      u.gap(c, 6);
+      u.small(c, sb.toString());
+    }
   }
 }

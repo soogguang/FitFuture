@@ -283,12 +283,12 @@ public final class RecommendationScreens {
     row.setGravity(Gravity.TOP);
     int base = a.currentCell(a.avatar());
     avatarCard(row, "A · 현재 식단 유지", a.state.meal.name, ready ? f.currentCell : base,
-        f.currentCheek, ready ? f.currentChangeKg : null, ready ? f.currentCell - f.baseCell : 0,
+        ready ? f.currentChangeKg : null, ready ? f.currentCell - f.baseCell : 0,
         ready && f.currentClamped, false);
     View gap = new View(a);
     row.addView(gap, new LinearLayout.LayoutParams(u.dp(8), 1));
     avatarCard(row, "B · 선택 대안 실천", a.state.selected().title, ready ? f.alternativeCell : base,
-        f.alternativeCheek, ready ? f.alternativeChangeKg : null,
+        ready ? f.alternativeChangeKg : null,
         ready ? f.alternativeCell - f.baseCell : 0, ready && f.alternativeClamped, true);
     s("avatars").addView(row);
     u.gap(s("note"), 14);
@@ -361,7 +361,6 @@ public final class RecommendationScreens {
       String title,
       String name,
       int cell,
-      int cheek,
       Double changeKg,
       int moved,
       boolean clamped,
@@ -381,7 +380,7 @@ public final class RecommendationScreens {
     // 아바타 옆에 예상 변화량 (끝 칸에서 그림이 멈춰도 kg은 그대로 보여준다)
     LinearLayout figureRow = u.row();
     figureRow.setGravity(Gravity.CENTER);
-    u.figure(figureRow, a.avatar(), cell, cheek, a.heightScale(), 74, 180);
+    u.figure(figureRow, a.avatar(), cell, a.heightScale(), 74, 180);
     TextView kg =
         u.text(
             changeKg == null ? "—" : String.format(java.util.Locale.KOREA, "%+.1f kg", changeKg),
@@ -485,7 +484,7 @@ public final class RecommendationScreens {
     u.gap(p, 84);
     p.addView(u.icon(R.drawable.ic_check, 32, R.color.primary));
     u.gap(p, 18);
-    u.figure(p, a.avatar(), a.currentCell(a.avatar()), 0, a.heightScale(), 90, 220);
+    u.figure(p, a.avatar(), a.currentCell(a.avatar()), a.heightScale(), 90, 220);
     u.gap(p, 24);
     TextView title = u.title(p, "오늘의 식사를 기록했어요");
     title.setGravity(Gravity.CENTER);

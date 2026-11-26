@@ -327,8 +327,10 @@ public final class Ui {
    * 발바닥은 아래에 고정되고, heightScale(키)만큼 작아진다.
    */
   public AvatarLayerView figure(
-      LinearLayout p, AvatarSpec spec, int cell, int cheek, double heightScale, int wDp, int hDp) {
+      LinearLayout p, AvatarSpec spec, int cell, double heightScale, int wDp, int hDp) {
     AvatarLayerView v = new AvatarLayerView(a);
+    // 볼 윤곽은 체형 칸 구간을 따른다 (얼굴형은 그대로). 어느 화면이든 같은 규칙.
+    int cheek = com.fitfuture.app.MainActivity.BODY_CELLS.cheekForCell(cell);
     v.setAvatar(spec, cell, cheek, heightScale);
     LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(dp(wDp), dp(hDp));
     lp.gravity = Gravity.CENTER_HORIZONTAL;

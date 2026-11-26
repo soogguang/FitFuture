@@ -105,11 +105,18 @@ public class AvatarSpecLayersTest {
     }
 
     @Test
-    public void longWaveSelectsMatchingRearButAllowsManualChange() {
+    public void hairBackAlwaysFollowsHairstyle() {
         AvatarSpec s = AvatarSpec.defaults(BodyPreset.FEMALE).withHairStyle("f10");
         assertEquals("b05", s.get(Category.HAIR_BACK));
-        assertEquals(AvatarCatalog.NONE,
-                s.with(Category.HAIR_BACK, AvatarCatalog.NONE).get(Category.HAIR_BACK));
+        // 뒷머리만 따로 바꿀 수 없다 (헤어스타일 하나)
+        assertEquals("b05", s.with(Category.HAIR_BACK, AvatarCatalog.NONE).get(Category.HAIR_BACK));
         assertEquals("b05", s.with(Category.EYES, "b_m").get(Category.HAIR_BACK));
+        // with(HAIR)도 뒷머리를 함께 맞춘다
+        assertEquals("b04", s.with(Category.HAIR, "f08").get(Category.HAIR_BACK));
+        // 예전 저장 데이터의 어긋난 짝도 불러올 때 바로잡힌다
+        java.util.Map<Category, String> old = new java.util.EnumMap<>(Category.class);
+        old.put(Category.HAIR, "f02");
+        old.put(Category.HAIR_BACK, "b03");
+        assertEquals(AvatarCatalog.NONE, new AvatarSpec(BodyPreset.FEMALE, 0, old, null, null).get(Category.HAIR_BACK));
     }
 }
