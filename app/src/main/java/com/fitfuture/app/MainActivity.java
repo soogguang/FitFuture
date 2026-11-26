@@ -4,6 +4,7 @@ import android.app.*;
 import android.content.*;
 import android.net.Uri;
 import android.os.*;
+import android.provider.MediaStore;
 import android.view.*;
 import android.widget.*;
 import com.fitfuture.app.data.*;
@@ -13,6 +14,7 @@ import com.fitfuture.app.ui.*;
 import com.fitfuture.avatar.AvatarStore;
 import com.fitfuture.avatar.core.AvatarSpec;
 import com.fitfuture.avatar.core.BodyCellConfig;
+import java.io.File;
 import java.util.*;
 import java.util.concurrent.*;
 
@@ -825,6 +827,19 @@ public final class MainActivity extends androidx.activity.ComponentActivity {
 
   // ── 셀카로 닮은 파츠 추천 ──
   private static final int REQ_SELFIE_PICK = 44, REQ_SELFIE_CAMERA = 45;
+  private final androidx.activity.result.ActivityResultLauncher<String> selfieCameraPermission =
+      registerForActivityResult(
+          new androidx.activity.result.contract.ActivityResultContracts.RequestPermission(),
+          granted -> {
+            if (granted) {
+              startSelfie(true);
+            } else {
+              selfieOk = false;
+              selfieMessage =
+                  "카메라 권한이 없어서 셀카를 찍을 수 없어요. '사진 고르기'를 쓰거나 설정에서 카메라 권한을 허용해 주세요.";
+              render();
+            }
+          });
   private com.fitfuture.avatar.face.SelfieAnalyzer selfieAnalyzer;
   private Uri pendingSelfieUri;
   private File pendingSelfieFile;
@@ -861,6 +876,13 @@ public final class MainActivity extends androidx.activity.ComponentActivity {
               })
           .setNegativeButton("취소", null)
           .show();
+      return;
+    }
+    if (camera
+        && checkSelfPermission(android.Manifest.permission.CAMERA)
+            != android.content.pm.PackageManager.PERMISSION_GRANTED) {
+      // 앱이 CAMERA 권한을 선언했으므로, 허용 전에 시스템 카메라를 열면 Android가 막는다
+      selfieCameraPermission.launch(android.Manifest.permission.CAMERA);
       return;
     }
     try {

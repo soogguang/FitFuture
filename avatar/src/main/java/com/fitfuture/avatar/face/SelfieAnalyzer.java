@@ -98,12 +98,17 @@ public final class SelfieAnalyzer {
             }
 
             FaceMeasurements m = FaceMeasurements.measure(contours(face));
-            PartRecommender.Result r = PartRecommender.recommend(m, norms, base);
-
             List<String> notes = new ArrayList<>();
-            if (faces.size() > 1) notes.add("여러 명이 있어서 가장 크게 나온 얼굴로 골랐어요.");
             Float smile = face.getSmilingProbability();
-            if (smile != null && smile > 0.7f) notes.add("웃는 사진이라 입술은 덜 정확할 수 있어요.");
+            if (smile != null && smile > 0.7f) {
+                // 웃으면 입 폭·입술 두께가 크게 달라져서 입은 추천하지 않고 지금 것을 둔다
+                m.mouthWidth = Double.NaN;
+                m.lipThickness = Double.NaN;
+                m.cupidBow = Double.NaN;
+                notes.add("웃는 사진이라 입은 바꾸지 않았어요. 입을 다문 사진이면 입도 골라 드려요.");
+            }
+            PartRecommender.Result r = PartRecommender.recommend(m, norms, base);
+            if (faces.size() > 1) notes.add("여러 명이 있어서 가장 크게 나온 얼굴로 골랐어요.");
             return new Outcome(true, String.join(" ", notes), r, m);
         } catch (IOException e) {
             return Outcome.fail("사진을 열지 못했어요. 다른 사진으로 시도해 주세요.");
