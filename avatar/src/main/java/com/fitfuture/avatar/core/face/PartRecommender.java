@@ -16,7 +16,7 @@ import java.util.Map;
  * <pre>
  * 얼굴형  턱 넓음 → 각진형 / 이마 좁고 턱 좁음 → 광대형 / 세로로 김 → 타원형 / 그 외 둥근형
  * 눈      눈꼬리 내려감 → 내려간 눈 / 올라감 → 올라간 눈 / 세로로 큼 → 둥근 눈 / 그 외 기본 눈
- *         + 눈 가로 크기 → 작게·보통·크게
+ *         + 눈 세로 크기(뜨인 정도) → 작게·보통·크게
  * 눈썹    아치 낮음 → 일자 / 아치 높음 → 각진 / 그 외 아치  + 두께 → 가늘게·보통·굵게
  * 코      콧볼 매우 넓음 → 넓은 콧볼 / 그 외 타원 코  + 콧볼 폭 → 작게·보통·크게
  * 입술    윗입술 가운데가 깊게 패임 → 굴곡 / 입이 작음 → 둥근 / 그 외 기본  + 두께 → 얇게·보통·도톰
@@ -95,9 +95,10 @@ public final class PartRecommender {
             eyeType = "a";
             eyeWhy = "눈매가 평균에 가까움";
         }
-        String eyeSize = level(zEyeW, "s", "m", "l");
+        // 눈 크기는 세로로 얼마나 뜨였는지로 정한다. ML Kit 눈 가로 길이는 사람마다 거의 같게 나와서 쓰지 않는다.
+        String eyeSize = level(zEyeOpen, "s", "m", "l");
         s = s.with(Category.EYES, eyeType + "_" + eyeSize);
-        why.put(Category.EYES, eyeWhy + ", 크기 " + sizeWord(zEyeW, "작게", "보통", "크게"));
+        why.put(Category.EYES, eyeWhy + ", 크기 " + sizeWord(zEyeOpen, "작게", "보통", "크게"));
 
         // 눈썹: 01~03 일자, 04~06 아치, 07~09 각진 (+0 가늘게, +1 보통, +2 굵게)
         if (!Double.isNaN(m.browArch)) {

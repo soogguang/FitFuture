@@ -105,7 +105,9 @@ public final class SelfieAnalyzer {
                 m.mouthWidth = Double.NaN;
                 m.lipThickness = Double.NaN;
                 m.cupidBow = Double.NaN;
-                notes.add("웃는 사진이라 입은 바꾸지 않았어요. 입을 다문 사진이면 입도 골라 드려요.");
+                // 웃으면 눈도 가늘어져서 눈 크기·둥근 눈 판단은 하지 않는다 (눈꼬리 방향만 본다)
+                m.eyeOpen = Double.NaN;
+                notes.add("웃는 사진이라 입과 눈 크기는 정하지 않았어요. 입을 다문 무표정 사진이면 더 정확해요.");
             }
             PartRecommender.Result r = PartRecommender.recommend(m, norms, base);
             if (faces.size() > 1) notes.add("여러 명이 있어서 가장 크게 나온 얼굴로 골랐어요.");

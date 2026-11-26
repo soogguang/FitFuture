@@ -16,10 +16,10 @@ public class PartRecommenderTest {
 
     /** 합성 얼굴 파라미터 (FaceNorms.DEFAULT 평균값에서 시작) */
     static final class P {
-        double aspect = 1.20, jaw = 0.62, forehead = 0.80;
-        double eyeW = 0.45, eyeOpen = 0.36, tilt = 4;
-        double browT = 0.12, arch = 0.10, noseW = 0.58;
-        double mouthW = 0.80, lip = 0.30, cupid = 0.03;
+        double aspect = 1.23, jaw = 0.65, forehead = 0.90;
+        double eyeW = 0.43, eyeOpen = 0.30, tilt = 3;
+        double browT = 0.093, arch = 0.145, noseW = 0.53;
+        double mouthW = 0.74, lip = 0.33, cupid = 0.026;
     }
 
     /** 두 눈 중심 거리 1 기준으로 윤곽을 만든 뒤, 회전·크기·이동을 적용한다. */
@@ -164,18 +164,18 @@ public class PartRecommenderTest {
     @Test
     public void distinctiveFeatures() {
         P p = new P();
-        p.tilt = -5;
-        p.eyeW = 0.52;
+        p.tilt = -2;
+        p.eyeOpen = 0.36;
         assertEquals("b_l", rec(p).spec.get(Category.EYES));
 
         p = new P();
-        p.tilt = 11;
-        p.eyeW = 0.40;
+        p.tilt = 8;
+        p.eyeOpen = 0.24;
         assertEquals("d_s", rec(p).spec.get(Category.EYES));
 
         p = new P();
-        p.eyeOpen = 0.46;
-        assertEquals("c_m", rec(p).spec.get(Category.EYES));
+        p.eyeOpen = 0.36;
+        assertEquals("c_l", rec(p).spec.get(Category.EYES));
 
         p = new P();
         p.jaw = 0.75;
@@ -196,12 +196,12 @@ public class PartRecommenderTest {
         assertEquals("03", rec(p).spec.get(Category.BROWS)); // 굵은 일자
 
         p = new P();
-        p.arch = 0.16;
-        p.browT = 0.08;
+        p.arch = 0.19;
+        p.browT = 0.075;
         assertEquals("07", rec(p).spec.get(Category.BROWS)); // 가는 각진
 
         p = new P();
-        p.noseW = 0.68;
+        p.noseW = 0.58;
         assertEquals("08", rec(p).spec.get(Category.NOSE)); // 넓은 콧볼 보통
 
         p = new P();

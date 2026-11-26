@@ -49,21 +49,22 @@ public final class FaceNorms {
     }
 
     /**
-     * 초기 추정치 (ML Kit 윤곽 기준, D = 두 눈 중심 거리).
-     * 눈 가로 ≈ 28mm, 눈 중심 거리 ≈ 60mm, 눈꼬리 평균 +4° 정도의 일반적인 얼굴 비율에서 출발했다.
+     * 2026-11-26 보정: 정면 사진 3장(무표정 2, 웃는 얼굴 1)을 ML Kit로 잰 값의 평균으로 맞춤.
+     * ML Kit 윤곽은 사람마다 차이가 작게 나오므로(눈 가로·이마·눈썹 두께는 거의 같음) 표준편차를 좁게 잡았다.
+     * 사진이 더 모이면 평균·표준편차를 다시 계산한다 (docs/avatar/AVATAR_GUIDE.md 참고).
      */
     public static final FaceNorms DEFAULT = new FaceNorms(
-            new Stat(1.20, 0.08),  // faceAspect
-            new Stat(0.62, 0.07),  // jawRatio
-            new Stat(0.80, 0.06),  // foreheadRatio
-            new Stat(0.45, 0.04),  // eyeWidth
-            new Stat(0.36, 0.06),  // eyeOpen
-            new Stat(4.0, 4.0),    // eyeTiltDeg
-            new Stat(0.12, 0.03),  // browThickness
-            new Stat(0.10, 0.04),  // browArch
-            new Stat(0.58, 0.06),  // noseWidth
-            new Stat(0.80, 0.07),  // mouthWidth
-            new Stat(0.30, 0.07),  // lipThickness
-            new Stat(0.03, 0.015)  // cupidBow
+            new Stat(1.23, 0.06),  // faceAspect
+            new Stat(0.65, 0.04),  // jawRatio
+            new Stat(0.90, 0.04),  // foreheadRatio
+            new Stat(0.43, 0.02),  // eyeWidth
+            new Stat(0.30, 0.04),  // eyeOpen   ← 사람마다 가장 많이 달라서 눈 크기를 정한다
+            new Stat(3.0, 2.0),    // eyeTiltDeg
+            new Stat(0.093, 0.015),// browThickness
+            new Stat(0.145, 0.03), // browArch
+            new Stat(0.53, 0.04),  // noseWidth
+            new Stat(0.74, 0.05),  // mouthWidth
+            new Stat(0.33, 0.05),  // lipThickness
+            new Stat(0.026, 0.01)  // cupidBow
     );
 }
