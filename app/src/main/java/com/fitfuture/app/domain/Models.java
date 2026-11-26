@@ -36,6 +36,7 @@ public final class Models {
   }
 
   public static class Nutrition implements Serializable {
+    public String source = "";
     public double caloriesKcal, carbohydrateGrams, proteinGrams, fatGrams;
 
     public Nutrition(double c, double carbs, double p, double f) {
@@ -63,6 +64,7 @@ public final class Models {
     public String id = java.util.UUID.randomUUID().toString(), name, photoUri = "";
     public List<FoodPortion> foods = new ArrayList<>();
     public Nutrition nutrition;
+    public String nutritionSource = "";
     public boolean confirmed;
 
     public Meal(String name) {
@@ -74,6 +76,7 @@ public final class Models {
       m.id = id;
       m.photoUri = photoUri;
       m.nutrition = nutrition;
+      m.nutritionSource = nutritionSource;
       m.confirmed = confirmed;
       for (FoodPortion f : foods) m.foods.add(f.copy());
       return m;
@@ -82,6 +85,10 @@ public final class Models {
 
   public static class Alternative implements Serializable {
     public int index;
+    public String id = "", source = "", verification = "";
+    public double scoreValue, calorieDifference;
+    public int priceWon;
+    public double[] componentScores, scoreWeights;
     public String title, instructions, reason, composition;
     public List<FoodPortion> foods;
     public Nutrition nutrition;
@@ -102,6 +109,7 @@ public final class Models {
       this.nutrition = nutrition;
       this.composition = composition;
       this.score = score;
+      this.scoreValue = score;
     }
   }
 
@@ -125,8 +133,25 @@ public final class Models {
   public static class FutureComparison {
     public int months;
     public double currentWeightKg, alternativeWeightKg;
+    /** 실제로 이동한 체형 칸 수(−2~+2). 기존 화면 호환용. */
     public AvatarStage currentStage, alternativeStage;
     public String assumptions;
+
+    // ── 아바타 렌더링용 (A = 현재 식단 유지, B = 선택 대안 실천) ──
+    /** 출발점: 사용자가 확정한 현재 체형 칸(1~7). 확정 전이면 BMI 초안. */
+    public int baseCell;
+    /** 기간 뒤 체형 칸(1~7). */
+    public int currentCell, alternativeCell;
+    /** 볼 윤곽 −1·0·+1. 실제로 2칸 이동했을 때만 ±1. */
+    public int currentCheek, alternativeCheek;
+    /** 예상 체중 변화량(kg). 끝 칸에서 그림이 멈춰도 이 값은 그대로 표시한다. */
+    public double currentChangeKg, alternativeChangeKg;
+    /** 끝 칸이라 그림이 덜 움직였는지. */
+    public boolean currentClamped, alternativeClamped;
+    /** 비교에 쓴 하루 섭취 열량(kcal). */
+    public double currentDailyKcal, alternativeDailyKcal;
+    /** B 하루 섭취가 기초대사량보다 낮음 → 극단적 감량 경고 (체형 칸과 별개). */
+    public boolean alternativeBelowBmr;
   }
 
   public static class MealRecord implements Serializable {
@@ -137,6 +162,8 @@ public final class Models {
     public String actualTitle, note;
     public String mealType = "점심";
     public Nutrition actualNutrition;
+    public Alternative plannedSnapshot, actualSnapshot;
+    public List<FoodPortion> actualFoods = new ArrayList<>();
   }
 
   public static class ModuleException extends Exception {

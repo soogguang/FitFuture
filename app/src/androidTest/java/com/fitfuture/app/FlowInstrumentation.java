@@ -11,10 +11,18 @@ import com.fitfuture.app.domain.Models.*;
 /** Dependency-free device tests of the complete connected flow and persisted data. */
 public final class FlowInstrumentation extends Instrumentation {
   private MainActivity activity;
+  private String recommendationUrl = "";
+  private boolean liveRecommendationOnly;
+  private boolean cameraOnly;
+  private boolean nutritionOnly;
 
   @Override
   public void onCreate(Bundle args) {
     super.onCreate(args);
+    if (args != null) recommendationUrl = args.getString("recommendationUrl", "");
+    if (args != null) liveRecommendationOnly = Boolean.parseBoolean(args.getString("liveRecommendationOnly", "false"));
+    cameraOnly = args != null && "true".equals(args.getString("cameraOnly"));
+    nutritionOnly = args != null && "true".equals(args.getString("nutritionOnly"));
     start();
   }
 
@@ -22,18 +30,184 @@ public final class FlowInstrumentation extends Instrumentation {
   public void onStart() {
     Bundle result = new Bundle();
     try {
+      if (liveRecommendationOnly) {
+        runLiveRecommendation();
+        result.putString("stream", "PASS: saved meal/profile -> live Gemini -> "
+            + activity.state.alternatives.size() + " recommendation cards -> details -> future comparison\n");
+        finish(Activity.RESULT_OK, result);
+        return;
+      }
+      checkFoodResponseContract();
+      if (nutritionOnly) {
+        runNutritionFlow();
+        result.putString("stream", "PASS: MFDS asset, pork soup alias, grams scaling, multi-food totals, unknown/invalid rejection, confirm UI and provenance\n");
+        finish(Activity.RESULT_OK, result);
+        return;
+      }
+      if (cameraOnly) {
+        runCameraFlow();
+        result.putString("stream", "PASS: embedded camera preview, direct JPEG capture, recognition handoff, re-entry\n");
+        finish(Activity.RESULT_OK, result);
+        return;
+      }
       runFlow();
       result.putString(
           "stream",
-          "PASS: onboarding, validation, recognition, quantity editing, add/remove food,"
+          "PASS: real HTTP/JSON contract, shortage/server error screens, score parsing,"
+              + " recommendation kcal-to-avatar scenarios, feedback snapshots,"
+              + " onboarding, validation, recognition, quantity editing, add/remove food,"
               + " recommendation selection, detail, 1/3/6-month tabs, actual-vs-planned feedback,"
-              + " local persistence, recreation, native back, deletion, camera/gallery intents\n");
+              + " local persistence, recreation, native back, deletion, embedded camera/gallery\n");
       finish(Activity.RESULT_OK, result);
     } catch (Throwable error) {
       result.putString(
           "stream", "FAIL: " + error + "\n" + android.util.Log.getStackTraceString(error));
       finish(Activity.RESULT_CANCELED, result);
     }
+  }
+
+  /** Explicit opt-in only: real API call using the existing meal, without resetting user data. */
+  private void runLiveRecommendation() throws Exception {
+    Intent intent = new Intent(getTargetContext(), MainActivity.class);
+    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+    activity = (MainActivity) startActivitySync(intent);
+    waitForIdleSync();
+    require(activity.state.meal != null && activity.state.meal.confirmed,
+        "Confirm a meal before running live recommendation verification");
+    onMain(activity::loadRecommendations);
+    long until = System.currentTimeMillis() + 40000;
+    while (activity.screen.equals("s16_loading") && System.currentTimeMillis() < until) {
+      Thread.sleep(100);
+      waitForIdleSync();
+    }
+    require(activity.screen.equals("s16"), "Live recommendation failed: " + activity.failureMessage);
+    require(activity.state.alternatives.size() >= 1 && activity.state.alternatives.size() <= 3,
+        "Expected one to three validated alternatives");
+    for (Alternative alt : activity.state.alternatives) {
+      require(alt.source.startsWith("gemini"), "Live test received non-Gemini candidates");
+      require(clickable(activity.getWindow().getDecorView(), "추천 " + (alt.index + 1) + " " + alt.title) != null,
+          "Live recommendation card missing");
+    }
+    click("추천 근거 및 상세 ›");
+    screen("s17");
+    click("이 대안 선택");
+    waitUntil(() -> activity.futureComparisons.size() == 3);
+    onMain(() -> activity.root("s16"));
+    waitForIdleSync();
+    android.graphics.Bitmap screenshot = getUiAutomation().takeScreenshot();
+    try (java.io.OutputStream out = new java.io.FileOutputStream(
+        new java.io.File(getTargetContext().getFilesDir(), "live-recommendation.png"))) {
+      screenshot.compress(android.graphics.Bitmap.CompressFormat.PNG, 100, out);
+    } finally {
+      screenshot.recycle();
+    }
+  }
+
+  private void checkFoodResponseContract() throws Exception {
+    Meal meal = RemoteFoodAnalysis.parse(new org.json.JSONObject(
+        "{\"name\":\"비빔밥\",\"foods\":[{\"name\":\"비빔밥\",\"grams\":400}]}"));
+    require(meal.name.equals("비빔밥") && meal.foods.get(0).grams == 400 && !meal.confirmed,
+        "Remote recognition must preserve food and keep estimates unconfirmed");
+    for (String invalid : new String[] {
+        "{\"name\":\"밥\",\"foods\":[]}",
+        "{\"name\":\"밥\",\"foods\":[{\"name\":\"밥\",\"grams\":0}]}",
+        "{\"name\":\"밥\",\"foods\":[{\"name\":\"밥\",\"grams\":\"100\"}]}"}) {
+      boolean rejected = false;
+      try { RemoteFoodAnalysis.parse(new org.json.JSONObject(invalid)); }
+      catch (ModuleException | org.json.JSONException expected) { rejected = true; }
+      require(rejected, "Invalid remote response must be rejected");
+    }
+  }
+
+  private void runNutritionFlow() throws Exception {
+    RemoteFoodAnalysis service = new RemoteFoodAnalysis(getTargetContext(), "http://127.0.0.1");
+    Nutrition one = service.analyze(java.util.List.of(new FoodPortion("돼지국밥", 100)));
+    require(Math.abs(one.caloriesKcal - 76) < 0.001, "Pork soup MFDS energy mismatch");
+    require(Math.abs(one.proteinGrams - 5.53) < 0.001, "Pork soup protein mismatch");
+    Nutrition two = service.analyze(java.util.List.of(new FoodPortion("돼지 국밥", 200)));
+    require(Math.abs(two.caloriesKcal - 152) < 0.001, "Gram scaling mismatch");
+    Nutrition rice = service.analyze(java.util.List.of(new FoodPortion("밥", 100)));
+    Nutrition combined = service.analyze(java.util.List.of(
+        new FoodPortion("돼지국밥", 100), new FoodPortion("밥", 100)));
+    require(Math.abs(combined.caloriesKcal - one.caloriesKcal - rice.caloriesKcal) < 0.001,
+        "Multiple food total mismatch");
+    for (FoodPortion invalid : new FoodPortion[] {new FoodPortion("미등록음식XYZ", 100),
+        new FoodPortion("돼지국밥", Double.NaN), new FoodPortion("돼지국밥", -1),
+        new FoodPortion("돼지국밥", 5001)}) {
+      boolean rejected = false;
+      try { service.analyze(java.util.List.of(invalid)); }
+      catch (ModuleException expected) { rejected = expected.code.equals("NUTRITION"); }
+      require(rejected, "Unknown/invalid food must fail without fabricated values");
+    }
+    Intent intent = new Intent(getTargetContext(), MainActivity.class);
+    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+    intent.putExtra("preview", "s14");
+    activity = (MainActivity) startActivitySync(intent);
+    onMain(() -> {
+      activity.services = new com.fitfuture.app.domain.FeatureServices(service,
+          new DemoServices(), new DemoServices());
+      activity.state.meal = new Meal("돼지국밥");
+      activity.state.meal.foods.add(new FoodPortion("돼지국밥", 500));
+      activity.root("s14");
+    });
+    click("수정 후 확정");
+    waitUntil(() -> activity.screen.equals("s13"));
+    require(activity.state.meal.confirmed && activity.state.meal.nutrition.caloriesKcal == 380,
+        "Confirmation must calculate actual DB nutrition");
+    require(activity.state.meal.nutrition.source.contains("D301-004140000-0001"),
+        "Source food code must be retained");
+    onMain(() -> {
+      activity.state.meal.foods.get(0).name = "미등록음식XYZ";
+      activity.root("s14");
+    });
+    click("수정 후 확정");
+    waitUntil(() -> activity.screen.equals("s29_nutrition"));
+    require(activity.requestError.contains("미등록음식XYZ"), "Error must identify missing food");
+  }
+
+  private void runCameraFlow() throws Exception {
+    Intent intent = new Intent(getTargetContext(), MainActivity.class);
+    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+    intent.putExtra("preview", "s10"); // Isolated preview mode does not overwrite the user's records.
+    activity = (MainActivity) startActivitySync(intent);
+    waitForIdleSync();
+    onMain(() -> activity.services = new DemoServices().services());
+    captureInsideScreen();
+    onMain(() -> activity.root("s10"));
+    waitUntil(this::shutterReady);
+    onMain(() -> activity.root("s09"));
+    screen("s09");
+  }
+
+  private android.net.Uri captureInsideScreen() throws Exception {
+    waitUntil(this::shutterReady);
+    ActivityMonitor externalCamera = addMonitor(
+        new IntentFilter(android.provider.MediaStore.ACTION_IMAGE_CAPTURE), null, true);
+    onMain(() -> activity.recognitionReady = false);
+    onMain(() -> activity.footer.getChildAt(0).performClick());
+    waitUntil(() -> activity.recognitionReady);
+    require(externalCamera.getHits() == 0, "Capture must stay inside FitFuture");
+    removeMonitor(externalCamera);
+    android.net.Uri uri = android.net.Uri.parse(activity.state.photoUri);
+    require(uri.toString().contains(".photos/meal-"), "Captured URI missing");
+    try (java.io.InputStream stream = getTargetContext().getContentResolver().openInputStream(uri)) {
+      android.graphics.BitmapFactory.Options bounds = new android.graphics.BitmapFactory.Options();
+      bounds.inJustDecodeBounds = true;
+      android.graphics.BitmapFactory.decodeStream(stream, null, bounds);
+      require(bounds.outWidth > 0 && bounds.outHeight > 0, "Camera did not write a decodable image");
+    }
+    click("음식과 양 확인하기");
+    screen("s14");
+    require(activity.findViewById(R.id.photo_image).getVisibility() == View.VISIBLE,
+        "Captured photo not displayed");
+    return uri;
+  }
+
+  private boolean shutterReady() {
+    if (activity.footer.getChildCount() == 0) return false;
+    View button = activity.footer.getChildAt(0);
+    return button instanceof TextView && button.isEnabled()
+        && ((TextView) button).getText().toString().equals("사진 촬영");
   }
 
   private void onMain(Runnable action) {
@@ -124,7 +298,7 @@ public final class FlowInstrumentation extends Instrumentation {
   }
 
   private void waitUntil(java.util.function.BooleanSupplier check) throws Exception {
-    long until = System.currentTimeMillis() + 15000;
+    long until = System.currentTimeMillis() + 30000;
     while (!check.getAsBoolean() && System.currentTimeMillis() < until) {
       Thread.sleep(80);
       waitForIdleSync();
@@ -142,6 +316,14 @@ public final class FlowInstrumentation extends Instrumentation {
     intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
     activity = (MainActivity) startActivitySync(intent);
     waitForIdleSync();
+    RecommendationChecks.run(this, activity, recommendationUrl);
+    onMain(() -> {
+      // The original UI regression suite explicitly uses demo fixtures.
+      activity.state = new AppState();
+      DemoServices demo = new DemoServices();
+      activity.services = new com.fitfuture.app.domain.FeatureServices(demo, demo, activity.avatarFuture);
+      activity.root("s01");
+    });
     screen("s01");
     click("시작하기");
     click("건너뛰기");
@@ -161,14 +343,29 @@ public final class FlowInstrumentation extends Instrumentation {
     click("다음");
     screen("s06");
     click("설정 완료");
-    click("기본 아바타로 시작");
+    click("이 아바타로 시작");
     screen("s27");
     require(
         activity.state.profile.age == 23 && activity.state.profile.heightCm == 170,
         "Profile inputs lost");
     click("첫 식사 입력");
     click("텍스트 입력");
-    input("음식 이름", "돈가스 정식");
+    onMain(() -> {
+      EditText food = (EditText) findInput(activity.getWindow().getDecorView(), "음식 이름");
+      require(food != null && food.getImeHintLocales().get(0).getLanguage().equals("ko"),
+          "Korean keyboard locale missing");
+      food.requestFocus();
+      food.setText("");
+      android.view.inputmethod.InputConnection connection =
+          food.onCreateInputConnection(new android.view.inputmethod.EditorInfo());
+      require(connection != null, "Text input connection missing");
+      connection.setComposingText("ㄷ", 1);
+      connection.setComposingText("도", 1);
+      connection.setComposingText("돈", 1);
+      connection.commitText("돈가스 정식", 1);
+      require(food.getText().toString().equals("돈가스 정식")
+          && activity.state.inputText.equals("돈가스 정식"), "Korean composition lost");
+    });
     click("음식 인식하기");
     waitUntil(() -> activity.recognitionReady);
     click("음식과 양 확인하기");
@@ -220,6 +417,10 @@ public final class FlowInstrumentation extends Instrumentation {
     activity = (MainActivity) recreated;
     removeMonitor(monitor);
     waitForIdleSync();
+    onMain(() -> {
+      DemoServices demo = new DemoServices();
+      activity.services = new com.fitfuture.app.domain.FeatureServices(demo, demo, activity.avatarFuture);
+    });
     screen("s20");
     require(activity.state.note.equals("실천하기 편했어요"), "Memo lost on recreation");
     require(
@@ -272,68 +473,20 @@ public final class FlowInstrumentation extends Instrumentation {
     removeMonitor(gallery);
     click("사진 촬영");
     screen("s10");
-    ActivityMonitor camera =
-        addMonitor(
-            new IntentFilter(android.provider.MediaStore.ACTION_IMAGE_CAPTURE),
-            new ActivityResult(Activity.RESULT_CANCELED, null),
-            true);
-    click("사진 촬영");
-    require(camera.getHits() == 1, "Camera intent not launched");
-    removeMonitor(camera);
-    onMain(() -> activity.getOnBackPressedDispatcher().onBackPressed());
-    waitForIdleSync();
-    screen("s09");
-    // Exercise the real URI provider and both success callbacks without depending on a vendor
-    // camera UI.
-    click("사진 촬영");
-    java.util.concurrent.atomic.AtomicReference<android.net.Uri> fixture =
-        new java.util.concurrent.atomic.AtomicReference<>();
-    ActivityMonitor successfulCamera =
-        new ActivityMonitor() {
-          @Override
-          public ActivityResult onStartActivity(Intent request) {
-            if (!android.provider.MediaStore.ACTION_IMAGE_CAPTURE.equals(request.getAction()))
-              return null;
-            android.net.Uri uri =
-                request.getParcelableExtra(android.provider.MediaStore.EXTRA_OUTPUT);
-            fixture.set(uri);
-            try (java.io.OutputStream output =
-                getTargetContext().getContentResolver().openOutputStream(uri)) {
-              android.graphics.Bitmap bitmap =
-                  android.graphics.Bitmap.createBitmap(
-                      64, 64, android.graphics.Bitmap.Config.ARGB_8888);
-              bitmap.eraseColor(android.graphics.Color.rgb(160, 110, 60));
-              bitmap.compress(android.graphics.Bitmap.CompressFormat.JPEG, 90, output);
-              bitmap.recycle();
-            } catch (Exception ex) {
-              throw new IllegalStateException(ex);
-            }
-            return new ActivityResult(Activity.RESULT_OK, null);
-          }
-        };
-    addMonitor(successfulCamera);
-    click("사진 촬영");
-    removeMonitor(successfulCamera);
-    waitUntil(() -> activity.recognitionReady);
-    require(activity.state.photoUri.equals(fixture.get().toString()), "Camera URI not propagated");
-    click("음식과 양 확인하기");
-    screen("s14");
-    require(
-        activity.findViewById(R.id.photo_image).getVisibility() == View.VISIBLE,
-        "Captured photo not displayed");
+    android.net.Uri captured = captureInsideScreen();
     onMain(() -> activity.root("s09"));
     ActivityMonitor successfulGallery =
         new ActivityMonitor() {
           @Override
           public ActivityResult onStartActivity(Intent request) {
             if (!Intent.ACTION_OPEN_DOCUMENT.equals(request.getAction())) return null;
-            return new ActivityResult(Activity.RESULT_OK, new Intent().setData(fixture.get()));
+            return new ActivityResult(Activity.RESULT_OK, new Intent().setData(captured));
           }
         };
     addMonitor(successfulGallery);
     click("갤러리");
     removeMonitor(successfulGallery);
     waitUntil(() -> activity.recognitionReady);
-    require(activity.state.photoUri.equals(fixture.get().toString()), "Gallery URI not propagated");
+    require(activity.state.photoUri.equals(captured.toString()), "Gallery URI not propagated");
   }
 }

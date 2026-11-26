@@ -1,0 +1,5 @@
+{
+  "weights": {"N": 0.35, "P": 0.30, "C": 0.20, "F": 0.15},
+  "safety": {"min_kcal": 300, "max_kcal": 1800, "min_original_ratio": 0.60},
+  "macro_targets": {"carbohydrate": 0.50, "protein": 0.20, "fat": 0.30}
+}

@@ -1,0 +1,47 @@
+{
+  "meal": {
+    "name": "돈가스 정식",
+    "confirmed": true,
+    "foods": [
+      {
+        "name": "돈가스",
+        "grams": 150
+      },
+      {
+        "name": "밥",
+        "grams": 200
+      },
+      {
+        "name": "양배추 샐러드",
+        "grams": 50
+      }
+    ],
+    "nutrition": {
+      "calories_kcal": 850,
+      "carbohydrate_grams": 110,
+      "protein_grams": 32,
+      "fat_grams": 31
+    }
+  },
+  "profile": {
+    "goal": "체중 감량",
+    "gender": "여성",
+    "age": 21,
+    "height_cm": 163,
+    "weight_kg": 58,
+    "target_weight_kg": 55,
+    "activity": "가벼운 활동",
+    "preferences": [
+      "돈가스"
+    ],
+    "avoided": [
+      "매운 음식"
+    ],
+    "allergies": [
+      "갑각류"
+    ],
+    "budget_won": 8000,
+    "environment": "학식"
+  },
+  "feedback": []
+}

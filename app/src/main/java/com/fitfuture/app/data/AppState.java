@@ -25,7 +25,7 @@ public final class AppState implements Serializable {
   public Alternative selected() {
     return alternatives.isEmpty()
         ? null
-        : alternatives.get(Math.min(selectedAlternative, alternatives.size() - 1));
+        : alternatives.get(Math.max(0, Math.min(selectedAlternative, alternatives.size() - 1)));
   }
 
   public MealRecord record() {
@@ -41,6 +41,7 @@ public final class AppState implements Serializable {
     if (meal != null) {
       meal.confirmed = false;
       meal.nutrition = null;
+      meal.nutritionSource = "";
     }
   }
 }

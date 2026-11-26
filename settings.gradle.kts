@@ -4,4 +4,4 @@ dependencyResolutionManagement {
     repositories { google(); mavenCentral() }
 }
 rootProject.name = "FitFuture"
-include(":app")
+include(":app", ":avatar")

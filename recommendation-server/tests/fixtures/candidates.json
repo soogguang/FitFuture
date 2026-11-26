@@ -1,0 +1,134 @@
+{
+  "candidates": [
+    {
+      "title": "밥 줄이기",
+      "kind": "portion",
+      "portions": [
+        {
+          "food_id": "cutlet",
+          "grams": 150
+        },
+        {
+          "food_id": "rice",
+          "grams": 130
+        },
+        {
+          "food_id": "salad",
+          "grams": 50
+        }
+      ]
+    },
+    {
+      "title": "돈가스 줄이기",
+      "kind": "portion",
+      "portions": [
+        {
+          "food_id": "cutlet",
+          "grams": 110
+        },
+        {
+          "food_id": "rice",
+          "grams": 200
+        },
+        {
+          "food_id": "salad",
+          "grams": 50
+        }
+      ]
+    },
+    {
+      "title": "전체 조절",
+      "kind": "portion",
+      "portions": [
+        {
+          "food_id": "cutlet",
+          "grams": 110
+        },
+        {
+          "food_id": "rice",
+          "grams": 130
+        },
+        {
+          "food_id": "salad",
+          "grams": 50
+        }
+      ]
+    },
+    {
+      "title": "샐러드 균형",
+      "kind": "balance",
+      "portions": [
+        {
+          "food_id": "cutlet",
+          "grams": 150
+        },
+        {
+          "food_id": "rice",
+          "grams": 150
+        },
+        {
+          "food_id": "salad",
+          "grams": 90
+        }
+      ]
+    },
+    {
+      "title": "적당히 조절",
+      "kind": "portion",
+      "portions": [
+        {
+          "food_id": "cutlet",
+          "grams": 135
+        },
+        {
+          "food_id": "rice",
+          "grams": 160
+        },
+        {
+          "food_id": "salad",
+          "grams": 50
+        }
+      ]
+    },
+    {
+      "title": "없는 소스 줄이기",
+      "kind": "sauce",
+      "portions": [
+        {
+          "food_id": "cutlet",
+          "grams": 150
+        },
+        {
+          "food_id": "rice",
+          "grams": 170
+        },
+        {
+          "food_id": "salad",
+          "grams": 50
+        }
+      ]
+    },
+    {
+      "title": "새우 더하기",
+      "kind": "balance",
+      "portions": [
+        {
+          "food_id": "cutlet",
+          "grams": 150
+        },
+        {
+          "food_id": "rice",
+          "grams": 100
+        },
+        {
+          "food_id": "salad",
+          "grams": 50
+        },
+        {
+          "food_id": "shrimp",
+          "grams": 40
+        }
+      ]
+    }
+  ]
+}

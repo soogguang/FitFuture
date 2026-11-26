@@ -9,3 +9,8 @@ local.properties
 .env.*
 __pycache__/
 *.pyc
+.venv/
+.runtime-venv/
+.run/
+!.env.example
+recommendation-server/data/

@@ -10,6 +10,8 @@ import android.view.*;
 import android.widget.*;
 import com.fitfuture.app.R;
 import com.fitfuture.app.domain.Models.AvatarStage;
+import com.fitfuture.avatar.AvatarLayerView;
+import com.fitfuture.avatar.core.AvatarSpec;
 import java.util.*;
 import java.util.function.Consumer;
 
@@ -167,6 +169,7 @@ public final class Ui {
       gap(p, 6);
     }
     EditText e = (EditText) a.getLayoutInflater().inflate(R.layout.component_input, p, false);
+    e.setImeHintLocales(android.os.LocaleList.forLanguageTags("ko-KR,en-US"));
     e.setText(value);
     e.setHint(hint);
     e.setContentDescription(label.isEmpty() ? hint : label);
@@ -319,6 +322,21 @@ public final class Ui {
     return bitmap;
   }
 
+  /**
+   * Paper Cut 전신 아바타. 편집 미리보기·미래 비교·홈·기록이 모두 이 렌더러를 쓴다.
+   * 발바닥은 아래에 고정되고, heightScale(키)만큼 작아진다.
+   */
+  public AvatarLayerView figure(
+      LinearLayout p, AvatarSpec spec, int cell, int cheek, double heightScale, int wDp, int hDp) {
+    AvatarLayerView v = new AvatarLayerView(a);
+    v.setAvatar(spec, cell, cheek, heightScale);
+    LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(dp(wDp), dp(hDp));
+    lp.gravity = Gravity.CENTER_HORIZONTAL;
+    p.addView(v, lp);
+    return v;
+  }
+
+  /** 예전 숫자 자리표시 아바타. 새 화면에서는 figure()를 쓴다. */
   public View avatar(LinearLayout p, AvatarStage stage) {
     View v = a.getLayoutInflater().inflate(R.layout.component_avatar, p, false);
     TextView n = v.findViewById(R.id.avatar_stage), cap = v.findViewById(R.id.avatar_caption);

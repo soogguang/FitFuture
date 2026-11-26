@@ -30,14 +30,16 @@ public final class StateStore {
         .put("kcal", n.caloriesKcal)
         .put("carbs", n.carbohydrateGrams)
         .put("protein", n.proteinGrams)
-        .put("fat", n.fatGrams);
+        .put("fat", n.fatGrams)
+        .put("source", n.source);
   }
 
   private Nutrition readNutrition(JSONObject o) {
-    return o == null || !o.has("kcal")
-        ? null
-        : new Nutrition(
-            o.optDouble("kcal"), o.optDouble("carbs"), o.optDouble("protein"), o.optDouble("fat"));
+    if (o == null || !o.has("kcal")) return null;
+    Nutrition n = new Nutrition(
+        o.optDouble("kcal"), o.optDouble("carbs"), o.optDouble("protein"), o.optDouble("fat"));
+    n.source = o.optString("source", "");
+    return n;
   }
 
   private JSONObject meal(Meal m) throws JSONException {
@@ -50,6 +52,7 @@ public final class StateStore {
         .put("name", m.name)
         .put("photo", m.photoUri)
         .put("confirmed", m.confirmed)
+        .put("nutritionSource", m.nutritionSource)
         .put("foods", foods)
         .put("nutrition", nutrition(m.nutrition));
   }
@@ -60,6 +63,7 @@ public final class StateStore {
     m.id = o.optString("id", m.id);
     m.photoUri = o.optString("photo");
     m.confirmed = o.optBoolean("confirmed");
+    m.nutritionSource = o.optString("nutritionSource");
     m.nutrition = readNutrition(o.optJSONObject("nutrition"));
     JSONArray a = o.optJSONArray("foods");
     if (a != null)
@@ -101,13 +105,22 @@ public final class StateStore {
                 .put("title", r.actualTitle)
                 .put("mealType", r.mealType)
                 .put("note", r.note)
+                .put("plannedSnapshot", r.plannedSnapshot == null ? null : RecommendationJson.alternative(r.plannedSnapshot))
+                .put("actualSnapshot", r.actualSnapshot == null ? null : RecommendationJson.alternative(r.actualSnapshot))
+                .put("actualFoods", RecommendationJson.foods(r.actualFoods))
                 .put("nutrition", nutrition(r.actualNutrition)));
+      JSONArray alternatives = new JSONArray();
+      for (Alternative alt : s.alternatives) {
+        JSONObject encoded = RecommendationJson.alternative(alt);
+        if (encoded != null) alternatives.put(encoded);
+      }
       JSONObject root =
           new JSONObject()
-              .put("version", 1)
+              .put("version", 2)
               .put("profile", profile)
               .put("onboarded", s.onboarded)
               .put("records", records)
+              .put("alternatives", alternatives)
               .put("meal", meal(s.meal))
               .put("inputText", s.inputText)
               .put("draftMealType", s.draftMealType)
@@ -147,11 +160,17 @@ public final class StateStore {
       v.allergies = stringList(p.optJSONArray("allergies"));
       s.onboarded = o.optBoolean("onboarded");
       s.meal = readMeal(o.optJSONObject("meal"));
+      JSONArray alternatives = o.optJSONArray("alternatives");
+      if (alternatives != null && alternatives.length() >= 1 && alternatives.length() <= 3)
+        for (int i = 0; i < alternatives.length(); i++)
+          s.alternatives.add(RecommendationJson.readAlternative(alternatives.getJSONObject(i), i));
       s.inputText = o.optString("inputText", "돈가스 정식");
       s.draftMealType = o.optString("draftMealType", "점심");
       s.photoUri = o.optString("photo");
-      s.selectedAlternative = Math.max(0, Math.min(2, o.optInt("selected")));
+      s.selectedAlternative = Math.max(0, Math.min(s.alternatives.size() - 1, o.optInt("selected")));
       s.actualChoice = Math.max(0, Math.min(4, o.optInt("actual")));
+      if (s.actualChoice < 3 && s.actualChoice >= s.alternatives.size())
+        s.actualChoice = s.selectedAlternative;
       s.months = o.optInt("months", 1);
       s.satisfaction = o.optInt("rating", 4);
       s.note = o.optString("note");
@@ -169,6 +188,12 @@ public final class StateStore {
           record.actualTitle = r.optString("title");
           record.mealType = r.optString("mealType", "점심");
           record.note = r.optString("note");
+          if (r.optJSONObject("plannedSnapshot") != null)
+            record.plannedSnapshot = RecommendationJson.readAlternative(r.getJSONObject("plannedSnapshot"), record.plannedAlternative);
+          if (r.optJSONObject("actualSnapshot") != null)
+            record.actualSnapshot = RecommendationJson.readAlternative(r.getJSONObject("actualSnapshot"), record.actualChoice);
+          JSONArray actualFoods = r.optJSONArray("actualFoods");
+          if (actualFoods != null && actualFoods.length() > 0) record.actualFoods = RecommendationJson.readFoods(actualFoods);
           record.actualNutrition = readNutrition(r.optJSONObject("nutrition"));
           if (record.meal != null) s.records.add(record);
         }

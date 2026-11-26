@@ -5,6 +5,7 @@ import android.text.*;
 import android.view.*;
 import android.widget.*;
 import com.fitfuture.app.MainActivity;
+import com.fitfuture.app.BuildConfig;
 import com.fitfuture.app.R;
 import com.fitfuture.app.domain.Models.*;
 import java.text.SimpleDateFormat;
@@ -98,7 +99,7 @@ public final class MealScreens {
     c.addView(macros);
     u.gap(s("avatar"), 12);
     LinearLayout avatar = u.card(s("avatar")), r = u.row(), icon = u.column();
-    u.avatar(icon, AvatarStage.BASELINE);
+    u.figure(icon, a.avatar(), a.currentCell(a.avatar()), 0, a.heightScale(), 56, 136);
     r.addView(icon, new LinearLayout.LayoutParams(-2, -2));
     LinearLayout label = u.column();
     label.setPadding(u.dp(20), 0, 0, 0);
@@ -176,9 +177,12 @@ public final class MealScreens {
     u.photo(s("photo"), "음식 사진 예시", 152, "");
     u.gap(s("methods"), 12);
     u.menuRow(s("methods"), "사진 촬영", "카메라로 음식 전체를 찍어요", R.drawable.ic_camera, () -> a.go("s10"));
-    u.menuRow(s("methods"), "갤러리", "저장된 사진을 가져오는 예시", R.drawable.ic_image, a::pickPhoto);
+    u.menuRow(s("methods"), "갤러리", "저장된 음식 사진을 가져와요", R.drawable.ic_image, a::pickPhoto);
     u.menuRow(s("methods"), "텍스트 입력", "음식 이름을 직접 입력해요", R.drawable.ic_text, () -> a.go("s11"));
     u.small(s("note"), "음식을 인식한 뒤 음식 이름과 양을 확인할 수 있어요.");
+    u.small(s("note"), BuildConfig.FOOD_API_URL.isEmpty()
+        ? "데모 모드 · 사진 인식은 예시 결과예요."
+        : "음식 인식 시 사진을 서버와 Google Gemini로 전송해요. 영양정보는 식약처 음식 DB로 계산해요.");
   }
 
   private void camera() {
@@ -190,7 +194,13 @@ public final class MealScreens {
     bg.setColor(Color.parseColor("#343D38"));
     bg.setCornerRadius(u.dp(16));
     camera.setBackground(bg);
+    camera.setClipToOutline(true);
     p.addView(camera, new LinearLayout.LayoutParams(-1, u.dp(372)));
+    androidx.camera.view.PreviewView preview = new androidx.camera.view.PreviewView(a);
+    preview.setImplementationMode(androidx.camera.view.PreviewView.ImplementationMode.COMPATIBLE);
+    preview.setScaleType(androidx.camera.view.PreviewView.ScaleType.FILL_CENTER);
+    preview.setContentDescription("음식 카메라 미리보기");
+    camera.addView(preview, new FrameLayout.LayoutParams(-1, -1));
     LinearLayout frame = u.column();
     frame.setGravity(Gravity.CENTER);
     android.graphics.drawable.GradientDrawable outline =
@@ -199,10 +209,9 @@ public final class MealScreens {
     outline.setStroke(u.dp(1), Color.WHITE);
     outline.setCornerRadius(u.dp(16));
     frame.setBackground(outline);
-    frame.addView(u.icon(R.drawable.ic_camera, 36, R.color.white));
-    u.gap(frame, 10);
-    TextView label = u.text("카메라 뷰파인더", 12, R.color.white, false);
+    TextView label = u.text("카메라를 준비하고 있어요…", 14, R.color.white, false);
     label.setGravity(Gravity.CENTER);
+    label.setBackgroundColor(Color.parseColor("#AA343D38"));
     frame.addView(label);
     FrameLayout.LayoutParams fp = new FrameLayout.LayoutParams(-1, -1);
     fp.setMargins(u.dp(30), u.dp(46), u.dp(30), u.dp(46));
@@ -210,6 +219,7 @@ public final class MealScreens {
     u.gap(s("text_link"), 14);
     u.link(s("text_link"), "텍스트로 입력", () -> a.go("s11"));
     a.primary("사진 촬영", a::capturePhoto);
+    a.mealCamera.attach(preview, label, (TextView) a.footer.getChildAt(0));
   }
 
   private void text() {
@@ -260,12 +270,14 @@ public final class MealScreens {
     u.notice(
         s("notices"),
         "01 · 음식을 인식하고 있어요",
-        "Gemini가 "
+        (BuildConfig.FOOD_API_URL.isEmpty() ? "예시 인식이 " : "Gemini가 ")
             + (a.state.inputText.isEmpty() ? "음식 사진" : a.state.inputText)
             + "의 구성 항목을 찾는 중이에요.",
         0);
     u.gap(s("notices"), 12);
-    u.notice(s("notices"), "02 · 영양정보 확인 대기", "음식과 양을 확정하면 식약처 영양 DB에서 확인해요.", 0);
+    u.notice(s("notices"), "02 · 영양정보 확인 대기", BuildConfig.FOOD_API_URL.isEmpty()
+        ? "음식과 양을 확정하면 서버의 영양 DB에서 확인해요."
+        : "음식과 양을 확정하면 식약처 음식 DB의 100g당 영양값으로 계산해요.", 0);
     u.gap(s("examples"), 20);
     u.link(s("examples"), "인식 실패 예시 보기", () -> a.go("s15"));
     u.link(s("examples"), "연결 오류 예시 보기", () -> a.go("s28"));
@@ -308,7 +320,10 @@ public final class MealScreens {
     u.gap(s("notes"), 14);
     u.small(s("notes"), "입력한 음식과 섭취량을 확인했어요");
     u.gap(s("notes"), 14);
-    u.small(s("notes"), "식약처 영양 DB 계산 화면 예시 · 가상 영양값");
+    String source = m.nutritionSource.isEmpty() ? m.nutrition.source : m.nutritionSource;
+    u.small(s("notes"), "영양 데이터 출처: " + (source == null || source.isEmpty() ? "데모 영양값" : source)
+        + "\n" + (BuildConfig.FOOD_API_URL.isEmpty() ? "음식 인식은 개발용 예시입니다. " : "")
+        + "음식과 중량을 직접 확인해 주세요.");
     a.primary("맞춤 대안 3개 보기", a::loadRecommendations);
   }
 
@@ -364,7 +379,9 @@ public final class MealScreens {
     u.photo(s("photo"), m.name + " 사진", 112, m.photoUri);
     u.gap(s("portions"), 12);
     for (FoodPortion f : new ArrayList<>(m.foods)) portion(s("portions"), f);
-    u.notice(s("warning"), "이 음식이 맞나요?", "음식 이름과 양을 확인해 주세요.", 1);
+    u.notice(s("warning"), "이 음식이 맞나요?", "분량은 추정값이에요. 음식 이름과 양을 수정해 주세요. "
+        + (BuildConfig.FOOD_API_URL.isEmpty() ? "확정한 양으로 서버의 영양 DB에서 확인해요."
+            : "확정한 양으로 식약처 음식 DB의 영양정보를 계산해요."), 1);
     u.gap(s("add"), 12);
     u.outline(s("add"), "＋ 음식 추가", () -> a.go("s14_add"));
     u.gap(s("examples"), 12);
@@ -390,6 +407,8 @@ public final class MealScreens {
     c.setPadding(u.dp(12), u.dp(10), u.dp(12), u.dp(10));
     LinearLayout r = u.row();
     EditText name = new EditText(a);
+    name.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_SENTENCES);
+    name.setImeHintLocales(android.os.LocaleList.forLanguageTags("ko-KR,en-US"));
     name.setText(f.name);
     name.setTextSize(14);
     name.setTextColor(u.color(R.color.text));
