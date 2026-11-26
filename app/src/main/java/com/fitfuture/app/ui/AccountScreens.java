@@ -206,32 +206,57 @@ public final class AccountScreens {
           else a.go("s18");
         });
     u.gap(s("weeks"), 18);
-    u.section(s("weeks"), "주차별 아바타 · 확장");
+    u.section(s("weeks"), "지금 식단을 이어가면");
+    // 미래 비교의 A(현재 식단 유지)와 같은 계산: 기록 평균 → 없으면 최근 한 끼를 매일 먹는다고 가정
+    Double lastMealKcal = null;
+    if (a.state.meal != null && a.state.meal.nutrition != null)
+      lastMealKcal = a.state.meal.nutrition.caloriesKcal;
+    else
+      for (int k = a.state.records.size() - 1; k >= 0 && lastMealKcal == null; k--)
+        if (a.state.records.get(k).actualNutrition != null)
+          lastMealKcal = a.state.records.get(k).actualNutrition.caloriesKcal;
+    com.fitfuture.app.data.AvatarFutureService.Trend trend =
+        com.fitfuture.app.data.AvatarFutureService.currentTrend(
+            a.state.profile, a.avatar(), com.fitfuture.app.MainActivity.BODY_CELLS,
+            new java.util.ArrayList<>(a.state.records), lastMealKcal);
+    int[] months = {1, 3, 6};
     LinearLayout row = u.row();
     for (int i = 0; i < 3; i++) {
       LinearLayout c = u.column();
       c.setGravity(Gravity.CENTER);
       c.setPadding(u.dp(4), u.dp(12), u.dp(4), u.dp(12));
       c.setBackgroundResource(R.drawable.bg_card);
-      TextView week = u.text((i + 1) + "주 차", 12, R.color.text, true);
-      week.setGravity(Gravity.CENTER);
-      c.addView(week);
+      TextView label = u.text(months[i] + "개월 후", 12, R.color.text, true);
+      label.setGravity(Gravity.CENTER);
+      c.addView(label);
       u.gap(c, 12);
-      // 기록한 체중의 변화율로 지금 체형 칸에서 이동 (미래 비교와 같은 규칙)
-      double rate = 0;
-      if (a.state.weights.size() > i)
-        rate = (a.state.weights.get(i) - a.state.profile.weightKg) / a.state.profile.weightKg;
-      com.fitfuture.avatar.core.BodyCellMapper.Future fw =
-          com.fitfuture.avatar.core.BodyCellMapper.future(
-              a.currentCell(a.avatar()), rate, com.fitfuture.app.MainActivity.BODY_CELLS);
-      u.figure(c, a.avatar(), fw.cell, a.heightScale(), 60, 150);
+      int cell = trend != null ? trend.cells[i] : a.currentCell(a.avatar());
+      u.figure(c, a.avatar(), cell, a.heightScale(), 60, 150);
+      if (trend != null) {
+        u.gap(c, 8);
+        double kg = trend.changeKg[i];
+        TextView change =
+            u.text(String.format(Locale.KOREA, "%s%.1f kg", kg >= 0 ? "+" : "−", Math.abs(kg)),
+                12, R.color.primary_dark, true);
+        change.setGravity(Gravity.CENTER);
+        c.addView(change);
+      }
       LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(0, -2, 1);
       if (i < 2) lp.setMarginEnd(u.dp(6));
       row.addView(c, lp);
     }
     s("weeks").addView(row);
     u.gap(s("weeks"), 12);
-    u.small(s("weeks"), "기록한 체중으로 지금 체형에서 몇 칸 움직였는지 보여줘요.");
+    if (trend == null)
+      u.small(s("weeks"), "식사를 기록하면 지금 식단을 1·3·6개월 이어갔을 때의 모습을 보여줘요.");
+    else
+      u.small(
+          s("weeks"),
+          (trend.fromRecords
+                  ? String.format(Locale.KOREA, "아침·점심·저녁을 모두 기록한 날의 평균 하루 %,.0f kcal로 계산했어요.", trend.dailyKcal)
+                  : String.format(Locale.KOREA, "기록이 %d일보다 적어서 최근 한 끼를 매일 먹는다고 가정했어요 (하루 %,.0f kcal).",
+                      com.fitfuture.app.data.AvatarFutureService.MIN_FULL_DAYS, trend.dailyKcal))
+              + " 의료적 예측이 아닌 참고용 시나리오예요.");
     u.gap(s("weight"), 18);
     u.section(s("weight"), "직접 잰 체중 · 확장");
     double recent =
