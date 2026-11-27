@@ -70,13 +70,12 @@ public final class RecommendationScreens {
       Alternative alt = a.state.alternatives.get(position);
       boolean selected = position == a.state.selectedAlternative;
       LinearLayout c = u.card(s("alternatives"));
-      c.setPadding(u.dp(8), u.dp(15), u.dp(8), u.dp(15));
+      c.setPadding(u.dp(16), u.dp(15), u.dp(8), u.dp(15));
       c.setBackgroundResource(selected ? R.drawable.bg_selected_card : R.drawable.bg_input);
-      LinearLayout row = u.row(), photo = u.column();
-      u.photo(photo, "사진", 58, "");
-      row.addView(photo, new LinearLayout.LayoutParams(u.dp(54), -2));
+      // No per-alternative image source exists, so the card shows text only (no placeholder box).
+      LinearLayout row = u.row();
       LinearLayout words = u.column();
-      words.setPadding(u.dp(8), 0, u.dp(4), 0);
+      words.setPadding(0, 0, u.dp(4), 0);
       LinearLayout heading = u.row();
       TextView index =
           u.text(String.format(Locale.KOREA, "%02d  ", selectedPosition + 1), 12, R.color.primary, true);
