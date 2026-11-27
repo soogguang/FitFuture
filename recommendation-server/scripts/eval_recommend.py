@@ -171,6 +171,8 @@ def main():
     ap.add_argument("--quick", action="store_true", help="식단 2개 × 프로필 3개만")
     ap.add_argument("--delay", type=float, default=2.0, help="요청 사이 대기(초), Gemini 한도 보호")
     ap.add_argument("--timeout", type=float, default=60)
+    ap.add_argument("--stop-after", type=int, default=3,
+                    help="Gemini 한도 초과(AI_RATE_LIMIT)가 이 횟수만큼 연속이면 중단 (한도 낭비 방지)")
     args = ap.parse_args()
 
     index = load_index()
@@ -192,6 +194,10 @@ def main():
     stamp = datetime.now().strftime("%Y%m%d-%H%M%S")
     req_rows, alt_rows = [], []
     url = args.url + "/recommend"
+    streak = {"n": 0}
+
+    class Stop(Exception):
+        pass
 
     def run(label, meal_i, pname, profile, tag="main"):
         body = request_body(index, MEALS[meal_i], profile)
@@ -209,16 +215,31 @@ def main():
         mark = f"{row['n_alts']}개" if status == 200 else code
         bad = [k for g in graded for k in "NKRBADS" if not g[k]]
         print(f"[{len(req_rows):>2}] {label:<28} {mark:<10} {sec:5.1f}s" + (f"  위반: {','.join(bad)}" if bad else ""))
+        streak["n"] = streak["n"] + 1 if code == "AI_RATE_LIMIT" else 0
+        if streak["n"] >= args.stop_after:
+            raise Stop()
         time.sleep(args.delay)
         return status, resp
 
+    stopped = False
+    pref_rows, rep_rows = [], []
+    try:
+        experiments(run, meals, pref_rows, rep_rows, args)
+    except Stop:
+        stopped = True
+        print(f"\nGemini 한도 초과가 {args.stop_after}번 연속이라 중단했어요. 한도가 풀린 뒤 --delay를 늘려 다시 실행해 주세요.")
+    if not req_rows:
+        sys.exit("저장할 결과가 없어요.")
+    _save(req_rows, alt_rows, pref_rows, rep_rows, out_dir, stamp, health, meals, stopped)
+
+
+def experiments(run, meals, pref_rows, rep_rows, args):
     # 1) 본 실험: 식단 × 프로필
     for mi in range(len(meals)):
         for pname, profile in PROFILES.items():
             run(f"{MEALS[mi][0]} / {pname}", mi, pname, profile)
 
     # 2) 선호 반영: 같은 식단·프로필에서 선호 음식만 바꿈
-    pref_rows = []
     if not args.quick:
         base = dict(PROFILES["P1 감량·학식"])
         for mi, food in PREF_PAIRS:
@@ -229,14 +250,14 @@ def main():
                 results[bool(pref)] = resp.get("alternatives", []) if status == 200 else []
             def top(alts):
                 return [(a["title"], a["scores"].get("P")) for a in alts]
-            changed = [a["title"] for a in results[False]] != [a["title"] for a in results[True]]
+            both = bool(results[False]) and bool(results[True])
+            changed = ([a["title"] for a in results[False]] != [a["title"] for a in results[True]]) if both else None
             p_up = (statistics.mean(a["scores"]["P"] for a in results[True]) >
                     statistics.mean(a["scores"]["P"] for a in results[False])) if results[False] and results[True] else None
             pref_rows.append(dict(meal=MEALS[mi][0], preferred=food, rank_changed=changed, p_score_up=p_up,
                                   without=top(results[False]), with_pref=top(results[True])))
 
     # 3) 일관성: 같은 요청 3번
-    rep_rows = []
     if not args.quick:
         for mi in REPEAT_MEALS:
             runs = []
@@ -244,10 +265,13 @@ def main():
                 status, resp = run(f"{MEALS[mi][0]} / 반복 {k + 1}", mi, "P1 반복", PROFILES["P1 감량·학식"], tag="repeat")
                 runs.append([a["title"] for a in resp.get("alternatives", [])] if status == 200 else None)
             ok = [r for r in runs if r]
-            same_top1 = len({r[0] for r in ok}) == 1 if ok else False
-            overlap = (len(set.intersection(*[set(r) for r in ok])) if len(ok) > 1 else 0)
+            same_top1 = (len({r[0] for r in ok}) == 1) if len(ok) == 3 else None
+            overlap = len(set.intersection(*[set(r) for r in ok])) if len(ok) == 3 else None
             rep_rows.append(dict(meal=MEALS[mi][0], runs=runs, same_top1=same_top1, common_titles=overlap))
 
+
+
+def _save(req_rows, alt_rows, pref_rows, rep_rows, out_dir, stamp, health, meals, stopped):
     # 저장
     with open(out_dir / f"requests-{stamp}.csv", "w", newline="", encoding="utf-8-sig") as f:
         w = csv.DictWriter(f, fieldnames=list(req_rows[0].keys()))
@@ -265,16 +289,17 @@ def main():
     names = {"N": "영양 재계산 일치", "K": "열량 300~1800kcal", "R": "원래 열량 60% 이상",
              "B": "예산 이내", "A": "알레르기 근거·미포함", "D": "중복 없음", "S": "점수 순 정렬"}
     lines = [f"# 대안 추천 실험 결과 ({stamp})", "",
-             f"- 서버: {health}", f"- 후보 생성: {ok[0]['source'] if ok else '-'}", "",
+             f"- 서버: {health}", f"- 후보 생성: {ok[0]['source'] if ok else '-'}",
+             "- **중간 중단: Gemini 한도 초과** (아래 숫자는 보낸 요청까지만)" if stopped else "- 끝까지 실행", "",
              "## 요청 결과", "",
              "| 항목 | 결과 |", "|---|---|",
-             f"| 요청 | {len(main_req)}건 (식단 {len(meals)} × 프로필 {len(PROFILES)}) |",
+             f"| 요청 | {len(main_req)}건 (계획: 식단 {len(meals)} × 프로필 {len(PROFILES)}) |",
              f"| 성공 (대안 1~3개) | {len(ok)} / {len(main_req)} |",
              f"| 대안 3개 모두 | {sum(r['n_alts'] == 3 for r in ok)} / {len(main_req)} |",
              f"| SHORTAGE (조건 맞는 대안 없음) | {len(shortage)} / {len(main_req)} |",
              f"| 오류 | {len(errors)} / {len(main_req)} {sorted({r['result'] for r in errors}) or ''} |",
-             f"| 응답 시간 | 평균 {statistics.mean(r['seconds'] for r in main_req):.1f}초, "
-             f"최대 {max(r['seconds'] for r in main_req):.1f}초 |", "",
+             (f"| 응답 시간 | 평균 {statistics.mean(r['seconds'] for r in main_req):.1f}초, "
+              f"최대 {max(r['seconds'] for r in main_req):.1f}초 |" if main_req else "| 응답 시간 | - |"), "",
              "## 대안별 검증 (통과 / 전체)", "", "| 기준 | 통과 |", "|---|---|"]
     for k, label in names.items():
         lines.append(f"| {label} | {sum(r[k] for r in main_alt)} / {len(main_alt)} |")
@@ -285,12 +310,14 @@ def main():
         lines += ["", "## 선호 반영 (같은 식단, 선호 음식만 추가)", "",
                   "| 식단 | 선호 음식 | 순위 변화 | 선호 점수(P) 상승 |", "|---|---|---|---|"]
         for r in pref_rows:
-            lines.append(f"| {r['meal']} | {r['preferred']} | {'예' if r['rank_changed'] else '아니오'} | "
+            yn = lambda v: "-" if v is None else ("예" if v else "아니오")
+            lines.append(f"| {r['meal']} | {r['preferred']} | {yn(r['rank_changed'])} | "
                          f"{'-' if r['p_score_up'] is None else ('예' if r['p_score_up'] else '아니오')} |")
     if rep_rows:
         lines += ["", "## 일관성 (같은 요청 3번)", "", "| 식단 | 1순위 동일 | 3번 모두 나온 대안 수 |", "|---|---|---|"]
         for r in rep_rows:
-            lines.append(f"| {r['meal']} | {'예' if r['same_top1'] else '아니오'} | {r['common_titles']} |")
+            lines.append(f"| {r['meal']} | {'-' if r['same_top1'] is None else ('예' if r['same_top1'] else '아니오')} | "
+                         f"{'-' if r['common_titles'] is None else r['common_titles']} |")
     violations = [r for r in main_alt if not all(r[k] for k in names)]
     if violations:
         lines += ["", "## 위반 사례", ""]
