@@ -37,7 +37,7 @@ def build_pipeline(client):
     if candidate_mode not in ("gemini", "fixture") or (not fixture and candidate_mode == "fixture"):
         raise RecommendationError("CONFIGURATION", "후보 생성 설정을 확인해 주세요. 실제 모드에는 Gemini가 필요해요.", 503)
     generator = (FixtureGenerator(ROOT / "tests/fixtures/candidates.json") if candidate_mode == "fixture" else
-                 GeminiGenerator(client, os.getenv("GEMINI_API_KEY", ""), os.getenv("GEMINI_MODEL", "gemini-3.8-flash")))
+                 GeminiGenerator(client, os.getenv("GEMINI_API_KEY", ""), os.getenv("GEMINI_MODEL", "gemini-3.5-flash-lite")))
     try:
         scorer = RuleScorer(Path(os.getenv("SCORING_CONFIG_PATH", str(ROOT / "fitfuture/scoring.json"))))
     except (ValueError, OSError, KeyError, TypeError) as exc:

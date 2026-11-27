@@ -28,7 +28,7 @@ def main():
     parser.add_argument("--image", type=Path, help="Optional food JPEG/PNG/WebP to test after text succeeds")
     args = parser.parse_args()
     key = saved_setting("GEMINI_API_KEY")
-    model = args.model or saved_setting("GEMINI_MODEL")
+    model = args.model or saved_setting("GEMINI_MODEL") or "gemini-3.5-flash-lite"
     try:
         recognizer = GeminiRecognizer(key, model)
     except ValueError as error:

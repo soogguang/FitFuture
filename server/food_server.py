@@ -212,7 +212,7 @@ def main():
     parser.add_argument("--port", type=int, default=8000)
     args = parser.parse_args()
     try:
-        recognizer = GeminiRecognizer(os.environ.get("GEMINI_API_KEY", ""), os.environ.get("GEMINI_MODEL", ""))
+        recognizer = GeminiRecognizer(os.environ.get("GEMINI_API_KEY", ""), os.environ.get("GEMINI_MODEL", "gemini-3.5-flash-lite"))
     except ValueError as error:
         parser.error(str(error))
     server = ThreadingHTTPServer(("127.0.0.1", args.port), handler_for(recognizer))

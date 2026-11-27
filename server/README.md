@@ -16,7 +16,7 @@ $env:GEMINI_MODEL='gemini-3.5-flash-lite'
 python server/food_server.py
 ```
 
-기본 바인딩은 `127.0.0.1:8000`. 키/모델이 없으면 시작 시 오류를 내며 가짜 인식으로 대체하지 않는다.
+기본 바인딩은 `127.0.0.1:8000`. `GEMINI_MODEL`을 지정하지 않으면 `gemini-3.5-flash-lite`를 쓴다 (추천 서버와 같은 기본 모델). 키가 없으면 시작 시 오류를 내며 가짜 인식으로 대체하지 않는다.
 실제 API 호출은 공급자 계정의 요금/한도를 사용한다. `/health`는 프로세스 상태만 확인하며 키 유효성 검사는 아니다.
 
 앱의 음식 인식은 기본 데모 모드다. 아래처럼 서버 주소를 넣어 APK를 빌드하면 실제 인식 서버를 사용한다. 영양·추천 서버와 함께 실행할 때는 포트가 겹치지 않도록 인식 서버를 `python server/food_server.py --port 8765`로 시작하고 `-PfoodApiUrl=http://10.0.2.2:8765`를 지정한다. 영양·추천 서버 주소는 `recommendationBaseUrl`로 별도 설정한다. [통합 가이드](../docs/INTEGRATION.md)를 참고한다.
