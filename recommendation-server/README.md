@@ -44,6 +44,13 @@ curl -s http://127.0.0.1:8000/recommend -H 'Content-Type: application/json' --da
 `examples/response.fixture.json`은 Python 파이프라인으로 만든 **검증용 응답**이며 Android 계약 테스트도 동일 파일을 읽습니다.
 직접 foreground 실행할 때는 환경변수를 export한 후 `.venv/bin/uvicorn fitfuture.app:app --host 127.0.0.1 --port 8000`을 사용합니다 (`.env` 자동 로드는 scripts/server.py에서 수행).
 
+## Gemini 모델
+
+후보 생성 기본 모델은 `gemini-3.5-flash-lite`다 (음식 인식 서버와 같음). `.env`의 `GEMINI_MODEL`로 바꿀 수 있다.
+2026-11-27 실험에서 `gemini-3.8-flash`는 응답 지연(30초 초과)과 요청 한도 초과로 30건 모두 실패했고,
+`gemini-3.5-flash-lite`는 30건 모두 정상 응답(평균 2.2초)했다. 실험 방법과 결과는 `scripts/eval_recommend.py`와
+`docs/RECOMMENDATION_EVAL.md`를 참고한다.
+
 ## 실제 모드 기본 데이터: 앱과 같은 식약처 음식 DB + 공공 근거
 
 `MFDS_CATALOG_PATH`를 지정하지 않은 `real` 모드는 앱에 포함된 식약처 음식 DB
