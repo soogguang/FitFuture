@@ -80,7 +80,9 @@ class Candidate(StrictModel):
 
 
 class CandidateBatch(StrictModel):
-    candidates: list[Candidate] = Field(min_length=5, max_length=10)
+    # Gemini may find fewer distinct feasible changes (e.g. a 3-food meal with no verified offers).
+    # Accept what it returns; the pipeline verifies each one and reports SHORTAGE when none survive.
+    candidates: list[Candidate] = Field(max_length=10)
 
 
 class Alternative(StrictModel):

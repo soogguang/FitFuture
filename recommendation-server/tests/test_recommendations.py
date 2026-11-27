@@ -192,6 +192,22 @@ def test_api_returns_all_available_up_to_three(pipeline, request_data, count):
     assert [a["score"] for a in alternatives] == sorted((a["score"] for a in alternatives), reverse=True)
 
 
+@pytest.mark.parametrize("count", [1, 2, 4])
+def test_fewer_than_five_ai_candidates_are_still_verified(pipeline, request_data, count):
+    # Gemini may find only a few distinct changes; use what it returns instead of failing the request.
+    rows = json.loads((ROOT / "tests/fixtures/candidates.json").read_text())["candidates"][:count]
+    replace_candidates(pipeline, rows)
+    result = recommend(pipeline, request_data)
+    assert len(result.alternatives) == min(count, 3)
+
+
+def test_no_ai_candidates_is_shortage_not_format_error(pipeline, request_data):
+    replace_candidates(pipeline, [])
+    with pytest.raises(RecommendationError) as error:
+        recommend(pipeline, request_data)
+    assert error.value.code == "SHORTAGE"
+
+
 def test_actual_edited_portions_return_two_instead_of_shortage(pipeline, request_data):
     for food, grams in zip(request_data["meal"]["foods"], [220, 260, 30]):
         food["grams"] = grams
